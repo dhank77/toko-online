@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.ambient-card {
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.05);
+}
+.elevated-card {
+  box-shadow: 0 10px 15px rgba(30, 64, 175, 0.1);
+}
+.glass-header {
+  backdrop-filter: blur(8px);
+  background-color: rgba(248, 249, 255, 0.85);
+}
