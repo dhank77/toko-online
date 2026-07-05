@@ -1,20 +1,19 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
-import NavWithCart from './components/NavWithCart'
+import SiteLayout from './components/SiteLayout'
 import HomePage from './pages/HomePage'
 import CartPage from './pages/CartPage'
-import Footer from './components/Footer'
+import AdminDashboard from './pages/AdminDashboard'
 
 export default function App() {
   return (
     <CartProvider>
       <BrowserRouter>
-        <NavWithCart />
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/cart" element={<CartPage />} />
+          <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
+          <Route path="/cart" element={<SiteLayout><CartPage /></SiteLayout>} />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
-        <Footer />
       </BrowserRouter>
     </CartProvider>
   )

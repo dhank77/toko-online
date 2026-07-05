@@ -72,6 +72,7 @@ export default {
       fontFamily: {
         "body-sm": ["Inter"],
         "display-lg": ["Inter"],
+        "headline-sm": ["Inter"],
         "headline-md": ["Inter"],
         "label-md": ["Inter"],
         "headline-lg-mobile": ["Inter"],
@@ -86,6 +87,7 @@ export default {
           "48px",
           { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" },
         ],
+        "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
         "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
         "label-md": [
           "14px",
