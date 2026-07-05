@@ -1,4 +1,7 @@
+import { useCart } from '../context/CartContext'
+
 export default function TrendingProducts() {
+  const { addItem } = useCart()
   const products = [
     {
       id: 1,
@@ -111,7 +114,7 @@ export default function TrendingProducts() {
                   <div className="flex text-secondary">{renderStars(product.rating)}</div>
                   <span className="text-label-sm text-on-surface-variant">({product.reviews} reviews)</span>
                 </div>
-                <button className="w-full border border-primary text-primary py-2 rounded-xl font-label-md hover:bg-primary hover:text-on-primary transition-all">
+                <button onClick={() => addItem(product)} className="w-full border border-primary text-primary py-2 rounded-xl font-label-md hover:bg-primary hover:text-on-primary transition-all">
                   Add to Cart
                 </button>
               </div>

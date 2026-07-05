@@ -1,4 +1,4 @@
-export default function TopNavBar() {
+export default function TopNavBar({ cartCount = 0 }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-header bg-surface shadow-sm h-20 flex items-center">
       <nav className="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
@@ -37,7 +37,7 @@ export default function TopNavBar() {
           </button>
           <button className="flex items-center gap-xs bg-primary text-on-primary px-4 py-2 rounded-xl scale-95 active:scale-90 transition-transform">
             <span className="material-symbols-outlined">shopping_cart</span>
-            <span className="font-label-md text-label-md">Cart (3)</span>
+            <span className="font-label-md text-label-md">Cart ({cartCount})</span>
           </button>
           <div className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden cursor-pointer">
             <img

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { CartProvider, useCart } from './context/CartContext'
 import TopNavBar from './components/TopNavBar'
 import HeroSection from './components/HeroSection'
 import CategorySection from './components/CategorySection'
@@ -6,6 +7,14 @@ import TrendingProducts from './components/TrendingProducts'
 import FlashSale from './components/FlashSale'
 import NewArrivals from './components/NewArrivals'
 import Footer from './components/Footer'
+
+function NavWithCart() {
+  const { count } = useCart()
+
+  return (
+    <TopNavBar cartCount={count} />
+  )
+}
 
 export default function App() {
   useEffect(() => {
@@ -57,8 +66,8 @@ export default function App() {
   }, [])
 
   return (
-    <>
-      <TopNavBar />
+    <CartProvider>
+      <NavWithCart />
       <main className="pt-20">
         <HeroSection />
         <CategorySection />
@@ -67,6 +76,6 @@ export default function App() {
         <NewArrivals />
       </main>
       <Footer />
-    </>
+    </CartProvider>
   )
 }
