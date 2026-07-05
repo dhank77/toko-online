@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ShopComposed | Pro-Tech Elite Smartphone</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#c4c7c9",
+                    "error": "#ba1a1a",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-container": "#b9bcbe",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-container": "#86f2e4",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-container": "#484c4e",
+                    "surface-bright": "#f8f9ff",
+                    "on-secondary-fixed": "#00201d",
+                    "surface-container": "#e6eeff",
+                    "on-background": "#0d1c2e",
+                    "secondary-fixed": "#89f5e7",
+                    "outline": "#757684",
+                    "on-surface": "#0d1c2e",
+                    "primary-container": "#1e40af",
+                    "error-container": "#ffdad6",
+                    "on-primary-fixed": "#001453",
+                    "inverse-on-surface": "#eaf1ff",
+                    "tertiary-fixed": "#e0e3e5",
+                    "inverse-surface": "#233144",
+                    "surface-tint": "#3755c3",
+                    "surface": "#f8f9ff",
+                    "secondary": "#006a61",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#ccdbf3",
+                    "on-secondary-fixed-variant": "#005049",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#b8c4ff",
+                    "primary-fixed-dim": "#b8c4ff",
+                    "tertiary": "#323537",
+                    "primary": "#00288e",
+                    "on-primary-fixed-variant": "#173bab",
+                    "on-tertiary": "#ffffff",
+                    "surface-variant": "#d5e3fc",
+                    "on-surface-variant": "#444653",
+                    "on-secondary-container": "#006f66",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-fixed-dim": "#6bd8cb",
+                    "background": "#f8f9ff",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#a8b8ff",
+                    "on-tertiary-fixed-variant": "#444749",
+                    "outline-variant": "#c4c5d5",
+                    "primary-fixed": "#dde1ff",
+                    "on-tertiary-fixed": "#191c1e",
+                    "surface-container-highest": "#d5e3fc"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "container-max": "1280px",
+                    "md": "24px",
+                    "sm": "16px",
+                    "gutter": "24px",
+                    "lg": "40px",
+                    "xs": "8px",
+                    "xl": "64px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .zoom-container { overflow: hidden; cursor: crosshair; }
+        .zoom-image { transition: transform 0.3s ease; transform-origin: center center; }
+        .zoom-container:hover .zoom-image { transform: scale(1.8); }
+        .glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
+<div class="flex items-center gap-lg">
+<a class="text-headline-md font-headline-md font-bold text-primary dark:text-inverse-primary" href="#">ShopComposed</a>
+<nav class="hidden md:flex items-center gap-md">
+<a class="font-body-md text-body-md text-primary font-bold border-b-2 border-primary pb-1" href="#">Categories</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors duration-200" href="#">Help Center</a>
+</nav>
+</div>
+<div class="flex-1 max-w-md mx-lg hidden lg:block">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container border-none rounded-full py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary" placeholder="Search premium electronics..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="hidden md:flex items-center gap-xs text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">location_on</span>
+<span class="text-label-md font-label-md">Location</span>
+</button>
+<div class="h-8 w-[1px] bg-outline-variant hidden md:block"></div>
+<button class="material-symbols-outlined p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all scale-95 active:scale-90">notifications</button>
+<button class="relative p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-all scale-95 active:scale-90">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-0 right-0 bg-primary text-on-primary text-[10px] w-4 h-4 flex items-center justify-center rounded-full">3</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant ml-2 cursor-pointer transition-transform hover:scale-105">
+<img class="w-full h-full object-cover" data-alt="A professional studio headshot of a modern user with a warm smile, wearing a clean charcoal grey blazer. The background is a soft, out-of-focus tech office setting with professional blue ambient lighting, reflecting the composed and authoritative brand identity of ShopComposed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAA36XhqjH5gWxr9y4FKyxr8J12wNircO9O_oPnyfdONcgjOYgzrmXe-azoJmt4hEHitIT-mzRuoNXpJbodnuTnYfwZ3uuzp61g1h9Iy-CutVD5D3baCsBRUpGR7tJq4MwEwgHzmu4fNfFpo9hCHQBbIoBNdnqe6jCL9-TGnkiDdr-0u04mUYe2zAaMOb95jOPj1B7kpJZb3V1WA6SKteNhdbq5wGyBbEQjxmDdR3wZQEXsKXktrPmMNw"/>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter py-lg">
+<!-- Product Hero Section (Bento Inspired) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-lg items-start">
+<!-- Left Column: Gallery (7/12) -->
+<div class="lg:col-span-7 space-y-md">
+<div class="grid grid-cols-12 gap-sm h-[600px]">
+<!-- Thumbnails -->
+<div class="col-span-2 flex flex-col gap-sm overflow-y-auto hide-scrollbar">
+<div class="aspect-square rounded-lg border-2 border-primary overflow-hidden cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Close up high-angle studio photograph of a premium smartphone in Midnight Blue. The device features a sophisticated matte glass finish and a polished titanium frame. Lighting is professional, accentuating the metallic edges against a clean, light grey-blue background typical of high-end product catalogues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsPAv0QmTFU7AQTXz18ZnjGVPU7eZo7MEFv4CEtgydVMG0DnZnrAjaxW-3QHLXJjVtQFT0dHSznCSQsU8tsJfK84QS_eYQFuAWFZXtwdi2X4a05E9Zmb2ByEz0UAmxPzFlGkyFf2t7rDHkBxiCSoi1CnmkDg617a52ke90FbKZC24XbOFnUqngBNqIKTBe2KkC12msHklJT_E0UCi9Vj9kUk5XkwOudrNMoqTB_8ypMIVQ0Rn9woiuIQ"/>
+</div>
+<div class="aspect-square rounded-lg border border-outline-variant overflow-hidden cursor-pointer hover:border-primary transition-colors">
+<img class="w-full h-full object-cover" data-alt="Side profile shot of a luxury smartphone showcasing its ultra-slim 7mm profile and tactile buttons. The titanium construction reflects soft studio lights, emphasizing the precision engineering and high-end minimalism. The scene is bright and airy with Professional Blue subtle tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOnOGftKA2JdzyLA2zV8F1CI2nOLZcaK7uKaEI18XTKvpOe7uzicLfvwwHYg9-4irTYQjzx88CVbwxDA8YJLri1AC03gZbQ6c3YGwK3KP8xsUf_iB9NyoZCiXNCmh7VCwYrAIFcZfZtxidnl61VfvWcFlCuG73FwqNCC8tQU82fUrXTsZFpduktSfm7DCfImyUzWccg-u0zyYbnJXR_G8ESJO_Di_JfaVhSZtRiVye2XICs33wR-3NDQ"/>
+</div>
+<div class="aspect-square rounded-lg border border-outline-variant overflow-hidden cursor-pointer relative group">
+<img class="w-full h-full object-cover" data-alt="Detailed macro shot of the triple-lens camera module on a high-end smartphone. Each sapphire crystal lens catches the light, revealing intricate internal optics. The background is a blurred elegant slate grey, conveying a sense of professional-grade technology and security." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRG3vCzDwENqDWphX5rKzECBEbZ0o3sFDPZYngoyxl71P204vZVGRMGoU3H_FAAH4w2DQOgLZ1p3OS9WFQqzZ-G12PKJFqHZbCiJerbgJqliwU3Zhi9eesysQcdxWNP7ajuXBwn8IDenLx6jsjb2aGl_hTCAsDFl4swwEtj723iAEYaqXCSbcFIR6ZIMH9KZUIc7HdG6feU0sMDqkKT0zizg0WtWd7wdlITghsB6ODrc4hQaa00grkzA"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/20 transition-all">
+<span class="material-symbols-outlined text-white text-3xl">play_circle</span>
+</div>
+</div>
+<div class="aspect-square rounded-lg border border-outline-variant overflow-hidden cursor-pointer hover:border-primary transition-colors">
+<img class="w-full h-full object-cover" data-alt="Top-down lifestyle image of a high-end smartphone sitting on a polished white marble desk next to a luxury fountain pen and a leather notepad. The lighting is natural and bright, creating a clean, professional aesthetic that emphasizes productivity and status." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsuxqWwpk8MH0SQrDTCxog6VWqAK_p-RS4QYeKnkNFSMgdwTVoHCR4JdGY1wbtY1X9oEZezK_ejkpRaHiZN6BbTPec7kdZ2dByfavymPIwuo6Cpg5ueRvKKubzvfeb6_bg6lCY4HVk01nuLDfLLpGoBD3rGhI2unT4cvjksvXAEPwl0DQvu3HiIez4hd55qVhLLBzuZ2lZmo9Tm8WKQdIwZgZzR-iOvO0sRS1kwQndmmh81yiEeAVpSw"/>
+</div>
+</div>
+<!-- Main Image with Zoom -->
+<div class="col-span-10 zoom-container rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant">
+<img class="zoom-image w-full h-full object-contain p-8" data-alt="Large-scale professional hero shot of the Pro-Tech Elite smartphone in Midnight Blue, standing upright. The OLED screen is illuminated with a vibrant, high-contrast abstract wallpaper featuring deep blues and glowing teals. The background is a clean, minimal gradient of slate to light grey-blue, embodying a trustworthy and authoritative retail environment." id="mainImage" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJIvMHzJrHvo0hETeitF62PZHTJ0owcwYH94Ogo1imlx2I_b_6jNEJrCn9VFux2s1p-g5lf6Y2sUiNaHMbfsQP3Hf3nU3Oj8HvvXrACxlZ-Fjg8vGHLbe2bI40b1zbTujvjlFoPv1OhvZEbXP74haPTTw-mm8AspNIQSWNbYAbunyibCy5k3y6Y9ARSTwfNHLYXHiIkJyRD5KwBw4XcSu4viYmFtEcbY_kM-95jaJAOhJXQiZqJ_rwmA"/>
+</div>
+</div>
+</div>
+<!-- Right Column: Product Info (5/12) -->
+<div class="lg:col-span-5 space-y-lg">
+<section>
+<div class="flex items-center gap-xs mb-xs">
+<div class="flex text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined">star_half</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant">(4.5/5) — 1,240 Reviews</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg mb-xs">Pro-Tech Elite Smartphone v2.0</h1>
+<div class="flex items-center gap-sm">
+<span class="text-3xl font-bold text-primary">$1,299.00</span>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-label-sm font-label-sm">In Stock</span>
+</div>
+</section>
+<!-- Variants -->
+<section class="space-y-md">
+<div>
+<span class="block font-label-md text-label-md mb-sm uppercase tracking-wider text-outline">Color: <span class="text-on-surface">Midnight Blue</span></span>
+<div class="flex gap-sm">
+<button class="w-10 h-10 rounded-full bg-primary-container ring-2 ring-primary ring-offset-2"></button>
+<button class="w-10 h-10 rounded-full bg-slate-300 ring-1 ring-outline-variant ring-offset-2 hover:ring-2 hover:ring-primary transition-all"></button>
+</div>
+</div>
+<div>
+<span class="block font-label-md text-label-md mb-sm uppercase tracking-wider text-outline">Storage</span>
+<div class="flex gap-sm">
+<button class="flex-1 py-3 px-4 rounded-xl border-2 border-primary bg-primary-fixed text-on-primary-fixed font-label-md text-label-md transition-all">128GB</button>
+<button class="flex-1 py-3 px-4 rounded-xl border border-outline-variant bg-surface text-on-surface font-label-md text-label-md hover:border-primary transition-all">256GB</button>
+<button class="flex-1 py-3 px-4 rounded-xl border border-outline-variant bg-surface text-on-surface font-label-md text-label-md hover:border-primary transition-all">512GB</button>
+</div>
+</div>
+</section>
+<!-- Shipping Calculator -->
+<section class="p-sm bg-surface-container rounded-xl space-y-sm border border-outline-variant">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-xs text-on-surface">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="font-label-md text-label-md">Shipping Estimator</span>
+</div>
+<button class="text-primary font-label-sm text-label-sm underline">Change Location</button>
+</div>
+<div class="space-y-xs">
+<div class="flex justify-between items-center p-xs bg-surface rounded-lg">
+<span class="text-body-sm font-body-sm">JNE Express (2-3 Days)</span>
+<span class="font-bold text-primary">$15.00</span>
+</div>
+<div class="flex justify-between items-center p-xs bg-surface rounded-lg">
+<span class="text-body-sm font-body-sm">J&amp;T Economy (4-7 Days)</span>
+<span class="font-bold text-primary">$8.50</span>
+</div>
+</div>
+</section>
+<!-- Action Buttons -->
+<div class="flex gap-sm pt-md">
+<button class="flex-[2] py-4 bg-primary text-on-primary rounded-xl font-headline-md text-headline-md hover:bg-primary-container transition-all active:scale-95 shadow-lg">
+                        Add to Cart
+                    </button>
+<button class="flex-1 py-4 bg-secondary text-on-secondary rounded-xl font-headline-md text-headline-md hover:bg-on-secondary-container transition-all active:scale-95 shadow-lg">
+                        Buy Now
+                    </button>
+</div>
+</div>
+</div>
+<!-- Sticky Add to Cart (Mobile) -->
+<div class="md:hidden fixed bottom-0 left-0 w-full p-sm bg-surface border-t border-outline-variant z-40 flex gap-sm items-center shadow-2xl">
+<button class="flex-1 py-4 bg-primary text-on-primary rounded-xl font-label-md text-label-md">Add to Cart</button>
+<button class="p-4 border border-outline-variant rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<!-- Product Description & Specs -->
+<div class="mt-xl grid grid-cols-1 lg:grid-cols-12 gap-xl">
+<div class="lg:col-span-8 space-y-lg">
+<div class="border-b border-outline-variant pb-md">
+<h2 class="font-headline-lg text-headline-lg mb-md">The Ultimate Professional Tool</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+                        Experience the peak of engineering with the Pro-Tech Elite. Designed for those who demand precision, security, and performance. Featuring our most advanced titanium alloy frame and the stunning Liquid Retina XDR display, this isn't just a phone—it's a workspace in your pocket. The triple-lens camera system utilizes AI-enhanced optical stabilization to capture every detail with cinematic clarity.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div class="space-y-sm">
+<h3 class="font-headline-md text-headline-md">Key Features</h3>
+<ul class="space-y-xs">
+<li class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md">A18 Bionic Pro Chipset</span>
+</li>
+<li class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md">6.7" OLED Super Retina Display</span>
+</li>
+<li class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-body-md text-body-md">IP68 Water &amp; Dust Resistant</span>
+</li>
+</ul>
+</div>
+<div class="bg-tertiary-fixed text-on-tertiary-fixed p-md rounded-xl space-y-sm">
+<h3 class="font-label-md text-label-md uppercase tracking-widest opacity-80">Security Note</h3>
+<p class="font-body-sm text-body-sm">Equipped with enterprise-grade encryption and secure enclave technology to protect your corporate data and personal communications.</p>
+</div>
+</div>
+</div>
+<!-- Side Specs Mini-Card -->
+<div class="lg:col-span-4 bg-surface-container-high p-lg rounded-xl shadow-sm border border-outline-variant self-start">
+<h3 class="font-headline-md text-headline-md mb-md">Specifications</h3>
+<div class="space-y-md">
+<div class="flex justify-between border-b border-outline-variant pb-xs">
+<span class="text-outline font-label-md text-label-md">Weight</span>
+<span class="font-body-md text-body-md">187 grams</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant pb-xs">
+<span class="text-outline font-label-md text-label-md">Dimensions</span>
+<span class="font-body-md text-body-md">146 x 70 x 7.8 mm</span>
+</div>
+<div class="flex justify-between border-b border-outline-variant pb-xs">
+<span class="text-outline font-label-md text-label-md">Battery</span>
+<span class="font-body-md text-body-md">4,800 mAh Li-Ion</span>
+</div>
+</div>
+<button class="w-full mt-lg py-2 text-primary font-label-md text-label-md hover:underline">Download Full PDF Manual</button>
+</div>
+</div>
+<!-- Customer Reviews Section -->
+<section class="mt-xl pt-xl border-t border-outline-variant">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg">Customer Reviews</h2>
+<div class="flex items-center gap-md mt-sm">
+<span class="text-5xl font-bold text-primary">4.5</span>
+<div>
+<div class="flex text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined">star_half</span>
+</div>
+<span class="text-label-sm font-label-sm text-outline">Based on 1,240 verified buyers</span>
+</div>
+</div>
+</div>
+<button class="px-lg py-3 border-2 border-primary text-primary rounded-xl font-label-md text-label-md hover:bg-primary-fixed transition-all">Write a Review</button>
+</div>
+<!-- Review Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Review Item -->
+<div class="p-lg bg-surface border border-outline-variant rounded-xl shadow-sm space-y-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-primary">JD</div>
+<div>
+<h4 class="font-label-md text-label-md">Jonathan Doe</h4>
+<span class="text-label-sm font-label-sm text-outline">Verified Purchase</span>
+</div>
+</div>
+<div class="text-primary flex">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md italic text-on-surface-variant">"The build quality is absolutely second to none. Transitioning from my old flagship to the Pro-Tech Elite was seamless. The camera system is a game-changer for my photography business."</p>
+<div class="flex gap-sm overflow-x-auto hide-scrollbar">
+<img class="w-24 h-24 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" data-alt="A user-submitted photo of the smartphone unboxed on a clean wooden table. The packaging is minimalist and white. The device's Midnight Blue surface reflects the soft indoor room lighting, showing the authentic matte texture as experienced by a customer." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCy6Zf6-O5h3wlXUT6TMw8ogoGVBeqhRUlUgUkHI3hGHvmkwHr1CUtx2TWRCTT7SMHMdMdwg0USafnbHmqOL4SraiDFVsiBjgqCy5FmWm1yQX0XQUcpzRq8wgvuPgutp5rgk3ea7dsJUFF8hZ998TCCUc3huhe8mUqNBzWyxKj1oZm4fvZZCpi5fU8M4Kk8oe3ACUOuH9uYnK7KHm2eizJdVuTiehCatBrxoItpFe2qxh60SWzK08lZAA"/>
+<img class="w-24 h-24 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" data-alt="Close up photo taken by a customer showing the smartphone's vivid screen displaying a colorful cityscape. The photo highlights the thin bezels and the crisp detail of the OLED panel in a real-world lighting scenario." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDawfSIR8fXnr_UneZ_gwWmkbQ6Xhx4DfXqUynORMrvIzfWuNO17db5jT0PgRgfoga_2ZaM1Mr0C6ptZsMGGK11hcSy-9ByolMa1wHU0Itk9DT9TSX_IZkb8Zw6nWFGQE_LEZhsBUkHgGPTtKXfWHcSbvc1ziAjWUY_qsDsQtr52nW00GjGjA3AZju_E-MQSwkx1HDBwGiRJdzbpXzcnOeTlJ4L6KuesSTgcOU-4i0rZs6Z-GwjnwFC8w"/>
+</div>
+</div>
+<!-- Review Item -->
+<div class="p-lg bg-surface border border-outline-variant rounded-xl shadow-sm space-y-md">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-primary">SW</div>
+<div>
+<h4 class="font-label-md text-label-md">Sarah Williams</h4>
+<span class="text-label-sm font-label-sm text-outline">Verified Purchase</span>
+</div>
+</div>
+<div class="text-primary flex">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+</div>
+<p class="font-body-md text-body-md italic text-on-surface-variant">"Incredible battery life. I can go two full days without a charge. The Midnight Blue color is even deeper and more professional in person than the photos suggest."</p>
+<div class="flex gap-sm overflow-x-auto hide-scrollbar">
+<img class="w-24 h-24 rounded-lg object-cover cursor-pointer hover:opacity-80 transition-opacity" data-alt="Handheld customer photo of the smartphone in its titanium frame, reflecting the sunset light coming through a window. The light catches the brushed metal edges perfectly, giving a warm, authentic vibe to the premium product." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCkmMz6RtnlfJegRSL6zynq7w6o6TvljZicZ1bYXbCPUiGzQJ4sQt1EuhKCdK_EywuwZAnZkhOBXoUnREV8xkI6BsIz7uTpt-8nGfRAdFqU1rP2_4G2p8CjMG5mHyjP-eZepklMMVwioelSrq3dLbzMAnaXz-XWaQ_pmWEMW0-Kn20mK-HCruJcqBEA9zCY3RzcFyMeJAciDX4z3bnKy_WkIJN8o028jLrGpIwCebF-eZzurDBNYT6DHA"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-highest border-t border-outline-variant mt-xl">
+<div class="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto">
+<div class="space-y-md">
+<span class="text-label-md font-label-md font-bold text-on-surface">ShopComposed</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Precision crafted technology for the modern professional. Built on trust, efficiency, and minimalist elegance.</p>
+</div>
+<div class="space-y-sm">
+<span class="font-label-md text-label-md text-primary">Customer Support</span>
+<ul class="space-y-xs">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Help Center</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping Info</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Return Policy</a></li>
+</ul>
+</div>
+<div class="space-y-sm">
+<span class="font-label-md text-label-md text-primary">Company</span>
+<ul class="space-y-xs">
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div class="space-y-md">
+<span class="font-label-md text-label-md text-primary">Newsletter</span>
+<div class="relative">
+<input class="w-full bg-surface border-outline-variant rounded-lg py-2 px-4 focus:ring-primary" placeholder="Enter your email" type="email"/>
+<button class="absolute right-1 top-1 bottom-1 px-3 bg-primary text-on-primary rounded-md text-label-sm font-label-sm">Join</button>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-gutter py-md border-t border-outline-variant text-center">
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 ShopComposed. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        // Simple Interaction: Change Main Image
+        const thumbnails = document.querySelectorAll('.col-span-2 img');
+        const mainImage = document.getElementById('mainImage');
+        
+        thumbnails.forEach(thumb => {
+            thumb.parentElement.addEventListener('click', () => {
+                mainImage.src = thumb.src;
+                mainImage.setAttribute('data-alt', thumb.getAttribute('data-alt'));
+                
+                // Update active border
+                thumbnails.forEach(t => t.parentElement.classList.remove('border-primary'));
+                thumbnails.forEach(t => t.parentElement.classList.add('border-outline-variant'));
+                thumb.parentElement.classList.add('border-primary');
+                thumb.parentElement.classList.remove('border-outline-variant');
+            });
+        });
+
+        // Zoom functionality refinement
+        const zoomContainer = document.querySelector('.zoom-container');
+        const zoomImage = document.querySelector('.zoom-image');
+
+        zoomContainer.addEventListener('mousemove', (e) => {
+            const { left, top, width, height } = zoomContainer.getBoundingClientRect();
+            const x = ((e.clientX - left) / width) * 100;
+            const y = ((e.clientY - top) / height) * 100;
+            zoomImage.style.transformOrigin = `${x}% ${y}%`;
+        });
+    </script>
+</body></html>
