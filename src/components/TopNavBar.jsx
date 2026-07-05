@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function TopNavBar({ cartCount = 0 }) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-header bg-surface shadow-sm h-20 flex items-center">
@@ -7,9 +9,15 @@ export default function TopNavBar({ cartCount = 0 }) {
             ShopComposed
           </span>
           <div className="hidden md:flex items-center gap-md">
-            <a className="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Home</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Categories</a>
-            <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">Help Center</a>
+            <Link className="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" to="/">
+              Home
+            </Link>
+            <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">
+              Categories
+            </a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-body-md text-body-md" href="#">
+              Help Center
+            </a>
           </div>
         </div>
 
@@ -35,10 +43,13 @@ export default function TopNavBar({ cartCount = 0 }) {
             <span className="material-symbols-outlined">notifications</span>
             <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
           </button>
-          <button className="flex items-center gap-xs bg-primary text-on-primary px-4 py-2 rounded-xl scale-95 active:scale-90 transition-transform">
+          <Link
+            to="/cart"
+            className="flex items-center gap-xs bg-primary text-on-primary px-4 py-2 rounded-xl scale-95 active:scale-90 transition-transform"
+          >
             <span className="material-symbols-outlined">shopping_cart</span>
             <span className="font-label-md text-label-md">Cart ({cartCount})</span>
-          </button>
+          </Link>
           <div className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden cursor-pointer">
             <img
               className="w-full h-full object-cover"

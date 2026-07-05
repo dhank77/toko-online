@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.item-row:hover .delete-btn {
+  opacity: 1;
+}
+.checkout-grid {
+  grid-template-columns: 1fr 380px;
+}
+@media (max-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.shadow-ambient {
+  box-shadow: 0 2px 4px rgba(30, 64, 175, 0.05);
+}
+.shadow-elevated {
+  box-shadow: 0 10px 15px rgba(30, 64, 175, 0.1);
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
