@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { supabase } from '../utils/supabaseClient'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
@@ -10,6 +11,8 @@ export default function RegisterPage() {
   const [terms, setTerms] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const { signUp } = useAuth()
+  const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -27,25 +30,15 @@ export default function RegisterPage() {
 
     setLoading(true)
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-          phone,
-        },
-      },
-    })
-
-    setLoading(false)
-
-    if (error) {
-      setError(error.message)
-      return
+    try {
+      await signUp(email, password, { full_name: fullName, phone })
+      alert('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.')
+      navigate('/login')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
-
-    alert('Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi.')
   }
 
   return (

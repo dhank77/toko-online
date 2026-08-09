@@ -1,6 +1,53 @@
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function TopNavBar({ cartCount = 0 }) {
+  const { user, signOut } = useAuth()
+  const [showMenu, setShowMenu] = useState(false)
+  const menuRef = useRef(null)
+
+  const getInitial = () => {
+    const name = user?.user_metadata?.full_name || user?.email || ''
+    return name.charAt(0).toUpperCase()
+  }
+
+  const avatarSrc = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null
+
+  const renderAvatar = () => {
+    if (avatarSrc) {
+      return (
+        <img
+          alt={getInitial()}
+          className="w-full h-full object-cover"
+          src={avatarSrc}
+        />
+      )
+    }
+
+    return (
+      <span className="w-full h-full flex items-center justify-center text-sm font-bold text-primary">
+        {getInitial()}
+      </span>
+    )
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const handleLogout = async () => {
+    await signOut()
+    setShowMenu(false)
+  }
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-header bg-surface shadow-sm h-20 flex items-center">
       <nav className="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-20">
@@ -50,13 +97,33 @@ export default function TopNavBar({ cartCount = 0 }) {
             <span className="material-symbols-outlined">shopping_cart</span>
             <span className="font-label-md text-label-md">Cart ({cartCount})</span>
           </Link>
-          <div className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden cursor-pointer">
-            <img
-              className="w-full h-full object-cover"
-              data-alt="Professional studio portrait of a customer, soft lighting, clean corporate minimalism aesthetic, high resolution photography with neutral background"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDusBWrLYqyMiuF7t7Qa5oZqitatwxcJ8ntPX4-YXAOljBWxT4Iltuvzqv6zV_UsFpKB3Z21ZIRq3ef8YBOsIJbQMku6zpwSUKsL_ErD8B8giowEFtv21QfuXnvGq1GqHfldy3jbSrtFveWltVjhmkH5JI04nJy5rjDRaSf2YpbEBCwrYtKiBMSCNdnOrues7K1r6CiSao3EObqQ4KnH1BKDTdyiGPpo_ouNIRINdHpDe2WMMmgCg4EcA"
-            />
-          </div>
+          {user ? (
+            <div className="relative" ref={menuRef}>
+              <button
+                className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden"
+                onClick={() => setShowMenu((prev) => !prev)}
+              >
+                {renderAvatar()}
+              </button>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-40 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-lg py-2">
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-on-surface hover:bg-surface-variant transition-colors"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="w-10 h-10 rounded-full border-2 border-primary overflow-hidden flex items-center justify-center"
+            >
+              <span className="material-symbols-outlined text-on-surface">login</span>
+            </Link>
+          )}
         </div>
       </nav>
     </header>

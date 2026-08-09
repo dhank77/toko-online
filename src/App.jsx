@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
+import { AuthProvider } from './context/AuthContext'
 import SiteLayout from './components/SiteLayout'
 import HomePage from './pages/HomePage'
 import CartPage from './pages/CartPage'
@@ -10,15 +11,17 @@ import RegisterPage from './pages/RegisterPage'
 export default function App() {
   return (
     <CartProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
-          <Route path="/cart" element={<SiteLayout><CartPage /></SiteLayout>} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
+            <Route path="/cart" element={<SiteLayout><CartPage /></SiteLayout>} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </CartProvider>
   )
 }
