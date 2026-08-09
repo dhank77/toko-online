@@ -10,29 +10,8 @@ export default function LoginPage() {
   }
 
   return (
-    <>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet"
-      />
-      <link href="https://fonts.googleapis.com" rel="preconnect" />
-      <link crossOrigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet"
-      />
-      <style>{`
-        .bg-login-pattern {
-          background-image: radial-gradient(circle at 100% 100%, #e6eeff 0, transparent 50%),
-                            radial-gradient(circle at 0 0, #dce9ff 0, transparent 50%);
-        }
-      `}</style>
-      <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased bg-login-pattern">
-        <main className="flex-grow flex items-center justify-center p-sm md:p-gutter">
+    <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased bg-login-pattern">
+      <main className="flex-grow flex items-center justify-center p-sm md:p-gutter">
         <div className="w-full max-w-[480px] bg-surface-container-lowest rounded-xl shadow-[0_10px_15px_rgba(30,64,175,0.1)] p-lg flex flex-col relative overflow-hidden">
           <div className="text-center mb-xl relative z-10">
             <h1 className="font-headline-md text-headline-md text-primary mb-sm font-bold tracking-tight">
@@ -141,7 +120,6 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-      </div>
-    </>
+    </div>
   )
 }

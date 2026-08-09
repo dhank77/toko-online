@@ -40,3 +40,7 @@
   backdrop-filter: blur(8px);
   background-color: rgba(248, 249, 255, 0.85);
 }
+.bg-login-pattern {
+  background-image: radial-gradient(circle at 100% 100%, #e6eeff 0, transparent 50%),
+                    radial-gradient(circle at 0 0, #dce9ff 0, transparent 50%);
+}
