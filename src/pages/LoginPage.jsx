@@ -1,12 +1,32 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../utils/supabaseClient'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('Login', { email, password })
+    setError('')
+    setLoading(true)
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setError(error.message)
+      return
+    }
+
+    navigate('/')
   }
 
   return (
@@ -73,11 +93,16 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {error && (
+              <p className="text-error text-body-sm font-body-sm">{error}</p>
+            )}
+
             <button
               className="w-full bg-primary text-on-primary py-sm rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors mt-xs flex items-center justify-center gap-xs"
+              disabled={loading}
               type="submit"
             >
-              Masuk
+              {loading ? 'Masuk...' : 'Masuk'}
             </button>
           </form>
 
@@ -114,7 +139,7 @@ export default function LoginPage() {
 
           <div className="mt-lg text-center font-body-sm text-body-sm text-on-surface-variant relative z-10">
             Belum punya akun?{' '}
-            <a className="font-label-md text-label-md text-primary hover:underline" href="#">
+            <a className="font-label-md text-label-md text-primary hover:underline" href="/register">
               Daftar di sini
             </a>
           </div>
