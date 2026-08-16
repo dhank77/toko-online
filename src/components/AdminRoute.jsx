@@ -3,31 +3,30 @@ import { useAuth } from '../context/AuthContext'
 import { useEffect, useState } from 'react'
 
 export default function AdminRoute({ children }) {
-  const { user, loading, fetchProfile } = useAuth()
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [checking, setChecking] = useState(true)
+  const { user, loading, isAdmin, checkingAdmin, refreshAdminStatus } = useAuth()
+  const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
     let active = true
-    const check = async () => {
+
+    const verify = async () => {
       if (!user) {
-        if (active) setIsAdmin(false)
-        setChecking(false)
+        if (active) setAuthorized(false)
         return
       }
-      const profile = await fetchProfile()
+      await refreshAdminStatus()
       if (active) {
-        setIsAdmin(profile?.role === 'admin')
-        setChecking(false)
+        setAuthorized(true)
       }
     }
-    check()
+
+    verify()
     return () => {
       active = false
     }
-  }, [user, fetchProfile])
+  }, [user, refreshAdminStatus])
 
-  if (loading || checking) {
+  if (loading || checkingAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-on-background">
         <span className="font-body-md text-body-md">Loading...</span>

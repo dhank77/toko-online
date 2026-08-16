@@ -1,11 +1,14 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { useState, useEffect, createContext, useContext } from 'react'
 import { supabase } from '../utils/supabaseClient'
+import { api } from '../utils/api'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [checkingAdmin, setCheckingAdmin] = useState(false)
 
   useEffect(() => {
     const getSession = async () => {
@@ -48,29 +51,37 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
-  const fetchProfile = async () => {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-    const userId = session?.user?.id
-    if (!userId) return null
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', userId)
-      .single()
-    if (error) return null
-    return data
+  const checkAdmin = async () => {
+    if (!user) {
+      setIsAdmin(false)
+      return
+    }
+    setCheckingAdmin(true)
+    try {
+      const profile = await api.getProfile()
+      setIsAdmin(profile?.role === 'admin')
+    } catch {
+      setIsAdmin(false)
+    } finally {
+      setCheckingAdmin(false)
+    }
+  }
+
+  const refreshAdminStatus = async () => {
+    await checkAdmin()
   }
 
   const value = {
     user,
     loading,
+    isAdmin,
+    checkingAdmin,
     signIn,
     signUp,
     signOut,
     signInWithOAuth,
-    fetchProfile,
+    checkAdmin,
+    refreshAdminStatus,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

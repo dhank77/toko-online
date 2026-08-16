@@ -1,38 +1,30 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { api } from '../utils/api'
 
 export default function AdminDashboard() {
-  const products = [
-    {
-      id: 1,
-      name: 'Ergo-Flow Executive Chair',
-      sold: '42 units sold',
-      revenue: '$12,400',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuCvXtMwX8ccxJjLmeGhnOhGJT5aj7Fzgf2OZz2KzQdKt_8kYAqcVNkB0FUsei03kF0bnYwyU2g75uDdYKWLFGWJh9KMTzT1I8-H1zeaGVUcvyi7E4SktDwVPzSlcgH4TsuvKaPfnsNPugL2-fPuz2YBx3NToR2ZROBWDFcmFQllTiJxQUqYk1D4hz7JWfemSyedOpx2cV1B3qKSHR4SQsCfqJpyoVD9HukUXwHuPBvwEI3DC7XfVsZKSw',
-    },
-    {
-      id: 2,
-      name: 'HyperCharge Pro Pad',
-      sold: '38 units sold',
-      revenue: '$2,280',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuD168sSfZO2YjiNNCSSPtvl3nToQVRshYJ1IZBsHnQWcx9949MfbmdqzBLt2eGerrhpLZZS_RoTm472vf0KJcYMi4zTcJAt39xBAAanXg8m8aItYaUarSjGVndb09mQJ_hqeaoEFrLGZwd_Gi-YdZI89iSvGLmAt7jeNqS75SYSRc4e5342LMUc_-YVc_MnAQJsd1Ejy9Wnl1bKw1RpXK3pR7Zcb3Zc6JMp3Vby2gYyKb83PyH1hhLkLw',
-    },
-    {
-      id: 3,
-      name: 'K-Series Silent Mech',
-      sold: '31 units sold',
-      revenue: '$5,580',
-      image:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuDA9iHglJGqkuy_-s58oYnXzcQO0jC7mQjF5RWDhMLV5dS8B2uhtR3M0OGeWAcPhpUoOT5ECD5Sc1_yaN6hDSmpg7j-D5lKWBqSjnEtg2P-I5YSnv5UHEWoHkIA60DkQYa7p_3oPJ4kDeBhP2f20-FABQDP5BN7ZQ35xw4b6M3FjLBIsBRw-0CPGU9PUdIXGKpl63-uk---vQUv6ce9ST4juhEPndshKQGFiP6pEJeupEc750yA5wK5ag',
-    },
-  ]
+  const [products, setProducts] = useState([])
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const orders = [
-    { id: '#ORD-2049', customer: 'Jane Doe', initials: 'JD', color: 'bg-primary-fixed', textColor: 'text-primary', product: 'Ergo Chair x 1', amount: '$599.00', status: 'Shipped', statusBg: 'bg-secondary-container', statusText: 'text-on-secondary-container' },
-    { id: '#ORD-2048', customer: 'Mark Smith', initials: 'MS', color: 'bg-secondary-fixed', textColor: 'text-secondary', product: 'HyperCharge x 2', amount: '$120.00', status: 'Processed', statusBg: 'bg-primary-fixed', statusText: 'text-primary' },
-    { id: '#ORD-2047', customer: 'Alice Lo', initials: 'AL', color: 'bg-tertiary-fixed', textColor: 'text-tertiary', product: 'Silent Mech x 1', amount: '$180.00', status: 'Pending', statusBg: 'bg-surface-container-highest', statusText: 'text-on-surface-variant' },
-  ]
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsData, ordersData] = await Promise.all([
+          api.getProducts(),
+          api.getOrders(),
+        ])
+        setProducts(productsData.slice(0, 3))
+        setOrders(ordersData.slice(0, 5))
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <div className="flex min-h-screen bg-background text-on-background">
@@ -219,18 +211,31 @@ export default function AdminDashboard() {
             <div className="glass-card p-md rounded-xl shadow-sm flex flex-col">
               <h4 className="font-label-md text-label-md text-on-surface uppercase tracking-tight mb-md">Top Selling Products</h4>
               <div className="flex-1 space-y-md">
-                {products.map((product) => (
-                  <div key={product.id} className="flex items-center gap-sm">
-                    <div className="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden flex-shrink-0">
-                      <img className="w-full h-full object-cover" data-alt={product.name} src={product.image} />
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, idx) => (
+                    <div key={idx} className="flex items-center gap-sm">
+                      <div className="w-10 h-10 rounded-lg bg-surface-container-high animate-pulse" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-surface-variant rounded w-3/4" />
+                        <div className="h-3 bg-surface-variant rounded w-1/4" />
+                      </div>
+                      <div className="h-4 bg-surface-variant rounded w-16" />
                     </div>
-                    <div className="flex-1">
-                      <p className="font-label-md text-label-md text-on-surface truncate">{product.name}</p>
-                      <p className="font-body-sm text-body-sm text-on-surface-variant">{product.sold}</p>
+                  ))
+                ) : (
+                  products.map((product) => (
+                    <div key={product.id} className="flex items-center gap-sm">
+                      <div className="w-10 h-10 rounded-lg bg-surface-container-high overflow-hidden flex-shrink-0">
+                        <img className="w-full h-full object-cover" data-alt={product.name} src={product.image_url} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-label-md text-label-md text-on-surface truncate">{product.name}</p>
+                        <p className="font-body-sm text-body-sm text-on-surface-variant">{product.review_count} reviews</p>
+                      </div>
+                      <p className="font-label-md text-label-md text-primary">${Number(product.price).toFixed(2)}</p>
                     </div>
-                    <p className="font-label-md text-label-md text-primary">{product.revenue}</p>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
               <button className="w-full mt-md py-xs text-primary font-label-md text-label-md hover:underline decoration-2 transition-all">View Full Report</button>
             </div>
@@ -255,29 +260,42 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-outline-variant">
-                  {orders.map((order) => (
-                    <tr key={order.id} className="hover:bg-surface-container-low transition-colors group">
-                      <td className="px-md py-md font-label-md text-label-md">{order.id}</td>
-                      <td className="px-md py-md">
-                        <div className="flex items-center gap-xs">
-                          <div className={`w-6 h-6 rounded-full ${order.color} flex items-center justify-center text-[10px] font-bold ${order.textColor}`}>
-                            {order.initials}
+                  {loading ? (
+                    Array.from({ length: 3 }).map((_, idx) => (
+                      <tr key={idx} className="hover:bg-surface-container-low transition-colors group">
+                        <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-16 animate-pulse" /></td>
+                        <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-24 animate-pulse" /></td>
+                        <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-32 animate-pulse" /></td>
+                        <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-16 animate-pulse" /></td>
+                        <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-16 animate-pulse" /></td>
+                        <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-8 animate-pulse" /></td>
+                      </tr>
+                    ))
+                  ) : (
+                    orders.map((order) => (
+                      <tr key={order.id} className="hover:bg-surface-container-low transition-colors group">
+                        <td className="px-md py-md font-label-md text-label-md">{order.id}</td>
+                        <td className="px-md py-md">
+                          <div className="flex items-center gap-xs">
+                            <div className={`w-6 h-6 rounded-full bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-on-surface-variant`}>
+                              {(order.profiles?.full_name || order.customer_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
+                            </div>
+                            <span className="font-body-sm text-body-sm text-on-surface">{order.profiles?.full_name || order.customer_name || 'Unknown'}</span>
                           </div>
-                          <span className="font-body-sm text-body-sm text-on-surface">{order.customer}</span>
-                        </div>
-                      </td>
-                      <td className="px-md py-md font-body-sm text-body-sm text-on-surface-variant">{order.product}</td>
-                      <td className="px-md py-md font-label-md text-label-md text-on-surface">{order.amount}</td>
-                      <td className="px-md py-md">
-                        <span className={`px-xs py-[2px] ${order.statusBg} ${order.statusText} rounded-full text-[12px] font-bold`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="px-md py-md">
-                        <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">more_vert</button>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-md py-md font-body-sm text-body-sm text-on-surface-variant">{order.product_id ? 'Product order' : 'Order'}</td>
+                        <td className="px-md py-md font-label-md text-label-md text-on-surface">${Number(order.total_amount || 0).toFixed(2)}</td>
+                        <td className="px-md py-md">
+                          <span className={`px-xs py-[2px] rounded-full text-[12px] font-bold ${order.status === 'shipped' ? 'bg-secondary-container text-on-secondary-container' : order.status === 'processed' ? 'bg-primary-fixed text-primary' : 'bg-surface-container-highest text-on-surface-variant'}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-md py-md">
+                          <button className="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">more_vert</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

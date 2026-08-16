@@ -1,0 +1,73 @@
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
+
+async function request(path, options = {}) {
+  const { data: { session } } = await import('../utils/supabaseClient.js').then(m => m.supabase.auth.getSession())
+  const token = session?.access_token
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'Request failed' }))
+    const err = new Error(error.error || 'Request failed')
+    err.status = res.status
+    err.payload = error
+    throw err
+  }
+
+  if (res.status === 204) return null
+  return res.json()
+}
+
+export const api = {
+  getProducts: () => request('/products'),
+  getProductBySlug: (slug) => request(`/products/slug/${slug}`),
+  createProduct: (product) => request('/products', {
+    method: 'POST',
+    body: JSON.stringify(product),
+  }),
+  updateProduct: (id, updates) => request(`/products/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  }),
+  deleteProduct: (id) => request(`/products/${id}`, {
+    method: 'DELETE',
+  }),
+  getCategories: () => request('/categories'),
+  createCategory: (category) => request('/categories', {
+    method: 'POST',
+    body: JSON.stringify(category),
+  }),
+  updateCategory: (id, updates) => request(`/categories/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  }),
+  deleteCategory: (id) => request(`/categories/${id}`, {
+    method: 'DELETE',
+  }),
+  getOrders: () => request('/orders'),
+  updateOrderStatus: (id, status) => request(`/orders/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
+  getProfile: () => request('/profiles/me'),
+  updateProfile: (data) => request('/profiles/me', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  }),
+  login: (email, password) => request('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  }),
+  signup: (email, password, full_name) => request('/auth/signup', {
+    method: 'POST',
+    body: JSON.stringify({ email, password, full_name }),
+  }),
+}
