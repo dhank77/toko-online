@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 export async function authenticate(req, res, next) {
   const authHeader = req.headers.authorization
-  const cookieToken = req.cookies?.sb-access-token
+  const cookieToken = req.cookies?.['sb-access-token']
 
   const token = authHeader?.startsWith('Bearer ') ? authHeader.split(' ')[1] : cookieToken
 

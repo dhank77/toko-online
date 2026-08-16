@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext } from 'react'
+import { useState, useEffect, createContext, useContext, useCallback } from 'react'
 import { supabase } from '../utils/supabaseClient'
 import { api } from '../utils/api'
 
@@ -51,7 +51,7 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
-  const checkAdmin = async () => {
+  const checkAdmin = useCallback(async () => {
     if (!user) {
       setIsAdmin(false)
       return
@@ -65,11 +65,11 @@ export function AuthProvider({ children }) {
     } finally {
       setCheckingAdmin(false)
     }
-  }
+  }, [user])
 
-  const refreshAdminStatus = async () => {
+  const refreshAdminStatus = useCallback(async () => {
     await checkAdmin()
-  }
+  }, [checkAdmin])
 
   const value = {
     user,
