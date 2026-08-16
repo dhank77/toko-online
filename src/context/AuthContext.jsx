@@ -48,6 +48,21 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  const fetchProfile = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+    if (!userId) return null
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', userId)
+      .single()
+    if (error) return null
+    return data
+  }
+
   const value = {
     user,
     loading,
@@ -55,6 +70,7 @@ export function AuthProvider({ children }) {
     signUp,
     signOut,
     signInWithOAuth,
+    fetchProfile,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
