@@ -1,30 +1,17 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export default function AdminRoute({ children }) {
-  const { user, loading, isAdmin, checkingAdmin, refreshAdminStatus } = useAuth()
-  const [authorized, setAuthorized] = useState(false)
+  const { user, loading, isAdmin, checkingAdmin, checkAdmin } = useAuth()
 
   useEffect(() => {
-    let active = true
-
-    const verify = async () => {
-      if (!user) {
-        if (active) setAuthorized(false)
-        return
-      }
-      await refreshAdminStatus()
-      if (active) {
-        setAuthorized(true)
-      }
+    if (user) {
+      checkAdmin()
     }
+  }, [user, checkAdmin])
 
-    verify()
-    return () => {
-      active = false
-    }
-  }, [user, refreshAdminStatus])
+  console.log('AdminRoute render:', { loading, checkingAdmin, hasUser: !!user, isAdmin })
 
   if (loading || checkingAdmin) {
     return (

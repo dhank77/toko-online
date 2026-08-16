@@ -59,8 +59,10 @@ export function AuthProvider({ children }) {
     setCheckingAdmin(true)
     try {
       const profile = await api.getProfile()
+      console.log('Admin check profile:', profile)
       setIsAdmin(profile?.role === 'admin')
-    } catch {
+    } catch (err) {
+      console.error('Admin check error:', err)
       setIsAdmin(false)
     } finally {
       setCheckingAdmin(false)

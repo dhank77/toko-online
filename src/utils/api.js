@@ -1,18 +1,28 @@
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
+function withTimeout(promise, ms = 8000) {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Request timeout')), ms)
+  )
+  return Promise.race([promise, timeout])
+}
+
 async function request(path, options = {}) {
   const { data: { session } } = await import('../utils/supabaseClient.js').then(m => m.supabase.auth.getSession())
   const token = session?.access_token
 
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-    credentials: 'include',
-  })
+  const res = await withTimeout(
+    fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+      credentials: 'include',
+    }),
+    8000
+  )
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: 'Request failed' }))

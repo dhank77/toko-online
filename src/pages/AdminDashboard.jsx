@@ -28,6 +28,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex min-h-screen bg-background text-on-background">
+      {error && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-error-container text-error px-md py-sm rounded-lg shadow-lg font-label-md">
+          {error}
+        </div>
+      )}
       {/* SideNavBar */}
       <aside className="hidden md:flex flex-col h-screen p-sm space-y-base bg-tertiary-container dark:bg-tertiary text-secondary-fixed dark:text-secondary-fixed-dim w-64 fixed left-0 top-0 z-50">
         <div className="px-sm py-md">
