@@ -143,6 +143,7 @@ export default function LoginPage() {
             <button
               className="w-full border border-outline-variant bg-surface text-on-surface py-sm rounded-lg font-label-md text-label-md hover:bg-surface-variant transition-colors flex items-center justify-center gap-sm"
               type="button"
+              onClick={() => signInWithOAuth('facebook')}
             >
               <svg
                 aria-label="Facebook"
