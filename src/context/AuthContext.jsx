@@ -43,12 +43,18 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
+  const signInWithOAuth = async (provider) => {
+    const { error } = await supabase.auth.signInWithOAuth({ provider })
+    if (error) throw error
+  }
+
   const value = {
     user,
     loading,
     signIn,
     signUp,
     signOut,
+    signInWithOAuth,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
