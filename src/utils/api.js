@@ -1,3 +1,5 @@
+import { supabase } from '../utils/supabaseClient.js'
+
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001/api'
 
 function withTimeout(promise, ms = 8000) {
@@ -8,7 +10,7 @@ function withTimeout(promise, ms = 8000) {
 }
 
 async function request(path, options = {}) {
-  const { data: { session } } = await import('../utils/supabaseClient.js').then(m => m.supabase.auth.getSession())
+  const { data: { session } } = await supabase.auth.getSession()
   const token = session?.access_token
 
   const res = await withTimeout(

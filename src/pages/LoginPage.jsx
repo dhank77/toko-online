@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn, signInWithOAuth } = useAuth()
+  const { signIn, signInWithOAuth, checkAdmin } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -20,10 +20,17 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password)
-      navigate('/')
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const admin = await checkAdmin()
+      console.log('Admin status:', admin)
+      setLoading(false)
+      if (admin) {
+        navigate('/admin', { replace: true })
+        return
+      }
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err.message)
-    } finally {
       setLoading(false)
     }
   }

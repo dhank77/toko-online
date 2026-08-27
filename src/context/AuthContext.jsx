@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext, useContext, useCallback } from 'react'
+import { useState, useEffect, useRef, createContext, useContext, useCallback } from 'react'
 import { supabase } from '../utils/supabaseClient'
 import { api } from '../utils/api'
 
@@ -9,6 +9,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [checkingAdmin, setCheckingAdmin] = useState(false)
+  const userRef = useRef(user)
+
+  useEffect(() => {
+    userRef.current = user
+  }, [user])
 
   useEffect(() => {
     const getSession = async () => {
@@ -52,22 +57,40 @@ export function AuthProvider({ children }) {
   }
 
   const checkAdmin = useCallback(async () => {
-    if (!user) {
+    const currentUser = userRef.current
+    if (!currentUser) {
       setIsAdmin(false)
-      return
+      return false
     }
+
     setCheckingAdmin(true)
+
+    const tryCheck = async (retries = 2) => {
+      try {
+        const profile = await api.getProfile()
+        console.log('Admin check profile:', profile)
+        const admin = profile?.role === 'admin'
+        setIsAdmin(admin)
+        return admin
+      } catch (err) {
+        if (err.status === 429 && retries > 0) {
+          console.error(`Admin check rate limited, retrying in 2s... (${retries} retries left)`)
+          await new Promise((resolve) => setTimeout(resolve, 2000))
+          return tryCheck(retries - 1)
+        }
+
+        console.error('Admin check error:', err)
+        setIsAdmin(false)
+        return false
+      }
+    }
+
     try {
-      const profile = await api.getProfile()
-      console.log('Admin check profile:', profile)
-      setIsAdmin(profile?.role === 'admin')
-    } catch (err) {
-      console.error('Admin check error:', err)
-      setIsAdmin(false)
+      return await tryCheck()
     } finally {
       setCheckingAdmin(false)
     }
-  }, [user])
+  }, [])
 
   const refreshAdminStatus = useCallback(async () => {
     await checkAdmin()
