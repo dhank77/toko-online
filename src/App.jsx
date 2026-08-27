@@ -4,7 +4,9 @@ import { AuthProvider } from './context/AuthContext'
 import SiteLayout from './components/SiteLayout'
 import HomePage from './pages/HomePage'
 import CartPage from './pages/CartPage'
+import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/AdminDashboard'
+import AdminCategories from './pages/AdminCategories'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminRoute from './components/AdminRoute'
@@ -21,10 +23,13 @@ export default function App() {
               path="/admin"
               element={
                 <AdminRoute>
-                  <AdminDashboard />
+                  <AdminLayout />
                 </AdminRoute>
               }
-            />
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="categories" element={<AdminCategories />} />
+            </Route>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Routes>
