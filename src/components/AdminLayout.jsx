@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 
 export default function AdminLayout() {
   const location = useLocation()
@@ -98,6 +99,8 @@ export default function AdminLayout() {
         <section className="p-gutter max-w-container-max mx-auto w-full flex-1">
           <Outlet />
         </section>
+
+        <Toaster position="bottom-left" />
 
         {/* Footer */}
         <footer className="w-full py-xl px-gutter grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto border-t border-outline-variant bg-surface-container-lowest dark:bg-surface-container-highest mt-auto">

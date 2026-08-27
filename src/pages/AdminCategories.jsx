@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
 
 const emptyCategory = { name: '', slug: '', icon: '' }
@@ -58,8 +59,10 @@ export default function AdminCategories() {
     try {
       if (modalMode === 'edit' && form.id) {
         await api.updateCategory(form.id, form)
+        toast.success('Category updated successfully')
       } else {
         await api.createCategory(form)
+        toast.success('Category created successfully')
       }
       await loadCategories()
       setForm({ ...emptyCategory })
@@ -77,6 +80,7 @@ export default function AdminCategories() {
     setError('')
     try {
       await api.deleteCategory(deleteId)
+      toast.success('Category deleted successfully')
       await loadCategories()
       setDeleteId(null)
     } catch (err) {
