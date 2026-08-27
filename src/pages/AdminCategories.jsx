@@ -4,6 +4,59 @@ import { api } from '../utils/api'
 
 const emptyCategory = { name: '', slug: '', icon: '' }
 
+const CATEGORY_ICONS = [
+  'shopping_bag',
+  'devices',
+  'chair',
+  'restaurant',
+  'fitness_center',
+  'directions_car',
+  'pets',
+  'toys',
+  'book',
+  'movie',
+  'music_note',
+  'camera',
+  'computer',
+  'phone',
+  'watch',
+  'eyeglasses',
+  'jewelry',
+  'cake',
+  'local_florist',
+  'local_grocery_store',
+  'local_pharmacy',
+  'school',
+  'flight',
+  'train',
+  'directions_bike',
+  'sports_soccer',
+  'local_pizza',
+  'local_cafe',
+  'local_dining',
+  'payments',
+  'account_balance',
+  'work',
+  'home',
+  'castle',
+  'forest',
+  'waves',
+  'wb_sunny',
+  'nightlife',
+  'coffee',
+  'store',
+  'local_mall',
+  'local_convenience_store',
+  'agriculture',
+  'water_drop',
+  'energy_savings_leaf',
+  'medical_services',
+  'local_hospital',
+  'support_agent',
+  'security',
+  'code',
+]
+
 export default function AdminCategories() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
@@ -144,7 +197,18 @@ export default function AdminCategories() {
                   <tr key={category.id} className="hover:bg-surface-container-low transition-colors group">
                     <td className="px-md py-md font-label-md text-label-md text-on-surface">{category.name}</td>
                     <td className="px-md py-md font-body-sm text-body-sm text-on-surface-variant">{category.slug}</td>
-                    <td className="px-md py-md font-body-sm text-body-sm text-on-surface-variant">{category.icon || '-'}</td>
+                    <td className="px-md py-md">
+                      <div className="flex items-center gap-xs">
+                        {category.icon ? (
+                          <>
+                            <span className="material-symbols-outlined text-[18px]">{category.icon}</span>
+                            <span className="font-body-sm text-body-sm text-on-surface-variant">{category.icon}</span>
+                          </>
+                        ) : (
+                          <span className="font-body-sm text-body-sm text-on-surface-variant">-</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-md py-md">
                       <div className="flex items-center justify-end gap-xs">
                         <button
@@ -207,12 +271,31 @@ export default function AdminCategories() {
               </div>
               <div>
                 <label className="block font-label-md text-label-md text-on-surface mb-xs">Icon</label>
-                <input
-                  value={form.icon}
-                  onChange={(e) => setForm((prev) => ({ ...prev, icon: e.target.value }))}
-                  className="w-full px-sm py-xs bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  placeholder="Optional icon name"
-                />
+                <div className="grid grid-cols-6 sm:grid-cols-8 gap-xs max-h-64 overflow-y-auto custom-scrollbar p-sm bg-surface-container-low border border-outline-variant rounded-lg">
+                  {CATEGORY_ICONS.map((icon) => {
+                    const selected = form.icon === icon
+                    return (
+                      <button
+                        key={icon}
+                        type="button"
+                        onClick={() => setForm((prev) => ({ ...prev, icon }))}
+                        className={`flex flex-col items-center justify-center gap-xs rounded-lg border p-xs transition-colors ${
+                          selected
+                            ? 'border-primary bg-primary-fixed text-primary'
+                            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                        }`}
+                      >
+                        <span className="material-symbols-outlined text-[20px]">{icon}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+                {form.icon && (
+                  <div className="mt-xs flex items-center gap-xs text-body-sm text-body-sm text-on-surface-variant">
+                    <span className="material-symbols-outlined text-[18px]">{form.icon}</span>
+                    <span>Selected: {form.icon}</span>
+                  </div>
+                )}
               </div>
               <div className="flex justify-end gap-sm pt-sm">
                 <button
