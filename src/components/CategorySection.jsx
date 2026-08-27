@@ -30,13 +30,15 @@ export default function CategorySection() {
 
   return (
     <section className="py-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-4 flex justify-between items-end">
-        <h2 className="text-2xl font-bold text-primary">Browse Categories</h2>
-        <Button variant="ghost" size="sm" className="text-secondary hover:text-secondary/80">
-          View All <span className="material-symbols-outlined text-sm">chevron_right</span>
-        </Button>
+      <div className="max-w-7xl mx-auto px-6 mb-4">
+        <div className="flex justify-between items-end">
+          <h2 className="text-2xl font-bold text-primary">Browse Categories</h2>
+          <Button variant="ghost" size="sm" className="text-secondary hover:text-secondary/80">
+            View All <span className="material-symbols-outlined text-sm">chevron_right</span>
+          </Button>
+        </div>
       </div>
-      <div className="flex gap-4 overflow-x-auto no-scrollbar px-6 pb-4">
+      <div className="flex gap-4 overflow-x-auto no-scrollbar px-6 pb-4 justify-center">
         {categories.map((cat) => (
           <div key={cat.id} className="flex-shrink-0 w-32 flex flex-col items-center gap-3 group cursor-pointer">
             <div className="w-24 h-24 rounded-full bg-muted border-2 border-transparent group-hover:border-secondary transition-all flex items-center justify-center overflow-hidden">
