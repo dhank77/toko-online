@@ -1,13 +1,31 @@
+import { useState, useEffect } from 'react'
+import { api } from '../utils/api'
+
 export default function CategorySection() {
-  const categories = [
-    { icon: 'laptop_mac', label: 'Tech Gear' },
-    { icon: 'chair', label: 'Office Decor' },
-    { icon: 'watch', label: 'Wearables' },
-    { icon: 'auto_stories', label: 'Productivity' },
-    { icon: 'checkroom', label: 'Apparel' },
-    { icon: 'coffee', label: 'Wellness' },
-    { icon: 'fitness_center', label: 'Fitness' },
-  ]
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    let active = true
+
+    const load = async () => {
+      try {
+        const data = await api.getCategories()
+        if (active) {
+          setCategories(data)
+        }
+      } catch {
+        if (active) {
+          setCategories([])
+        }
+      }
+    }
+
+    load()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <section className="py-md overflow-hidden">
@@ -19,13 +37,13 @@ export default function CategorySection() {
       </div>
       <div className="flex gap-md overflow-x-auto no-scrollbar px-gutter pb-4">
         {categories.map((cat) => (
-          <div key={cat.icon} className="flex-shrink-0 w-32 flex flex-col items-center gap-sm group cursor-pointer">
+          <div key={cat.id} className="flex-shrink-0 w-32 flex flex-col items-center gap-sm group cursor-pointer">
             <div className="w-24 h-24 rounded-full bg-surface-container-high border-2 border-transparent group-hover:border-secondary transition-all flex items-center justify-center overflow-hidden">
               <span className="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">
-                {cat.icon}
+                {cat.icon || 'category'}
               </span>
             </div>
-            <span className="font-label-md text-label-md text-on-surface">{cat.label}</span>
+            <span className="font-label-md text-label-md text-on-surface">{cat.name}</span>
           </div>
         ))}
       </div>
