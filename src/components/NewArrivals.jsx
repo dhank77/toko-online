@@ -1,3 +1,6 @@
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+
 export default function NewArrivals() {
   const items = [
     {
@@ -31,26 +34,26 @@ export default function NewArrivals() {
   ]
 
   return (
-    <section className="py-lg max-w-container-max mx-auto px-gutter">
-      <h2 className="font-headline-lg text-headline-lg text-primary mb-lg text-center">New Arrivals</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-sm h-[600px]">
+    <section className="py-10 max-w-7xl mx-auto px-6">
+      <h2 className="text-2xl font-bold text-primary mb-8 text-center">New Arrivals</h2>
+      <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[600px]">
         {items.map((item, idx) => (
           <div
             key={idx}
-            className={`rounded-3xl overflow-hidden relative group ${item.mdClass ? item.mdClass : ''} ambient-card`}>
+            className={`rounded-3xl overflow-hidden relative group ${item.mdClass ? item.mdClass : ''}`}>
             <img
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               data-alt={`${item.title} product image`}
               src={item.img}
             />
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors p-md flex items-end">
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors p-6 flex items-end">
               {item.desc ? (
                 <div className="flex flex-col">
-                  <span className="text-white font-headline-lg font-bold mb-2">{item.title}</span>
-                  <p className="text-white/80 font-body-md mb-4">{item.desc}</p>
-                  <button className="bg-white text-primary px-6 py-2 rounded-lg font-label-md w-fit">
+                  <span className="text-white font-bold text-lg mb-2">{item.title}</span>
+                  <p className="text-white/80 text-sm mb-4">{item.desc}</p>
+                  <Button size="sm" className="w-fit bg-white text-primary hover:bg-white/90">
                     {item.btn}
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <span className="text-white font-bold">{item.title}</span>

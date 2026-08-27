@@ -15,8 +15,8 @@ export default function AdminRoute({ children }) {
 
   if (loading || checkingAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-on-background">
-        <span className="font-body-md text-body-md">Loading...</span>
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <span className="text-sm">Loading...</span>
       </div>
     )
   }
@@ -27,10 +27,10 @@ export default function AdminRoute({ children }) {
 
   if (!isAdmin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-on-background">
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
         <div className="text-center">
-          <h1 className="font-headline-lg text-headline-lg text-error mb-sm">403</h1>
-          <p className="font-body-md text-body-md text-on-surface-variant">You don't have permission to access this page.</p>
+          <h1 className="text-2xl font-bold text-destructive mb-2">403</h1>
+          <p className="text-sm text-muted-foreground">You don't have permission to access this page.</p>
         </div>
       </div>
     )

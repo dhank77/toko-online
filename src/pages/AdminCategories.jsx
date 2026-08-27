@@ -1,60 +1,24 @@
 import { useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 
 const emptyCategory = { name: '', slug: '', icon: '' }
 
 const CATEGORY_ICONS = [
-  'shopping_bag',
-  'devices',
-  'chair',
-  'restaurant',
-  'fitness_center',
-  'directions_car',
-  'pets',
-  'toys',
-  'book',
-  'movie',
-  'music_note',
-  'camera',
-  'computer',
-  'phone',
-  'watch',
-  'eyeglasses',
-  'jewelry',
-  'cake',
-  'local_florist',
-  'local_grocery_store',
-  'local_pharmacy',
-  'school',
-  'flight',
-  'train',
-  'directions_bike',
-  'sports_soccer',
-  'local_pizza',
-  'local_cafe',
-  'local_dining',
-  'payments',
-  'account_balance',
-  'work',
-  'home',
-  'castle',
-  'forest',
-  'waves',
-  'wb_sunny',
-  'nightlife',
-  'coffee',
-  'store',
-  'local_mall',
-  'local_convenience_store',
-  'agriculture',
-  'water_drop',
-  'energy_savings_leaf',
-  'medical_services',
-  'local_hospital',
-  'support_agent',
-  'security',
-  'code',
+  'shopping_bag', 'devices', 'chair', 'restaurant', 'fitness_center', 'directions_car',
+  'pets', 'toys', 'book', 'movie', 'music_note', 'camera', 'computer', 'phone', 'watch',
+  'eyeglasses', 'jewelry', 'cake', 'local_florist', 'local_grocery_store', 'local_pharmacy',
+  'school', 'flight', 'train', 'directions_bike', 'sports_soccer', 'local_pizza', 'local_cafe',
+  'local_dining', 'payments', 'account_balance', 'work', 'home', 'castle', 'forest', 'waves',
+  'wb_sunny', 'nightlife', 'coffee', 'store', 'local_mall', 'local_convenience_store',
+  'agriculture', 'water_drop', 'energy_savings_leaf', 'medical_services', 'local_hospital',
+  'support_agent', 'security', 'code',
 ]
 
 export default function AdminCategories() {
@@ -146,206 +110,199 @@ export default function AdminCategories() {
   return (
     <>
       {error && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-error-container text-error px-md py-sm rounded-lg shadow-lg font-label-md">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-destructive/10 text-destructive px-6 py-3 rounded-lg shadow-lg font-medium border border-destructive/20">
           {error}
         </div>
       )}
 
-      <div className="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface mb-xs">Master Data</h1>
-          <p className="font-body-md text-body-md text-on-surface-variant">Manage categories for your store catalog.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Master Data</h1>
+          <p className="text-sm text-muted-foreground">Manage categories for your store catalog.</p>
         </div>
-        <button
+        <Button
           onClick={openCreate}
-          className="flex items-center gap-xs bg-primary text-on-primary px-sm py-xs rounded-xl font-label-md text-label-md hover:bg-primary-container transition-colors shadow-sm active:scale-95"
+          className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
         >
-          <span className="material-symbols-outlined text-[20px]">add</span>
+          <span className="material-symbols-outlined text-lg">add</span>
           New Category
-        </button>
+        </Button>
       </div>
 
-      <div className="glass-card rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="bg-surface-container text-on-surface-variant">
-                <th className="px-md py-sm font-label-sm text-label-sm uppercase tracking-wider">Name</th>
-                <th className="px-md py-sm font-label-sm text-label-sm uppercase tracking-wider">Slug</th>
-                <th className="px-md py-sm font-label-sm text-label-sm uppercase tracking-wider">Icon</th>
-                <th className="px-md py-sm font-label-sm text-label-sm uppercase tracking-wider text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant">
-              {loading ? (
-                Array.from({ length: 3 }).map((_, idx) => (
-                  <tr key={idx} className="hover:bg-surface-container-low transition-colors">
-                    <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-32 animate-pulse" /></td>
-                    <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-24 animate-pulse" /></td>
-                    <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-16 animate-pulse" /></td>
-                    <td className="px-md py-md"><div className="h-4 bg-surface-variant rounded w-8 animate-pulse ml-auto" /></td>
-                  </tr>
-                ))
-              ) : categories.length === 0 ? (
-                <tr>
-                  <td colSpan="4" className="px-md py-xl text-center font-body-md text-body-md text-on-surface-variant">
-                    No categories found. Create your first category to get started.
-                  </td>
-                </tr>
-              ) : (
-                categories.map((category) => (
-                  <tr key={category.id} className="hover:bg-surface-container-low transition-colors group">
-                    <td className="px-md py-md font-label-md text-label-md text-on-surface">{category.name}</td>
-                    <td className="px-md py-md font-body-sm text-body-sm text-on-surface-variant">{category.slug}</td>
-                    <td className="px-md py-md">
-                      <div className="flex items-center gap-xs">
-                        {category.icon ? (
-                          <>
-                            <span className="material-symbols-outlined text-[18px]">{category.icon}</span>
-                            <span className="font-body-sm text-body-sm text-on-surface-variant">{category.icon}</span>
-                          </>
-                        ) : (
-                          <span className="font-body-sm text-body-sm text-on-surface-variant">-</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-md py-md">
-                      <div className="flex items-center justify-end gap-xs">
-                        <button
-                          onClick={() => openEdit(category)}
-                          className="p-xs text-on-surface-variant hover:text-primary transition-colors"
-                          title="Edit"
-                        >
-                          <span className="material-symbols-outlined">edit</span>
-                        </button>
-                        <button
-                          onClick={() => setDeleteId(category.id)}
-                          className="p-xs text-on-surface-variant hover:text-error transition-colors"
-                          title="Delete"
-                        >
-                          <span className="material-symbols-outlined">delete</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="text-xs uppercase tracking-wider">Name</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Slug</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Icon</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-border">
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, idx) => (
+                    <TableRow key={idx} className="hover:bg-muted/50 transition-colors">
+                      <TableCell><div className="h-4 bg-muted rounded w-32 animate-pulse" /></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded w-24 animate-pulse" /></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded w-16 animate-pulse" /></TableCell>
+                      <TableCell><div className="h-4 bg-muted rounded w-8 animate-pulse ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : categories.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan="4" className="px-6 py-12 text-center text-sm text-muted-foreground">
+                      No categories found. Create your first category to get started.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  categories.map((category) => (
+                    <TableRow key={category.id} className="hover:bg-muted/50 transition-colors group">
+                      <TableCell className="text-sm font-medium text-foreground">{category.name}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{category.slug}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          {category.icon ? (
+                            <>
+                              <span className="material-symbols-outlined text-lg">{category.icon}</span>
+                              <span className="text-sm text-muted-foreground">{category.icon}</span>
+                            </>
+                          ) : (
+                            <span className="text-sm text-muted-foreground">-</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            onClick={() => openEdit(category)}
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-primary"
+                            title="Edit"
+                          >
+                            <span className="material-symbols-outlined">edit</span>
+                          </Button>
+                          <Button
+                            onClick={() => setDeleteId(category.id)}
+                            variant="ghost"
+                            size="icon"
+                            className="text-muted-foreground hover:text-destructive"
+                            title="Delete"
+                          >
+                            <span className="material-symbols-outlined">delete</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Create / Edit Modal */}
-      {modalMode && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-gutter">
-          <div className="bg-surface rounded-xl shadow-elevated w-full max-w-md">
-            <div className="p-md border-b border-outline-variant flex justify-between items-center">
-              <h3 className="font-headline-md text-headline-md text-on-surface">{modalMode === 'edit' ? 'Edit Category' : 'New Category'}</h3>
-              <button
-                onClick={() => { setModalMode(null); setForm({ ...emptyCategory }) }}
-                className="text-on-surface-variant hover:text-primary transition-colors"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
+      <Dialog open={!!modalMode} onOpenChange={(open) => { if (!open) { setModalMode(null); setForm({ ...emptyCategory }) } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{modalMode === 'edit' ? 'Edit Category' : 'New Category'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                value={form.name}
+                onChange={handleNameChange}
+                required
+                placeholder="Category name"
+              />
             </div>
-            <form onSubmit={handleSubmit} className="p-md space-y-md">
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface mb-xs">Name</label>
-                <input
-                  value={form.name}
-                  onChange={handleNameChange}
-                  required
-                  className="w-full px-sm py-xs bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  placeholder="Category name"
-                />
+            <div>
+              <Label htmlFor="slug">Slug</Label>
+              <Input
+                value={form.slug}
+                onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
+                required
+                placeholder="category-slug"
+              />
+            </div>
+            <div>
+              <Label>Icon</Label>
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-64 overflow-y-auto p-3 bg-muted/50 border border-border rounded-lg mt-2">
+                {CATEGORY_ICONS.map((icon) => {
+                  const selected = form.icon === icon
+                  return (
+                    <Button
+                      key={icon}
+                      type="button"
+                      variant={selected ? "default" : "ghost"}
+                      onClick={() => setForm((prev) => ({ ...prev, icon }))}
+                      className="flex flex-col items-center justify-center gap-1 rounded-lg border p-2 transition-colors h-auto"
+                    >
+                      <span className="material-symbols-outlined text-lg">{icon}</span>
+                    </Button>
+                  )
+                })}
               </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface mb-xs">Slug</label>
-                <input
-                  value={form.slug}
-                  onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
-                  required
-                  className="w-full px-sm py-xs bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  placeholder="category-slug"
-                />
-              </div>
-              <div>
-                <label className="block font-label-md text-label-md text-on-surface mb-xs">Icon</label>
-                <div className="grid grid-cols-6 sm:grid-cols-8 gap-xs max-h-64 overflow-y-auto custom-scrollbar p-sm bg-surface-container-low border border-outline-variant rounded-lg">
-                  {CATEGORY_ICONS.map((icon) => {
-                    const selected = form.icon === icon
-                    return (
-                      <button
-                        key={icon}
-                        type="button"
-                        onClick={() => setForm((prev) => ({ ...prev, icon }))}
-                        className={`flex flex-col items-center justify-center gap-xs rounded-lg border p-xs transition-colors ${
-                          selected
-                            ? 'border-primary bg-primary-fixed text-primary'
-                            : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-[20px]">{icon}</span>
-                      </button>
-                    )
-                  })}
+              {form.icon && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                  <span className="material-symbols-outlined">{form.icon}</span>
+                  <span>Selected: {form.icon}</span>
                 </div>
-                {form.icon && (
-                  <div className="mt-xs flex items-center gap-xs text-body-sm text-body-sm text-on-surface-variant">
-                    <span className="material-symbols-outlined text-[18px]">{form.icon}</span>
-                    <span>Selected: {form.icon}</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex justify-end gap-sm pt-sm">
-                <button
-                  type="button"
-                  onClick={() => { setModalMode(null); setForm({ ...emptyCategory }) }}
-                  className="px-sm py-xs rounded-lg font-label-md text-label-md text-on-surface-variant border border-outline-variant hover:bg-surface-container transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-sm py-xs bg-primary text-on-primary rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors disabled:opacity-60"
-                >
-                    {saving ? 'Saving...' : modalMode === 'edit' ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-gutter">
-          <div className="bg-surface rounded-xl shadow-elevated w-full max-w-sm">
-            <div className="p-md">
-              <h3 className="font-headline-md text-headline-md text-on-surface mb-xs">Delete Category</h3>
-              <p className="font-body-md text-body-md text-on-surface-variant">
-                Are you sure you want to delete this category? This action cannot be undone.
-              </p>
+              )}
             </div>
-            <div className="p-md border-t border-outline-variant flex justify-end gap-sm">
-              <button
-                onClick={() => setDeleteId(null)}
-                className="px-sm py-xs rounded-lg font-label-md text-label-md text-on-surface-variant border border-outline-variant hover:bg-surface-container transition-colors"
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => { setModalMode(null); setForm({ ...emptyCategory }) }}
               >
                 Cancel
-              </button>
-              <button
-                onClick={handleDelete}
+              </Button>
+              <Button
+                type="submit"
                 disabled={saving}
-                className="px-sm py-xs bg-error text-on-error rounded-lg font-label-md text-label-md hover:bg-error-container transition-colors disabled:opacity-60"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                {saving ? 'Deleting...' : 'Delete'}
-              </button>
-            </div>
+                {saving ? 'Saving...' : modalMode === 'edit' ? 'Update' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null) }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Delete Category</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              Are you sure you want to delete this category? This action cannot be undone.
+            </p>
           </div>
-        </div>
-      )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteId(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDelete}
+              disabled={saving}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {saving ? 'Deleting...' : 'Delete'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

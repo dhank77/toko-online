@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utils/api'
+import { Button } from '@/components/ui/button'
 
 export default function CategorySection() {
   const [categories, setCategories] = useState([])
@@ -28,22 +29,22 @@ export default function CategorySection() {
   }, [])
 
   return (
-    <section className="py-md overflow-hidden">
-      <div className="max-w-container-max mx-auto px-gutter mb-sm flex justify-between items-end">
-        <h2 className="font-headline-lg text-headline-lg text-primary">Browse Categories</h2>
-        <a className="text-secondary font-label-md text-label-md hover:underline flex items-center gap-1" href="#">
+    <section className="py-8 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 mb-4 flex justify-between items-end">
+        <h2 className="text-2xl font-bold text-primary">Browse Categories</h2>
+        <Button variant="ghost" size="sm" className="text-secondary hover:text-secondary/80">
           View All <span className="material-symbols-outlined text-sm">chevron_right</span>
-        </a>
+        </Button>
       </div>
-      <div className="flex gap-md overflow-x-auto no-scrollbar px-gutter pb-4">
+      <div className="flex gap-4 overflow-x-auto no-scrollbar px-6 pb-4">
         {categories.map((cat) => (
-          <div key={cat.id} className="flex-shrink-0 w-32 flex flex-col items-center gap-sm group cursor-pointer">
-            <div className="w-24 h-24 rounded-full bg-surface-container-high border-2 border-transparent group-hover:border-secondary transition-all flex items-center justify-center overflow-hidden">
+          <div key={cat.id} className="flex-shrink-0 w-32 flex flex-col items-center gap-3 group cursor-pointer">
+            <div className="w-24 h-24 rounded-full bg-muted border-2 border-transparent group-hover:border-secondary transition-all flex items-center justify-center overflow-hidden">
               <span className="material-symbols-outlined text-4xl text-primary group-hover:scale-110 transition-transform">
                 {cat.icon || 'category'}
               </span>
             </div>
-            <span className="font-label-md text-label-md text-on-surface">{cat.name}</span>
+            <span className="text-sm font-medium text-foreground">{cat.name}</span>
           </div>
         ))}
       </div>
