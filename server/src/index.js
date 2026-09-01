@@ -17,15 +17,15 @@ app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', cred
 app.use(cookieParser())
 app.use(express.json({ limit: '10kb' }))
 
-const limiter = rateLimit({
+const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   message: { error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
 })
 
-app.use('/api/', limiter)
+app.use('/api/', globalLimiter)
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }))
 

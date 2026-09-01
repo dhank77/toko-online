@@ -9,10 +9,17 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [checkingAdmin, setCheckingAdmin] = useState(false)
-  const userRef = useRef(user)
+  const userRef = useRef(null)
+  const cachedAdminRef = useRef(null)
+  const cachedAdminUserRef = useRef(null)
+  const rateLimitUntilRef = useRef(null)
 
   useEffect(() => {
     userRef.current = user
+    if (cachedAdminUserRef.current !== user?.id) {
+      cachedAdminRef.current = null
+      cachedAdminUserRef.current = user?.id || null
+    }
   }, [user])
 
   useEffect(() => {
@@ -47,6 +54,8 @@ export function AuthProvider({ children }) {
   }
 
   const signOut = async () => {
+    cachedAdminRef.current = null
+    cachedAdminUserRef.current = null
     const { error } = await supabase.auth.signOut()
     if (error) throw error
   }
@@ -56,44 +65,51 @@ export function AuthProvider({ children }) {
     if (error) throw error
   }
 
-  const checkAdmin = useCallback(async () => {
-    const currentUser = userRef.current
-    if (!currentUser) {
+  const checkAdmin = useCallback(async (userId, bypassCache = false) => {
+    const id = userId || userRef.current?.id
+    if (!id) {
       setIsAdmin(false)
       return false
     }
 
-    setCheckingAdmin(true)
-
-    const tryCheck = async (retries = 2) => {
-      try {
-        const profile = await api.getProfile()
-        console.log('Admin check profile:', profile)
-        const admin = profile?.role === 'admin'
-        setIsAdmin(admin)
-        return admin
-      } catch (err) {
-        if (err.status === 429 && retries > 0) {
-          console.error(`Admin check rate limited, retrying in 2s... (${retries} retries left)`)
-          await new Promise((resolve) => setTimeout(resolve, 2000))
-          return tryCheck(retries - 1)
-        }
-
-        console.error('Admin check error:', err)
-        setIsAdmin(false)
-        return false
-      }
+    const now = Date.now()
+    if (!bypassCache && rateLimitUntilRef.current && now < rateLimitUntilRef.current) {
+      console.log('Rate limited, using cached value')
+      return cachedAdminRef.current ?? false
     }
 
+    if (!bypassCache && cachedAdminUserRef.current === id && cachedAdminRef.current !== null) {
+      console.log('Using cached admin status:', cachedAdminRef.current)
+      setIsAdmin(cachedAdminRef.current)
+      return cachedAdminRef.current
+    }
+
+    setCheckingAdmin(true)
+
     try {
-      return await tryCheck()
+      const profile = await api.getProfile()
+      console.log('Admin check profile:', profile)
+      const admin = profile?.role === 'admin'
+      setIsAdmin(admin)
+      cachedAdminRef.current = admin
+      cachedAdminUserRef.current = id
+      rateLimitUntilRef.current = null
+      return admin
+    } catch (err) {
+      console.error('Admin check error:', err)
+      if (err.status === 429) {
+        rateLimitUntilRef.current = now + 60000
+        console.log('Rate limited for 60s, cache preserved')
+      }
+      setIsAdmin(false)
+      return false
     } finally {
       setCheckingAdmin(false)
     }
   }, [])
 
   const refreshAdminStatus = useCallback(async () => {
-    await checkAdmin()
+    await checkAdmin(null, true)
   }, [checkAdmin])
 
   const value = {

@@ -6,10 +6,10 @@ export default function AdminRoute({ children }) {
   const { user, loading, isAdmin, checkingAdmin, checkAdmin } = useAuth()
 
   useEffect(() => {
-    if (user) {
-      checkAdmin()
+    if (user && !isAdmin && !checkingAdmin) {
+      checkAdmin(user.id)
     }
-  }, [user, checkAdmin])
+  }, [user, isAdmin, checkingAdmin, checkAdmin])
 
   console.log('AdminRoute render:', { loading, checkingAdmin, hasUser: !!user, isAdmin })
 

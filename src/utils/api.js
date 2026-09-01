@@ -10,7 +10,13 @@ function withTimeout(promise, ms = 8000) {
 }
 
 async function request(path, options = {}) {
-  const { data: { session } } = await supabase.auth.getSession()
+  let session = null
+  try {
+    const result = await supabase.auth.getSession()
+    session = result.data.session
+  } catch (e) {
+    console.warn('Session retrieval failed:', e)
+  }
   const token = session?.access_token
 
   const res = await withTimeout(
