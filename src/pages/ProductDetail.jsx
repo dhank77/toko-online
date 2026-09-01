@@ -77,6 +77,9 @@ export default function ProductDetail() {
         variantId: selectedVariant?.id || null,
         variant: selectedVariant?.name || null,
         quantity: 1,
+        name: product.name,
+        image: product.image_url,
+        price: currentPrice,
       })
       toast.success(`${product.name} added to cart`)
     } catch (err) {

@@ -24,6 +24,10 @@ export async function updateCartItem(id, updates) {
   return api.updateCartItem(id, updates)
 }
 
+export async function setAllCartSelected(selected) {
+  return api.setAllCartSelected(selected)
+}
+
 export async function removeCartItem(id) {
   return api.removeCartItem(id)
 }

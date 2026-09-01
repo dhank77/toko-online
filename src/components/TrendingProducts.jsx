@@ -121,7 +121,7 @@ export default function TrendingProducts() {
                         return
                       }
                       try {
-                        await addItem({ productId: product.id, variantId: null, quantity: 1 })
+                        await addItem({ productId: product.id, variantId: null, quantity: 1, name: product.name, image: product.image_url, price: product.price })
                         toast.success(`${product.name} added to cart`)
                       } catch (err) {
                         console.error('Add to cart failed:', err)

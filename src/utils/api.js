@@ -103,6 +103,10 @@ export const api = {
     method: 'PATCH',
     body: JSON.stringify(updates),
   }),
+  setAllCartSelected: (selected) => request('/cart/select/all', {
+    method: 'PATCH',
+    body: JSON.stringify({ selected }),
+  }),
   removeCartItem: (id) => request(`/cart/${id}`, {
     method: 'DELETE',
   }),
