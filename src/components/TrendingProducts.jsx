@@ -5,17 +5,20 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import toast from 'react-hot-toast'
+import { formatRupiah } from '../lib/utils'
 
 export default function TrendingProducts() {
   const [products, setProducts] = useState([])
+  const [pagination, setPagination] = useState(null)
   const [loading, setLoading] = useState(true)
   const { addItem, isAuthed } = useCart()
   const navigate = useNavigate()
 
   useEffect(() => {
-    getProducts()
-      .then((data) => {
-        setProducts(data)
+    getProducts(1, 4)
+      .then((res) => {
+        setProducts(res.data)
+        setPagination(res.pagination)
         setLoading(false)
       })
       .catch(() => setLoading(false))
@@ -104,7 +107,7 @@ export default function TrendingProducts() {
                     <Link to={`/product/${product.slug}`} className="font-semibold text-foreground text-lg hover:text-primary transition-colors">
                       {product.name}
                     </Link>
-                    <span className="font-bold text-primary">${Number(product.price).toFixed(2)}</span>
+                    <span className="font-bold text-primary">{formatRupiah(product.price)}</span>
                   </div>
                   <div className="flex items-center gap-1 mb-4">
                     <div className="flex text-secondary">{renderStars(product.rating)}</div>
@@ -117,8 +120,13 @@ export default function TrendingProducts() {
                         navigate('/login')
                         return
                       }
-                      await addItem({ productId: product.id, variantId: null, quantity: 1 })
-                      toast.success(`${product.name} added to cart`)
+                      try {
+                        await addItem({ productId: product.id, variantId: null, quantity: 1 })
+                        toast.success(`${product.name} added to cart`)
+                      } catch (err) {
+                        console.error('Add to cart failed:', err)
+                        toast.error(err?.message || 'Failed to add to cart, please try again')
+                      }
                     }}
                     className="w-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                     variant="outline"

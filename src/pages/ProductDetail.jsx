@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import toast from 'react-hot-toast'
+import { formatRupiah } from '../lib/utils'
 
 export default function ProductDetail() {
   const { slug } = useParams()
@@ -185,7 +186,7 @@ export default function ProductDetail() {
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">{product.name}</h1>
               <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-primary">${currentPrice.toFixed(2)}</span>
+                <span className="text-3xl font-bold text-primary">{formatRupiah(currentPrice)}</span>
                 {product.in_stock ? (
                   <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-0">In Stock</Badge>
                 ) : (
@@ -220,7 +221,7 @@ export default function ProductDetail() {
                       {v.name}
                       {Number(v.price_adjustment) !== 0 && (
                         <span className="ml-1 text-xs opacity-70">
-                          ({Number(v.price_adjustment) > 0 ? '+' : ''}${Number(v.price_adjustment).toFixed(2)})
+                          ({Number(v.price_adjustment) > 0 ? '+' : ''}{formatRupiah(v.price_adjustment)})
                         </span>
                       )}
                     </button>

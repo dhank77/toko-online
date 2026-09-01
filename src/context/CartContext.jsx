@@ -53,7 +53,9 @@ export function CartProvider({ children }) {
 
   const addItem = useCallback(
     async (product) => {
-      if (!isAuthed) return
+      if (!isAuthed) {
+        throw new Error('Please login to add items to your cart')
+      }
       try {
         const res = await cartApi.addToCart(product.productId, product.variantId || null, product.quantity || 1)
         applyServerCart(res.cart)
