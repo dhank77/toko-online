@@ -32,6 +32,7 @@ export default function AdminProducts() {
   const [form, setForm] = useState({ ...emptyProduct })
   const [modalMode, setModalMode] = useState(null)
   const [deleteId, setDeleteId] = useState(null)
+  const [deleteVariantId, setDeleteVariantId] = useState(null)
   const [variants, setVariants] = useState([])
   const [variantForm, setVariantForm] = useState({ ...emptyVariant })
   const [savingVariant, setSavingVariant] = useState(false)
@@ -187,12 +188,14 @@ export default function AdminProducts() {
     }
   }
 
-  const handleDeleteVariant = async (id) => {
+  const handleDeleteVariant = async () => {
+    if (!deleteVariantId) return
     setError('')
     try {
-      await api.deleteVariant(id)
-      setVariants((prev) => prev.filter((v) => v.id !== id))
+      await api.deleteVariant(deleteVariantId)
+      setVariants((prev) => prev.filter((v) => v.id !== deleteVariantId))
       toast.success('Variant deleted')
+      setDeleteVariantId(null)
     } catch (err) {
       setError(err.message)
     }
@@ -535,7 +538,7 @@ export default function AdminProducts() {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDeleteVariant(variant.id)}
+                          onClick={() => setDeleteVariantId(variant.id)}
                           className="text-muted-foreground hover:text-destructive"
                         >
                           <span className="material-symbols-outlined">delete</span>
@@ -548,7 +551,6 @@ export default function AdminProducts() {
                   <Input
                     value={variantForm.name}
                     onChange={(e) => setVariantForm((prev) => ({ ...prev, name: e.target.value }))}
-                    required
                     placeholder="New variant name"
                     className="flex-1"
                   />
@@ -573,6 +575,27 @@ export default function AdminProducts() {
                 </div>
               </div>
             )}
+
+            <Dialog open={!!deleteVariantId} onOpenChange={(open) => { if (!open) setDeleteVariantId(null) }}>
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle>Delete Variant</DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                  <p className="text-sm text-muted-foreground">
+                    Are you sure you want to delete this variant? This action cannot be undone.
+                  </p>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setDeleteVariantId(null)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleDeleteVariant} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <DialogFooter>
               <Button
