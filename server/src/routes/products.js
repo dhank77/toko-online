@@ -13,12 +13,79 @@ router.get('/', async (req, res) => {
     const from = (page - 1) * limit
     const to = from + limit - 1
 
-    const { data, error, count } = await supabaseAdmin
+    let query = supabaseAdmin
       .from('products')
       .select('*, categories(name, slug, icon)', { count: 'exact' })
-      .eq('in_stock', true)
-      .order('created_at', { ascending: false })
-      .range(from, to)
+
+    // Public only sees in_stock products
+    query = query.eq('in_stock', true)
+
+    // Sorting
+    const sortField = req.query.sort || 'created_at'
+    const sortOrder = req.query.order === 'asc' ? true : false
+    query = query.order(sortField, { ascending: sortOrder })
+
+    // Pagination
+    query = query.range(from, to)
+
+    const { data, error, count } = await query
+
+    if (error) return res.status(400).json({ error: error.message })
+    res.json({
+      data,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit)
+      }
+    })
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch products' })
+  }
+})
+
+// Admin: read all products with filter, search, sort
+router.get('/admin', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1)
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12))
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+    const search = req.query.search || ''
+    const category = req.query.category || ''
+    const sortField = req.query.sort || 'created_at'
+    const sortOrder = req.query.order === 'asc' ? true : false
+    const inStock = req.query.in_stock
+
+    let query = supabaseAdmin
+      .from('products')
+      .select('*, categories(name, slug, icon)', { count: 'exact' })
+
+    // Search by name
+    if (search) {
+      query = query.ilike('name', `%${search}%`)
+    }
+
+    // Filter by category
+    if (category) {
+      query = query.eq('category_id', category)
+    }
+
+    // Filter by in_stock
+    if (inStock !== undefined && inStock !== '' && inStock !== 'all') {
+      query = query.eq('in_stock', inStock === 'true')
+    }
+
+    // Sorting
+    const allowedSorts = ['created_at', 'price', 'name', 'rating', 'review_count']
+    const safeSort = allowedSorts.includes(sortField) ? sortField : 'created_at'
+    query = query.order(safeSort, { ascending: sortOrder })
+
+    // Pagination
+    query = query.range(from, to)
+
+    const { data, error, count } = await query
 
     if (error) return res.status(400).json({ error: error.message })
     res.json({

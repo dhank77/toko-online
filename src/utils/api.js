@@ -45,7 +45,14 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  getProducts: (page = 1, limit = 12) => request(`/products?page=${page}&limit=${limit}`),
+  getProducts: (page = 1, limit = 12, params = {}) => {
+    const query = new URLSearchParams({ page, limit, ...params })
+    return request(`/products?${query}`)
+  },
+  getAdminProducts: (page = 1, limit = 12, params = {}) => {
+    const query = new URLSearchParams({ page, limit, ...params })
+    return request(`/products/admin?${query}`)
+  },
   getProductBySlug: (slug) => request(`/products/slug/${slug}`),
   createProduct: (product) => request('/products', {
     method: 'POST',

@@ -41,13 +41,30 @@ export default function AdminProducts() {
   const [savingVariant, setSavingVariant] = useState(false)
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef(null)
+  const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [sortField, setSortField] = useState('created_at')
+  const [sortOrder, setSortOrder] = useState('desc')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   const loadProducts = async (pageNum = 1) => {
     setLoading(true)
     setError('')
     try {
+      const params = {}
+      if (debouncedSearch) params.search = debouncedSearch
+      if (categoryFilter) params.category = categoryFilter
+      if (sortField) params.sort = sortField
+      if (sortOrder) params.order = sortOrder
+
       const [productsData, categoriesData] = await Promise.all([
-        api.getProducts(pageNum, limit),
+        api.getAdminProducts(pageNum, limit, params),
         api.getCategories(),
       ])
       setProducts(productsData.data)
@@ -63,7 +80,7 @@ export default function AdminProducts() {
 
   useEffect(() => {
     loadProducts(page)
-  }, [page])
+  }, [page, debouncedSearch, categoryFilter, sortField, sortOrder])
 
   const generateSlug = (name) =>
     name
@@ -272,6 +289,47 @@ export default function AdminProducts() {
           <span className="material-symbols-outlined text-lg">add</span>
           New Product
         </Button>
+      </div>
+
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">search</span>
+          <Input
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            className="pl-10"
+          />
+        </div>
+        <select
+          value={categoryFilter}
+          onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
+          className="px-3 py-2 border rounded-md bg-background text-sm"
+        >
+          <option value="">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
+        <select
+          value={sortField}
+          onChange={(e) => { setSortField(e.target.value); setPage(1) }}
+          className="px-3 py-2 border rounded-md bg-background text-sm"
+        >
+          <option value="created_at">Sort: Date</option>
+          <option value="name">Sort: Name</option>
+          <option value="price">Sort: Price</option>
+          <option value="rating">Sort: Rating</option>
+          <option value="review_count">Sort: Reviews</option>
+        </select>
+        <select
+          value={sortOrder}
+          onChange={(e) => { setSortOrder(e.target.value); setPage(1) }}
+          className="px-3 py-2 border rounded-md bg-background text-sm"
+        >
+          <option value="desc">Desc</option>
+          <option value="asc">Asc</option>
+        </select>
       </div>
 
       <Card>
