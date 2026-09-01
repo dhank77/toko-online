@@ -45,7 +45,7 @@ async function request(path, options = {}) {
 }
 
 export const api = {
-  getProducts: () => request('/products'),
+  getProducts: (page = 1, limit = 12) => request(`/products?page=${page}&limit=${limit}`),
   getProductBySlug: (slug) => request(`/products/slug/${slug}`),
   createProduct: (product) => request('/products', {
     method: 'POST',

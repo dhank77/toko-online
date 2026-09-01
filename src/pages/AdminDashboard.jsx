@@ -16,10 +16,10 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       try {
         const [productsData, ordersData] = await Promise.all([
-          api.getProducts(),
+          api.getProducts(1, 3),
           api.getOrders(),
         ])
-        setProducts(productsData.slice(0, 3))
+        setProducts(productsData.data)
         setOrders(ordersData.slice(0, 5))
       } catch (err) {
         setError(err.message)

@@ -1,7 +1,7 @@
 import { api } from '../utils/api'
 
-export async function getProducts() {
-  return api.getProducts()
+export async function getProducts(page = 1, limit = 12) {
+  return api.getProducts(page, limit)
 }
 
 export async function getProductBySlug(slug) {

@@ -28,6 +28,9 @@ export default function AdminProducts() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const limit = 12
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ ...emptyProduct })
   const [modalMode, setModalMode] = useState(null)
@@ -39,16 +42,18 @@ export default function AdminProducts() {
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef(null)
 
-  const loadProducts = async () => {
+  const loadProducts = async (pageNum = 1) => {
     setLoading(true)
     setError('')
     try {
       const [productsData, categoriesData] = await Promise.all([
-        api.getProducts(),
+        api.getProducts(pageNum, limit),
         api.getCategories(),
       ])
-      setProducts(productsData)
+      setProducts(productsData.data)
       setCategories(categoriesData)
+      setPage(pageNum)
+      setTotalPages(productsData.pagination.totalPages)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -57,8 +62,8 @@ export default function AdminProducts() {
   }
 
   useEffect(() => {
-    loadProducts()
-  }, [])
+    loadProducts(page)
+  }, [page])
 
   const generateSlug = (name) =>
     name
@@ -129,7 +134,7 @@ export default function AdminProducts() {
         })
         toast.success('Product created successfully')
       }
-      await loadProducts()
+      await loadProducts(page)
       setForm({ ...emptyProduct })
       setVariants([])
       setModalMode(null)
@@ -358,6 +363,32 @@ export default function AdminProducts() {
           </div>
         </CardContent>
       </Card>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            <span className="material-symbols-outlined text-sm">chevron_left</span>
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {page} of {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Next
+            <span className="material-symbols-outlined text-sm">chevron_right</span>
+          </Button>
+        </div>
+      )}
 
       <Dialog open={!!modalMode} onOpenChange={(open) => { if (!open) { setModalMode(null); setForm({ ...emptyProduct }); setVariants([]) } }}>
         <DialogContent className="sm:max-w-2xl">
