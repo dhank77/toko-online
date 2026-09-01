@@ -11,6 +11,7 @@ import AdminProducts from './pages/AdminProducts'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminRoute from './components/AdminRoute'
+import ProductDetail from './pages/ProductDetail'
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
+            <Route path="/product/:slug" element={<SiteLayout><ProductDetail /></SiteLayout>} />
             <Route path="/cart" element={<SiteLayout><CartPage /></SiteLayout>} />
             <Route
               path="/admin"

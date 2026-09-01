@@ -1,6 +1,7 @@
 import { getProducts } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
@@ -81,13 +82,13 @@ export default function TrendingProducts() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {products.map((product) => (
               <div key={product.id} className="bg-background rounded-2xl overflow-hidden group cursor-pointer hover:shadow-md transition-all">
-                <div className="relative h-64 overflow-hidden">
+                <Link to={`/product/${product.slug}`} className="relative h-64 overflow-hidden block">
                   <img
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     data-alt={`Product image for ${product.name}`}
                     src={product.image_url}
                   />
-                  <Button variant="secondary" size="icon" className="absolute top-4 right-4 rounded-full">
+                  <Button variant="secondary" size="icon" className="absolute top-4 right-4 rounded-full" onClick={(e) => e.preventDefault()}>
                     <span className="material-symbols-outlined">favorite</span>
                   </Button>
                   {product.badge && (
@@ -95,10 +96,12 @@ export default function TrendingProducts() {
                       {product.badge}
                     </Badge>
                   )}
-                </div>
+                </Link>
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-foreground text-lg">{product.name}</h3>
+                    <Link to={`/product/${product.slug}`} className="font-semibold text-foreground text-lg hover:text-primary transition-colors">
+                      {product.name}
+                    </Link>
                     <span className="font-bold text-primary">${Number(product.price).toFixed(2)}</span>
                   </div>
                   <div className="flex items-center gap-1 mb-4">
