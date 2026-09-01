@@ -47,13 +47,19 @@ router.put('/', async (req, res) => {
     const { product_id, variant_id = null, quantity = 1 } = req.body
     if (!product_id) return res.status(400).json({ error: 'product_id is required' })
 
-    const { data: existing, error: findErr } = await supabaseAdmin
+    let query = supabaseAdmin
       .from('cart_items')
       .select('id, quantity')
       .eq('user_id', req.user.id)
       .eq('product_id', product_id)
-      .eq('variant_id', variant_id)
-      .maybeSingle()
+
+    if (variant_id === null || variant_id === undefined) {
+      query = query.is('variant_id', null)
+    } else {
+      query = query.eq('variant_id', variant_id)
+    }
+
+    const { data: existing, error: findErr } = await query.maybeSingle()
 
     if (findErr) return res.status(400).json({ error: findErr.message })
 
