@@ -15,8 +15,8 @@ import ProductDetail from './pages/ProductDetail'
 
 export default function App() {
   return (
-    <CartProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <CartProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
@@ -38,7 +38,7 @@ export default function App() {
             <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </BrowserRouter>
-      </AuthProvider>
-    </CartProvider>
+      </CartProvider>
+    </AuthProvider>
   )
 }

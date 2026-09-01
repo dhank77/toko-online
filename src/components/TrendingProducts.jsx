@@ -1,14 +1,16 @@
 import { getProducts } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import toast from 'react-hot-toast'
 
 export default function TrendingProducts() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const { addItem } = useCart()
+  const { addItem, isAuthed } = useCart()
+  const navigate = useNavigate()
 
   useEffect(() => {
     getProducts()
@@ -109,7 +111,15 @@ export default function TrendingProducts() {
                     <span className="text-xs text-muted-foreground">({product.review_count} reviews)</span>
                   </div>
                   <Button
-                    onClick={() => addItem({ id: product.id, name: product.name, price: `$${Number(product.price).toFixed(2)}`, image: product.image_url })}
+                    onClick={async () => {
+                      if (!isAuthed) {
+                        toast.error('Please login to add items to your cart')
+                        navigate('/login')
+                        return
+                      }
+                      await addItem({ productId: product.id, variantId: null, quantity: 1 })
+                      toast.success(`${product.name} added to cart`)
+                    }}
                     className="w-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                     variant="outline"
                   >

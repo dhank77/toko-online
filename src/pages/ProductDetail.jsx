@@ -15,7 +15,7 @@ export default function ProductDetail() {
   const [error, setError] = useState(null)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
-  const { addItem } = useCart()
+  const { addItem, isAuthed } = useCart()
 
   useEffect(() => {
     setLoading(true)
@@ -65,18 +65,22 @@ export default function ProductDetail() {
     return stars
   }
 
-  const handleAddToCart = () => {
-    const price = selectedVariant
-      ? `$${(Number(product.price) + Number(selectedVariant.price_adjustment || 0)).toFixed(2)}`
-      : `$${Number(product.price).toFixed(2)}`
-    addItem({
-      id: product.id,
-      name: product.name,
-      price,
-      image: product.image_url,
-      variant: selectedVariant?.name || null,
-    })
-    toast.success(`${product.name} added to cart`)
+  const handleAddToCart = async () => {
+    if (!isAuthed) {
+      toast.error('Please login to add items to your cart')
+      return
+    }
+    try {
+      await addItem({
+        productId: product.id,
+        variantId: selectedVariant?.id || null,
+        variant: selectedVariant?.name || null,
+        quantity: 1,
+      })
+      toast.success(`${product.name} added to cart`)
+    } catch (err) {
+      toast.error(err?.message || 'Failed to add to cart')
+    }
   }
 
   if (loading) {

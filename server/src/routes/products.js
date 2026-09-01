@@ -5,17 +5,31 @@ import { requireAdmin } from '../middleware/admin.js'
 
 const router = Router()
 
-// Public: read products
+// Public: read products (paginated)
 router.get('/', async (req, res) => {
   try {
-    const { data, error } = await supabaseAdmin
+    const page = Math.max(1, parseInt(req.query.page) || 1)
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12))
+    const from = (page - 1) * limit
+    const to = from + limit - 1
+
+    const { data, error, count } = await supabaseAdmin
       .from('products')
-      .select('*, categories(name, slug, icon)')
+      .select('*, categories(name, slug, icon)', { count: 'exact' })
       .eq('in_stock', true)
       .order('created_at', { ascending: false })
+      .range(from, to)
 
     if (error) return res.status(400).json({ error: error.message })
-    res.json(data)
+    res.json({
+      data,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit)
+      }
+    })
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch products' })
   }

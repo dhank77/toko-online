@@ -11,3 +11,23 @@ export async function getProductBySlug(slug) {
 export async function getCategories() {
   return api.getCategories()
 }
+
+export async function getCart() {
+  return api.getCart()
+}
+
+export async function addToCart(product_id, variant_id, quantity = 1) {
+  return api.addToCart(product_id, variant_id, quantity)
+}
+
+export async function updateCartItem(id, updates) {
+  return api.updateCartItem(id, updates)
+}
+
+export async function removeCartItem(id) {
+  return api.removeCartItem(id)
+}
+
+export async function removeSelectedCartItems() {
+  return api.removeSelectedCartItems()
+}

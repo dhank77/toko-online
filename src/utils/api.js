@@ -87,6 +87,21 @@ export const api = {
     method: 'PATCH',
     body: JSON.stringify({ status }),
   }),
+  getCart: () => request('/cart'),
+  addToCart: (product_id, variant_id, quantity = 1) => request('/cart', {
+    method: 'PUT',
+    body: JSON.stringify({ product_id, variant_id, quantity }),
+  }),
+  updateCartItem: (id, updates) => request(`/cart/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  }),
+  removeCartItem: (id) => request(`/cart/${id}`, {
+    method: 'DELETE',
+  }),
+  removeSelectedCartItems: () => request('/cart/selected/all', {
+    method: 'DELETE',
+  }),
   getProfile: () => request('/profiles/me'),
   updateProfile: (data) => request('/profiles/me', {
     method: 'PUT',
