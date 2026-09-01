@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { supabase } from '../utils/supabaseClient'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -34,6 +35,8 @@ export default function AdminProducts() {
   const [variants, setVariants] = useState([])
   const [variantForm, setVariantForm] = useState({ ...emptyVariant })
   const [savingVariant, setSavingVariant] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef(null)
 
   const loadProducts = async () => {
     setLoading(true)
@@ -195,6 +198,52 @@ export default function AdminProducts() {
     }
   }
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file')
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Image must be less than 2MB')
+      return
+    }
+
+    setUploading(true)
+    setError('')
+    try {
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`
+      const filePath = `products/${fileName}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('products')
+        .upload(filePath, file, { cacheControl: '3600', upsert: false })
+
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage
+        .from('products')
+        .getPublicUrl(filePath)
+
+      setForm((prev) => ({ ...prev, image_url: urlData.publicUrl }))
+      toast.success('Image uploaded')
+    } catch (err) {
+      setError(err.message || 'Failed to upload image')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setForm((prev) => ({ ...prev, image_url: '' }))
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
   return (
     <>
       {error && (
@@ -223,6 +272,7 @@ export default function AdminProducts() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
+                  <TableHead className="text-xs uppercase tracking-wider w-12">Image</TableHead>
                   <TableHead className="text-xs uppercase tracking-wider">Name</TableHead>
                   <TableHead className="text-xs uppercase tracking-wider">Slug</TableHead>
                   <TableHead className="text-xs uppercase tracking-wider">Price</TableHead>
@@ -235,6 +285,7 @@ export default function AdminProducts() {
                 {loading ? (
                   Array.from({ length: 5 }).map((_, idx) => (
                     <TableRow key={idx} className="hover:bg-muted/50 transition-colors">
+                      <TableCell><div className="h-10 w-10 bg-muted rounded animate-pulse" /></TableCell>
                       <TableCell><div className="h-4 bg-muted rounded w-40 animate-pulse" /></TableCell>
                       <TableCell><div className="h-4 bg-muted rounded w-28 animate-pulse" /></TableCell>
                       <TableCell><div className="h-4 bg-muted rounded w-16 animate-pulse" /></TableCell>
@@ -245,13 +296,26 @@ export default function AdminProducts() {
                   ))
                 ) : products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan="6" className="px-6 py-12 text-center text-sm text-muted-foreground">
+                    <TableCell colSpan="7" className="px-6 py-12 text-center text-sm text-muted-foreground">
                       No products found. Create your first product to get started.
                     </TableCell>
                   </TableRow>
                 ) : (
                   products.map((product) => (
                     <TableRow key={product.id} className="hover:bg-muted/50 transition-colors group">
+                      <TableCell>
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="h-10 w-10 object-cover rounded-md border border-border"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-md border border-dashed border-border flex items-center justify-center">
+                            <span className="material-symbols-outlined text-muted-foreground text-sm">image</span>
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell className="text-sm font-medium text-foreground">{product.name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{product.slug}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">${Number(product.price).toFixed(2)}</TableCell>
@@ -343,12 +407,60 @@ export default function AdminProducts() {
                 />
               </div>
               <div>
-                <Label htmlFor="image_url">Image URL</Label>
-                <Input
-                  id="image_url"
-                  value={form.image_url}
-                  onChange={(e) => setForm((prev) => ({ ...prev, image_url: e.target.value }))}
-                  placeholder="https://..."
+                <Label>Product Image</Label>
+                <div className="mt-1.5 space-y-2">
+                  {form.image_url ? (
+                    <div className="relative group w-full max-w-[200px]">
+                      <img
+                        src={form.image_url}
+                        alt="Preview"
+                        className="w-full h-40 object-cover rounded-md border border-border"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={handleRemoveImage}
+                      >
+                        <span className="material-symbols-outlined text-sm">close</span>
+                      </Button>
+                    </div>
+                  ) : (
+                    <label
+                      htmlFor="product-image-upload"
+                      className="flex flex-col items-center justify-center w-full max-w-[200px] h-40 border-2 border-dashed border-border rounded-md cursor-pointer hover:border-primary/50 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-muted-foreground mb-1">image</span>
+                      <span className="text-xs text-muted-foreground">
+                        {uploading ? 'Uploading...' : 'Click to upload'}
+                      </span>
+                    </label>
+                  )}
+                </div>
+                {form.image_url && (
+                  <div className="mt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="text-xs"
+                    >
+                      <span className="material-symbols-outlined text-sm mr-1">upload</span>
+                      {uploading ? 'Uploading...' : 'Replace image'}
+                    </Button>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  id="product-image-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  className="sr-only"
                 />
               </div>
               <div>
