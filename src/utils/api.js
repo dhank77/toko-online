@@ -52,6 +52,18 @@ export const api = {
   deleteProduct: (id) => request(`/products/${id}`, {
     method: 'DELETE',
   }),
+  getVariants: (productId) => request(`/products/${productId}/variants`),
+  createVariant: (productId, variant) => request(`/products/${productId}/variants`, {
+    method: 'POST',
+    body: JSON.stringify(variant),
+  }),
+  updateVariant: (id, updates) => request(`/variants/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  }),
+  deleteVariant: (id) => request(`/variants/${id}`, {
+    method: 'DELETE',
+  }),
   getCategories: () => request('/categories'),
   createCategory: (category) => request('/categories', {
     method: 'POST',

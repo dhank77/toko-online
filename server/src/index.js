@@ -8,6 +8,7 @@ import categoryRoutes from './routes/categories.js'
 import orderRoutes from './routes/orders.js'
 import profileRoutes from './routes/profiles.js'
 import authRoutes from './routes/auth.js'
+import variantRoutes from './routes/variants.js'
 
 const app = express()
 
@@ -33,6 +34,7 @@ app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/orders', orderRoutes)
 app.use('/api/profiles', profileRoutes)
+app.use('/api', variantRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err)
