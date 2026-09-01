@@ -544,7 +544,7 @@ export default function AdminProducts() {
                     ))}
                   </div>
                 </div>
-                <form onSubmit={handleAddVariant} className="flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Input
                     value={variantForm.name}
                     onChange={(e) => setVariantForm((prev) => ({ ...prev, name: e.target.value }))}
@@ -567,10 +567,10 @@ export default function AdminProducts() {
                     placeholder="Stock"
                     className="w-24"
                   />
-                  <Button type="submit" disabled={savingVariant} size="sm" className="whitespace-nowrap">
+                  <Button type="button" onClick={handleAddVariant} disabled={savingVariant} size="sm" className="whitespace-nowrap">
                     {savingVariant ? 'Adding...' : 'Add Variant'}
                   </Button>
-                </form>
+                </div>
               </div>
             )}
 
