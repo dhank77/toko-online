@@ -1,10 +1,14 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { formatRupiah } from '../lib/utils'
+import { api } from '../utils/api'
+import { loadSnapScript } from '../utils/midtrans'
+import toast from 'react-hot-toast'
 
 export default function CartPage() {
   const {
@@ -17,22 +21,126 @@ export default function CartPage() {
     toggleSelect,
     toggleSelectAll,
     selectedCount,
+    selectedItems,
     selectedSubtotal,
     tax,
     total,
   } = useCart()
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const [paying, setPaying] = useState(false)
 
   const allSelected = items.length > 0 && items.every((item) => item.selected)
+
+  const handleCheckout = async () => {
+    if (!user) {
+      toast.error('Silakan login terlebih dahulu')
+      navigate('/login')
+      return
+    }
+    if (selectedCount === 0) {
+      toast.error('Pilih minimal 1 item untuk checkout')
+      return
+    }
+    if (total < 1000) {
+      toast.error('Total minimal Rp 1.000 untuk pembayaran Midtrans')
+      return
+    }
+
+    setPaying(true)
+    try {
+      // Pastikan Snap ter-load (fallback jika script di index.html belum siap)
+      try {
+        await loadSnapScript()
+      } catch (e) {
+        console.warn('Snap preload failed, retry via script tag in index.html:', e)
+      }
+
+      if (typeof window === 'undefined' || !window.snap) {
+        throw new Error('Midtrans Snap belum siap. Refresh halaman dan coba lagi.')
+      }
+
+      // Payload sesuai docs/midtrans_integration_guide.md
+      // Midtrans requires gross_amount == sum(item_details). Pajak 2% harus jadi line item terpisah.
+      const itemDetails = selectedItems.map((it) => ({
+        id: String(it.id).slice(0, 50),
+        price: Math.round(Number(it.price)),
+        quantity: Number(it.quantity),
+        name: String(it.name).slice(0, 50),
+      }))
+      // Tambahkan pajak sebagai item agar sum == gross_amount (fix: transaction_details.gross_amount is not equal to sum of item_details)
+      const taxRounded = Math.round(tax)
+      if (taxRounded > 0) {
+        itemDetails.push({
+          id: 'TAX-2PCT',
+          price: taxRounded,
+          quantity: 1,
+          name: 'Pajak 2%',
+        })
+      }
+
+      const payload = {
+        items: itemDetails,
+        gross_amount: Math.round(total),
+        customerDetails: {
+          firstName: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Pelanggan',
+          email: user?.email,
+          phone: user?.phone || '081234567890',
+        },
+      }
+
+      const data = await api.createTransaction(payload)
+
+      if (!data?.token) {
+        throw new Error(data?.error || 'Gagal mendapatkan token Midtrans')
+      }
+
+      // Redirect ke Midtrans Snap - popup
+      window.snap.pay(data.token, {
+        onSuccess: async function (result) {
+          toast.success('Pembayaran berhasil!')
+          console.log('Midtrans success:', result)
+          try {
+            await api.finishPayment(data.order_id)
+            toast.success('Pesanan disimpan ke riwayat')
+            // Bersihkan cart lokal: reload dari server (sudah dihapus di backend)
+            // Cart akan kosong untuk item yang dibeli; navigasi ke halaman sukses
+            navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=success`)
+          } catch (e) {
+            console.warn('finishPayment after onSuccess failed:', e)
+            navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=success`)
+          }
+        },
+        onPending: function (result) {
+          toast('Menunggu pembayaran Anda...', { icon: '⏳' })
+          console.log('Midtrans pending:', result)
+          navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=pending`)
+        },
+        onError: function (result) {
+          toast.error('Pembayaran gagal!')
+          console.log('Midtrans error:', result)
+          navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=failed`)
+        },
+        onClose: function () {
+          toast('Anda menutup popup pembayaran tanpa menyelesaikan transaksi', { icon: 'ℹ️' })
+        },
+      })
+    } catch (err) {
+      console.error('Checkout error:', err)
+      toast.error(err?.message || 'Gagal memproses pembayaran')
+    } finally {
+      setPaying(false)
+    }
+  }
 
   if (!user) {
     return (
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
+        <h1 className="text-2xl font-bold mb-8">Keranjang Belanja</h1>
         <div className="text-center py-16">
-          <p className="text-muted-foreground mb-4">Please login to view your shopping cart.</p>
+          <p className="text-muted-foreground mb-4">Silakan login untuk melihat keranjang belanja Anda.</p>
           <Link to="/login" className="text-primary font-medium hover:underline">
-            Go to Login
+            Masuk
           </Link>
         </div>
       </main>
@@ -42,7 +150,7 @@ export default function CartPage() {
   if (loading && items.length === 0) {
     return (
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
+        <h1 className="text-2xl font-bold mb-8">Keranjang Belanja</h1>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-background p-6 rounded-xl border border-border animate-pulse flex gap-4 items-center">
@@ -60,13 +168,13 @@ export default function CartPage() {
 
   return (
     <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-16">
-      <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
+        <h1 className="text-2xl font-bold mb-8">Keranjang Belanja</h1>
 
       {items.length === 0 ? (
         <div className="text-center py-16">
-          <p className="text-muted-foreground mb-4">Your cart is empty.</p>
+          <p className="text-muted-foreground mb-4">Keranjang Anda kosong.</p>
           <Link to="/" className="text-primary font-medium hover:underline">
-            Continue Shopping
+            Lanjut Belanja
           </Link>
         </div>
       ) : (
@@ -81,7 +189,7 @@ export default function CartPage() {
                   onCheckedChange={toggleSelectAll}
                 />
                 <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                  Select All ({items.length} items)
+                  Pilih Semua ({items.length} item)
                 </span>
               </label>
               <Button
@@ -90,7 +198,7 @@ export default function CartPage() {
                 onClick={removeSelected}
                 disabled={selectedCount === 0}
               >
-                Delete Selected
+                 Hapus yang Dipilih
               </Button>
             </div>
 
@@ -202,12 +310,24 @@ export default function CartPage() {
                 <span className="text-xl font-semibold">Total</span>
                 <span className="text-2xl font-bold text-primary">{formatRupiah(total)}</span>
               </div>
-              <Button className="w-full py-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4">
-                <span>Lanjut ke Pembayaran</span>
-                <span className="material-symbols-outlined" data-icon="arrow_forward">
-                  arrow_forward
-                </span>
+              <Button
+                onClick={handleCheckout}
+                disabled={paying || selectedCount === 0}
+                className="w-full py-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-60"
+              >
+                {paying ? (
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                ) : null}
+                <span>{paying ? 'Memproses...' : 'Lanjut ke Pembayaran'}</span>
+                {!paying && (
+                  <span className="material-symbols-outlined" data-icon="arrow_forward">
+                    arrow_forward
+                  </span>
+                )}
               </Button>
+              {selectedCount === 0 && (
+                <p className="text-xs text-amber-600 text-center mt-2">Pilih item terlebih dahulu</p>
+              )}
               {/* Payment Methods */}
               <div className="mt-8">
                 <p className="text-xs text-muted-foreground text-center uppercase tracking-wider mb-4">

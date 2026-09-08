@@ -55,10 +55,10 @@ export default function TrendingProducts() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-primary">Trending Now</h2>
-            <p className="text-muted-foreground text-sm">
-              Selected by our community of professional shoppers.
-            </p>
+             <h2 className="text-2xl font-bold text-primary">Sedang Tren</h2>
+             <p className="text-muted-foreground text-sm">
+               Dipilih oleh komunitas pembeli profesional kami.
+             </p>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="icon" className="rounded-full">
@@ -116,22 +116,22 @@ export default function TrendingProducts() {
                   <Button
                     onClick={async () => {
                       if (!isAuthed) {
-                        toast.error('Please login to add items to your cart')
+                        toast.error('Silakan login untuk menambahkan item ke keranjang')
                         navigate('/login')
                         return
                       }
                       try {
                         await addItem({ productId: product.id, variantId: null, quantity: 1, name: product.name, image: product.image_url, price: product.price })
-                        toast.success(`${product.name} added to cart`)
+                         toast.success(`${product.name} ditambahkan ke keranjang`)
                       } catch (err) {
                         console.error('Add to cart failed:', err)
-                        toast.error(err?.message || 'Failed to add to cart, please try again')
+                         toast.error(err?.message || 'Gagal menambahkan ke keranjang, coba lagi')
                       }
                     }}
                     className="w-full border border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                     variant="outline"
                   >
-                    Add to Cart
+                     Tambah ke Keranjang
                   </Button>
                 </div>
               </div>

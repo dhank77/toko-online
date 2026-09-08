@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
       }
     })
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch products' })
+    res.status(500).json({ error: 'Gagal mengambil produk' })
   }
 })
 
@@ -111,10 +111,10 @@ router.get('/slug/:slug', async (req, res) => {
       .eq('slug', req.params.slug)
       .single()
 
-    if (error) return res.status(404).json({ error: 'Product not found' })
+    if (error) return res.status(404).json({ error: 'Produk tidak ditemukan' })
     res.json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch product' })
+    res.status(500).json({ error: 'Gagal mengambil produk' })
   }
 })
 
@@ -132,7 +132,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.status(201).json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create product' })
+    res.status(500).json({ error: 'Gagal membuat produk' })
   }
 })
 
@@ -152,7 +152,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update product' })
+    res.status(500).json({ error: 'Gagal memperbarui produk' })
   }
 })
 
@@ -168,7 +168,7 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.status(204).send()
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete product' })
+    res.status(500).json({ error: 'Gagal menghapus produk' })
   }
 })
 

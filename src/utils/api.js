@@ -126,4 +126,16 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ email, password, full_name }),
   }),
+  createTransaction: (payload) => request('/payment/create-transaction', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  }),
+  getTransactionStatus: (orderId) => request(`/payment/status/${orderId}`),
+  getMyTransactions: () => request('/payment/my-transactions'),
+  finishPayment: (order_id) => request('/payment/finish', {
+    method: 'POST',
+    body: JSON.stringify({ order_id }),
+  }),
+  getMyOrders: () => request('/orders/my'),
+  getMyOrder: (orderId) => request(`/orders/my/${orderId}`),
 }

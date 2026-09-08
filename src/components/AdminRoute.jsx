@@ -16,7 +16,7 @@ export default function AdminRoute({ children }) {
   if (loading || checkingAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-        <span className="text-sm">Loading...</span>
+        <span className="text-sm">Memuat...</span>
       </div>
     )
   }
@@ -30,7 +30,7 @@ export default function AdminRoute({ children }) {
       <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-destructive mb-2">403</h1>
-          <p className="text-sm text-muted-foreground">You don't have permission to access this page.</p>
+           <p className="text-sm text-muted-foreground">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
         </div>
       </div>
     )

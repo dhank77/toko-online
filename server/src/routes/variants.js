@@ -5,8 +5,7 @@ import { requireAdmin } from '../middleware/admin.js'
 
 const router = Router()
 
-router.use(authenticate, requireAdmin)
-
+// Public: read variants for a product (no auth required)
 router.get('/products/:productId/variants', async (req, res) => {
   try {
     const { data, error } = await supabaseAdmin
@@ -22,7 +21,7 @@ router.get('/products/:productId/variants', async (req, res) => {
   }
 })
 
-router.post('/products/:productId/variants', async (req, res) => {
+router.post('/products/:productId/variants', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, price_adjustment, stock } = req.body
 
@@ -39,7 +38,7 @@ router.post('/products/:productId/variants', async (req, res) => {
   }
 })
 
-router.put('/variants/:id', async (req, res) => {
+router.put('/variants/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params
     const updates = req.body
@@ -58,7 +57,7 @@ router.put('/variants/:id', async (req, res) => {
   }
 })
 
-router.delete('/variants/:id', async (req, res) => {
+router.delete('/variants/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params
     const { error } = await supabaseAdmin

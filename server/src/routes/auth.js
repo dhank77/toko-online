@@ -19,7 +19,7 @@ router.post('/login', async (req, res) => {
       session: data.session,
     })
   } catch (err) {
-    res.status(500).json({ error: 'Login failed' })
+    res.status(500).json({ error: 'Login gagal' })
   }
 })
 
@@ -42,7 +42,7 @@ router.post('/signup', async (req, res) => {
       session: data.session,
     })
   } catch (err) {
-    res.status(500).json({ error: 'Signup failed' })
+    res.status(500).json({ error: 'Pendaftaran gagal' })
   }
 })
 
@@ -58,7 +58,7 @@ router.post('/refresh', async (req, res) => {
     if (error) return res.status(401).json({ error: error.message })
     res.json({ session: data.session })
   } catch (err) {
-    res.status(500).json({ error: 'Refresh failed' })
+    res.status(500).json({ error: 'Penyegaran sesi gagal' })
   }
 })
 

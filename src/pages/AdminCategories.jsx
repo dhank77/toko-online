@@ -76,10 +76,10 @@ export default function AdminCategories() {
     try {
       if (modalMode === 'edit' && form.id) {
         await api.updateCategory(form.id, form)
-        toast.success('Category updated successfully')
+        toast.success('Kategori berhasil diperbarui')
       } else {
         await api.createCategory(form)
-        toast.success('Category created successfully')
+        toast.success('Kategori berhasil dibuat')
       }
       await loadCategories()
       setForm({ ...emptyCategory })
@@ -97,7 +97,7 @@ export default function AdminCategories() {
     setError('')
     try {
       await api.deleteCategory(deleteId)
-      toast.success('Category deleted successfully')
+      toast.success('Kategori berhasil dihapus')
       await loadCategories()
       setDeleteId(null)
     } catch (err) {
@@ -117,15 +117,15 @@ export default function AdminCategories() {
 
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Master Data</h1>
-          <p className="text-sm text-muted-foreground">Manage categories for your store catalog.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Data Master</h1>
+          <p className="text-sm text-muted-foreground">Kelola kategori untuk katalog toko Anda.</p>
         </div>
         <Button
           onClick={openCreate}
           className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <span className="material-symbols-outlined text-lg">add</span>
-          New Category
+           Kategori Baru
         </Button>
       </div>
 
@@ -135,10 +135,10 @@ export default function AdminCategories() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="text-xs uppercase tracking-wider">Name</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Slug</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Icon</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider text-right">Actions</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Nama</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Slug</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Ikon</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-border">
@@ -153,9 +153,9 @@ export default function AdminCategories() {
                   ))
                 ) : categories.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan="4" className="px-6 py-12 text-center text-sm text-muted-foreground">
-                      No categories found. Create your first category to get started.
-                    </TableCell>
+                     <TableCell colSpan="4" className="px-6 py-12 text-center text-sm text-muted-foreground">
+                       Tidak ada kategori ditemukan. Buat kategori pertama Anda untuk memulai.
+                     </TableCell>
                   </TableRow>
                 ) : (
                   categories.map((category) => (
@@ -190,7 +190,7 @@ export default function AdminCategories() {
                             variant="ghost"
                             size="icon"
                             className="text-muted-foreground hover:text-destructive"
-                            title="Delete"
+                             title="Hapus"
                           >
                             <span className="material-symbols-outlined">delete</span>
                           </Button>
@@ -209,16 +209,16 @@ export default function AdminCategories() {
       <Dialog open={!!modalMode} onOpenChange={(open) => { if (!open) { setModalMode(null); setForm({ ...emptyCategory }) } }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{modalMode === 'edit' ? 'Edit Category' : 'New Category'}</DialogTitle>
+             <DialogTitle>{modalMode === 'edit' ? 'Edit Kategori' : 'Kategori Baru'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="name">Name</Label>
+               <Label htmlFor="name">Nama</Label>
               <Input
                 value={form.name}
                 onChange={handleNameChange}
                 required
-                placeholder="Category name"
+                 placeholder="Nama kategori"
               />
             </div>
             <div>
@@ -227,11 +227,11 @@ export default function AdminCategories() {
                 value={form.slug}
                 onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
                 required
-                placeholder="category-slug"
+                 placeholder="slug-kategori"
               />
             </div>
             <div>
-              <Label>Icon</Label>
+               <Label>Ikon</Label>
               <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-64 overflow-y-auto p-3 bg-muted/50 border border-border rounded-lg mt-2">
                 {CATEGORY_ICONS.map((icon) => {
                   const selected = form.icon === icon
@@ -251,7 +251,7 @@ export default function AdminCategories() {
               {form.icon && (
                 <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                   <span className="material-symbols-outlined">{form.icon}</span>
-                  <span>Selected: {form.icon}</span>
+                   <span>Dipilih: {form.icon}</span>
                 </div>
               )}
             </div>
@@ -261,14 +261,14 @@ export default function AdminCategories() {
                 variant="outline"
                 onClick={() => { setModalMode(null); setForm({ ...emptyCategory }) }}
               >
-                Cancel
+                 Batal
               </Button>
               <Button
                 type="submit"
                 disabled={saving}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                {saving ? 'Saving...' : modalMode === 'edit' ? 'Update' : 'Create'}
+                 {saving ? 'Menyimpan...' : modalMode === 'edit' ? 'Perbarui' : 'Buat'}
               </Button>
             </DialogFooter>
           </form>
@@ -279,12 +279,12 @@ export default function AdminCategories() {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null) }}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete Category</DialogTitle>
+                   <DialogTitle>Hapus Kategori</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              Are you sure you want to delete this category? This action cannot be undone.
-            </p>
+                   <p className="text-sm text-muted-foreground">
+                     Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan.
+                   </p>
           </div>
           <DialogFooter>
             <Button
@@ -298,7 +298,7 @@ export default function AdminCategories() {
               disabled={saving}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {saving ? 'Deleting...' : 'Delete'}
+               {saving ? 'Menghapus...' : 'Hapus'}
             </Button>
           </DialogFooter>
         </DialogContent>

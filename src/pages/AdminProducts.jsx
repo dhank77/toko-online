@@ -137,7 +137,7 @@ export default function AdminProducts() {
           category_id: form.category_id || null,
           in_stock: form.in_stock,
         })
-        toast.success('Product updated successfully')
+        toast.success('Produk berhasil diperbarui')
       } else {
         await api.createProduct({
           name: form.name,
@@ -149,7 +149,7 @@ export default function AdminProducts() {
           category_id: form.category_id || null,
           in_stock: form.in_stock,
         })
-        toast.success('Product created successfully')
+        toast.success('Produk berhasil dibuat')
       }
       await loadProducts(page)
       setForm({ ...emptyProduct })
@@ -168,7 +168,7 @@ export default function AdminProducts() {
     setError('')
     try {
       await api.deleteProduct(deleteId)
-      toast.success('Product deleted successfully')
+      toast.success('Produk berhasil dihapus')
       await loadProducts()
       setDeleteId(null)
     } catch (err) {
@@ -191,7 +191,7 @@ export default function AdminProducts() {
       })
       setVariants((prev) => [...prev, created])
       setVariantForm({ ...emptyVariant })
-      toast.success('Variant added')
+      toast.success('Varian berhasil ditambahkan')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -204,7 +204,7 @@ export default function AdminProducts() {
     try {
       const updated = await api.updateVariant(id, updates)
       setVariants((prev) => prev.map((v) => (v.id === id ? updated : v)))
-      toast.success('Variant updated')
+      toast.success('Varian berhasil diperbarui')
     } catch (err) {
       setError(err.message)
     }
@@ -216,7 +216,7 @@ export default function AdminProducts() {
     try {
       await api.deleteVariant(deleteVariantId)
       setVariants((prev) => prev.filter((v) => v.id !== deleteVariantId))
-      toast.success('Variant deleted')
+      toast.success('Varian berhasil dihapus')
       setDeleteVariantId(null)
     } catch (err) {
       setError(err.message)
@@ -228,12 +228,12 @@ export default function AdminProducts() {
     if (!file) return
 
     if (!file.type.startsWith('image/')) {
-      toast.error('Please select an image file')
+      toast.error('Silakan pilih file gambar')
       return
     }
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image must be less than 2MB')
+      toast.error('Gambar harus kurang dari 2MB')
       return
     }
 
@@ -255,9 +255,9 @@ export default function AdminProducts() {
         .getPublicUrl(filePath)
 
       setForm((prev) => ({ ...prev, image_url: urlData.publicUrl }))
-      toast.success('Image uploaded')
+      toast.success('Gambar berhasil diunggah')
     } catch (err) {
-      setError(err.message || 'Failed to upload image')
+      setError(err.message || 'Gagal mengunggah gambar')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -279,15 +279,15 @@ export default function AdminProducts() {
 
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Product Management</h1>
-          <p className="text-sm text-muted-foreground">Create and manage products and their variants.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Manajemen Produk</h1>
+          <p className="text-sm text-muted-foreground">Buat dan kelola produk serta variannya.</p>
         </div>
         <Button
           onClick={openCreate}
           className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <span className="material-symbols-outlined text-lg">add</span>
-          New Product
+           Produk Baru
         </Button>
       </div>
 
@@ -295,7 +295,7 @@ export default function AdminProducts() {
         <div className="relative flex-1">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">search</span>
           <Input
-            placeholder="Search products..."
+             placeholder="Cari produk..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1) }}
             className="pl-10"
@@ -306,7 +306,7 @@ export default function AdminProducts() {
           onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
           className="px-3 py-2 border rounded-md bg-background text-sm"
         >
-          <option value="">All Categories</option>
+           <option value="">Semua Kategori</option>
           {categories.map((cat) => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
@@ -316,19 +316,19 @@ export default function AdminProducts() {
           onChange={(e) => { setSortField(e.target.value); setPage(1) }}
           className="px-3 py-2 border rounded-md bg-background text-sm"
         >
-          <option value="created_at">Sort: Date</option>
-          <option value="name">Sort: Name</option>
-          <option value="price">Sort: Price</option>
-          <option value="rating">Sort: Rating</option>
-          <option value="review_count">Sort: Reviews</option>
+           <option value="created_at">Urut: Tanggal</option>
+           <option value="name">Urut: Nama</option>
+           <option value="price">Urut: Harga</option>
+           <option value="rating">Urut: Rating</option>
+           <option value="review_count">Urut: Ulasan</option>
         </select>
         <select
           value={sortOrder}
           onChange={(e) => { setSortOrder(e.target.value); setPage(1) }}
           className="px-3 py-2 border rounded-md bg-background text-sm"
         >
-          <option value="desc">Desc</option>
-          <option value="asc">Asc</option>
+           <option value="desc">Menurun</option>
+           <option value="asc">Meningkat</option>
         </select>
       </div>
 
@@ -338,13 +338,13 @@ export default function AdminProducts() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="text-xs uppercase tracking-wider w-12">Image</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Name</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Slug</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Price</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Category</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">In Stock</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider text-right">Actions</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider w-12">Gambar</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Nama</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Slug</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Harga</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Kategori</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider">Stok</TableHead>
+                   <TableHead className="text-xs uppercase tracking-wider text-right">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-border">
@@ -362,9 +362,9 @@ export default function AdminProducts() {
                   ))
                 ) : products.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan="7" className="px-6 py-12 text-center text-sm text-muted-foreground">
-                      No products found. Create your first product to get started.
-                    </TableCell>
+                     <TableCell colSpan="7" className="px-6 py-12 text-center text-sm text-muted-foreground">
+                       Tidak ada produk ditemukan. Buat produk pertama Anda untuk memulai.
+                     </TableCell>
                   </TableRow>
                 ) : (
                   products.map((product) => (
@@ -387,9 +387,9 @@ export default function AdminProducts() {
                       <TableCell className="text-sm text-muted-foreground">${Number(product.price).toFixed(2)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{product.categories?.name || '-'}</TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${product.in_stock ? 'bg-primary/10 text-primary border-primary/20' : 'bg-destructive/10 text-destructive border-destructive/20'}`}>
-                          {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                        </span>
+                           <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${product.in_stock ? 'bg-primary/10 text-primary border-primary/20' : 'bg-destructive/10 text-destructive border-destructive/20'}`}>
+                           {product.in_stock ? 'Stok Tersedia' : 'Stok Habis'}
+                         </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-1">
@@ -407,7 +407,7 @@ export default function AdminProducts() {
                             variant="ghost"
                             size="icon"
                             className="text-muted-foreground hover:text-destructive"
-                            title="Delete"
+                             title="Hapus"
                           >
                             <span className="material-symbols-outlined">delete</span>
                           </Button>
@@ -431,10 +431,10 @@ export default function AdminProducts() {
             disabled={page === 1}
           >
             <span className="material-symbols-outlined text-sm">chevron_left</span>
-            Previous
+             Sebelumnya
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {page} of {totalPages}
+             Halaman {page} dari {totalPages}
           </span>
           <Button
             variant="outline"
@@ -442,7 +442,7 @@ export default function AdminProducts() {
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
           >
-            Next
+             Selanjutnya
             <span className="material-symbols-outlined text-sm">chevron_right</span>
           </Button>
         </div>
@@ -451,18 +451,18 @@ export default function AdminProducts() {
       <Dialog open={!!modalMode} onOpenChange={(open) => { if (!open) { setModalMode(null); setForm({ ...emptyProduct }); setVariants([]) } }}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>{modalMode === 'edit' ? 'Edit Product' : 'New Product'}</DialogTitle>
+             <DialogTitle>{modalMode === 'edit' ? 'Edit Produk' : 'Produk Baru'}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">Nama</Label>
                 <Input
                   id="name"
                   value={form.name}
                   onChange={handleNameChange}
                   required
-                  placeholder="Product name"
+                  placeholder="Nama produk"
                 />
               </div>
               <div>
@@ -472,21 +472,21 @@ export default function AdminProducts() {
                   value={form.slug}
                   onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
                   required
-                  placeholder="product-slug"
+                  placeholder="slug-produk"
                 />
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Deskripsi</Label>
                 <Textarea
                   id="description"
                   value={form.description}
                   onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Product description"
+                  placeholder="Deskripsi produk"
                   rows={3}
                 />
               </div>
               <div>
-                <Label htmlFor="price">Price</Label>
+                <Label htmlFor="price">Harga</Label>
                 <Input
                   id="price"
                   type="number"
@@ -499,7 +499,7 @@ export default function AdminProducts() {
                 />
               </div>
               <div>
-                <Label>Product Image</Label>
+                <Label>Gambar Produk</Label>
                 <div className="mt-1.5 space-y-2">
                   {form.image_url ? (
                     <div className="relative group w-full max-w-[200px]">
@@ -525,7 +525,7 @@ export default function AdminProducts() {
                     >
                       <span className="material-symbols-outlined text-muted-foreground mb-1">image</span>
                       <span className="text-xs text-muted-foreground">
-                        {uploading ? 'Uploading...' : 'Click to upload'}
+                         {uploading ? 'Mengunggah...' : 'Klik untuk mengunggah'}
                       </span>
                     </label>
                   )}
@@ -541,7 +541,7 @@ export default function AdminProducts() {
                       className="text-xs"
                     >
                       <span className="material-symbols-outlined text-sm mr-1">upload</span>
-                      {uploading ? 'Uploading...' : 'Replace image'}
+                       {uploading ? 'Mengunggah...' : 'Ganti gambar'}
                     </Button>
                   </div>
                 )}
@@ -556,23 +556,23 @@ export default function AdminProducts() {
                 />
               </div>
               <div>
-                <Label htmlFor="badge">Badge</Label>
+                 <Label htmlFor="badge">Lencana</Label>
                 <Input
                   id="badge"
                   value={form.badge}
                   onChange={(e) => setForm((prev) => ({ ...prev, badge: e.target.value }))}
-                  placeholder="e.g. New, Sale"
+                   placeholder="misal: Baru, Diskon"
                 />
               </div>
               <div>
-                <Label htmlFor="category_id">Category</Label>
+                 <Label htmlFor="category_id">Kategori</Label>
                 <select
                   id="category_id"
                   value={form.category_id}
                   onChange={(e) => setForm((prev) => ({ ...prev, category_id: e.target.value }))}
                   className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                 >
-                  <option value="">No category</option>
+                   <option value="">Tidak ada kategori</option>
                   {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
@@ -588,17 +588,17 @@ export default function AdminProducts() {
                   onChange={(e) => setForm((prev) => ({ ...prev, in_stock: e.target.checked }))}
                   className="h-4 w-4 rounded border-border"
                 />
-                <Label htmlFor="in_stock" className="text-sm font-medium text-foreground">In Stock</Label>
+                 <Label htmlFor="in_stock" className="text-sm font-medium text-foreground">Stok Tersedia</Label>
               </div>
             </div>
 
             {modalMode === 'edit' && (
               <div className="space-y-4 border-t border-border pt-4">
                 <div>
-                  <h3 className="text-sm font-medium text-foreground mb-2">Variants</h3>
+                   <h3 className="text-sm font-medium text-foreground mb-2">Varian</h3>
                   <div className="space-y-2">
                     {variants.length === 0 && (
-                      <p className="text-xs text-muted-foreground">No variants yet.</p>
+                       <p className="text-xs text-muted-foreground">Belum ada varian.</p>
                     )}
                     {variants.map((variant) => (
                       <div key={variant.id} className="flex items-center gap-2">
@@ -606,7 +606,7 @@ export default function AdminProducts() {
                           value={variant.name}
                           onChange={(e) => handleUpdateVariant(variant.id, { name: e.target.value })}
                           className="flex-1"
-                          placeholder="Variant name"
+                           placeholder="Nama varian"
                         />
                         <Input
                           type="number"
@@ -614,14 +614,14 @@ export default function AdminProducts() {
                           value={variant.price_adjustment}
                           onChange={(e) => handleUpdateVariant(variant.id, { price_adjustment: Number(e.target.value) })}
                           className="w-28"
-                          placeholder="Adj."
+                           placeholder="Penyesuaian"
                         />
                         <Input
                           type="number"
                           value={variant.stock}
                           onChange={(e) => handleUpdateVariant(variant.id, { stock: Number(e.target.value) })}
                           className="w-24"
-                          placeholder="Stock"
+                           placeholder="Stok"
                         />
                         <Button
                           type="button"
@@ -640,7 +640,7 @@ export default function AdminProducts() {
                   <Input
                     value={variantForm.name}
                     onChange={(e) => setVariantForm((prev) => ({ ...prev, name: e.target.value }))}
-                    placeholder="New variant name"
+                     placeholder="Nama varian baru"
                     className="flex-1"
                   />
                   <Input
@@ -648,18 +648,18 @@ export default function AdminProducts() {
                     step="0.01"
                     value={variantForm.price_adjustment}
                     onChange={(e) => setVariantForm((prev) => ({ ...prev, price_adjustment: e.target.value }))}
-                    placeholder="Adj."
+                     placeholder="Penyesuaian"
                     className="w-28"
                   />
                   <Input
                     type="number"
                     value={variantForm.stock}
                     onChange={(e) => setVariantForm((prev) => ({ ...prev, stock: e.target.value }))}
-                    placeholder="Stock"
+                     placeholder="Stok"
                     className="w-24"
                   />
                   <Button type="button" onClick={handleAddVariant} disabled={savingVariant} size="sm" className="whitespace-nowrap">
-                    {savingVariant ? 'Adding...' : 'Add Variant'}
+                     {savingVariant ? 'Menambahkan...' : 'Tambah Varian'}
                   </Button>
                 </div>
               </div>
@@ -668,19 +668,19 @@ export default function AdminProducts() {
             <Dialog open={!!deleteVariantId} onOpenChange={(open) => { if (!open) setDeleteVariantId(null) }}>
               <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
-                  <DialogTitle>Delete Variant</DialogTitle>
+                   <DialogTitle>Hapus Varian</DialogTitle>
                 </DialogHeader>
                 <div className="py-4">
-                  <p className="text-sm text-muted-foreground">
-                    Are you sure you want to delete this variant? This action cannot be undone.
-                  </p>
+                   <p className="text-sm text-muted-foreground">
+                     Apakah Anda yakin ingin menghapus varian ini? Tindakan ini tidak dapat dibatalkan.
+                   </p>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setDeleteVariantId(null)}>
-                    Cancel
+                     Batal
                   </Button>
                   <Button onClick={handleDeleteVariant} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Delete
+                     Hapus
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -692,14 +692,14 @@ export default function AdminProducts() {
                 variant="outline"
                 onClick={() => { setModalMode(null); setForm({ ...emptyProduct }); setVariants([]) }}
               >
-                Cancel
+                 Batal
               </Button>
               <Button
                 type="submit"
                 disabled={saving}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                {saving ? 'Saving...' : modalMode === 'edit' ? 'Update' : 'Create'}
+                 {saving ? 'Menyimpan...' : modalMode === 'edit' ? 'Perbarui' : 'Buat'}
               </Button>
             </DialogFooter>
           </form>
@@ -709,19 +709,19 @@ export default function AdminProducts() {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null) }}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
+                   <DialogTitle>Hapus Produk</DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              Are you sure you want to delete this product? This action cannot be undone.
-            </p>
+                   <p className="text-sm text-muted-foreground">
+                     Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.
+                   </p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>
-              Cancel
+               Batal
             </Button>
             <Button onClick={handleDelete} disabled={saving} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {saving ? 'Deleting...' : 'Delete'}
+               {saving ? 'Menghapus...' : 'Hapus'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch categories' })
+    res.status(500).json({ error: 'Gagal mengambil kategori' })
   }
 })
 
@@ -34,7 +34,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.status(201).json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create category' })
+    res.status(500).json({ error: 'Gagal membuat kategori' })
   }
 })
 
@@ -54,7 +54,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update category' })
+    res.status(500).json({ error: 'Gagal memperbarui kategori' })
   }
 })
 
@@ -70,7 +70,7 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.status(204).send()
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete category' })
+    res.status(500).json({ error: 'Gagal menghapus kategori' })
   }
 })
 

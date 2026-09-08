@@ -10,10 +10,11 @@ import profileRoutes from './routes/profiles.js'
 import authRoutes from './routes/auth.js'
 import variantRoutes from './routes/variants.js'
 import cartRoutes from './routes/cart.js'
+import paymentRoutes from './routes/payment.js'
 
 const app = express()
 
-app.use(helmet())
+app.use(helmet({ contentSecurityPolicy: false }))
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }))
 app.use(cookieParser())
 app.use(express.json({ limit: '10kb' }))
@@ -21,7 +22,7 @@ app.use(express.json({ limit: '10kb' }))
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
-  message: { error: 'Too many requests, please try again later.' },
+  message: { error: 'Terlalu banyak permintaan, coba lagi nanti.' },
   standardHeaders: true,
   legacyHeaders: false,
 })
@@ -37,10 +38,11 @@ app.use('/api/orders', orderRoutes)
 app.use('/api/profiles', profileRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api', variantRoutes)
+app.use('/api/payment', paymentRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err)
-  res.status(err.status || 500).json({ error: err.message || 'Internal server error' })
+  res.status(err.status || 500).json({ error: err.message || 'Kesalahan server internal' })
 })
 
 const PORT = process.env.PORT || 3001

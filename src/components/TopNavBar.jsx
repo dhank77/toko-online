@@ -42,13 +42,13 @@ export default function TopNavBar({ cartCount = 0 }) {
           </Link>
           <div className="hidden md:flex items-center gap-6">
             <Link className="text-sm font-semibold text-primary border-b-2 border-primary pb-1" to="/">
-              Home
+               Beranda
             </Link>
             <a className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200" href="#">
-              Categories
+               Kategori
             </a>
             <a className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200" href="#">
-              Help Center
+               Pusat Bantuan
             </a>
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function TopNavBar({ cartCount = 0 }) {
             </span>
             <input
               className="w-full bg-muted/50 border border-border rounded-full py-2.5 pl-12 pr-4 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-              placeholder="Search for 'Sustainable Home Decor'..."
+               placeholder="Cari 'Dekorasi Rumah Berkelanjutan'..."
               type="text"
             />
           </div>
@@ -74,10 +74,15 @@ export default function TopNavBar({ cartCount = 0 }) {
             <span className="material-symbols-outlined">notifications</span>
             <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full"></span>
           </Button>
+          <Button asChild variant="ghost" size="icon" className="hidden sm:flex text-muted-foreground hover:text-primary" title="Pesanan Saya">
+            <Link to="/orders">
+              <span className="material-symbols-outlined">receipt_long</span>
+            </Link>
+          </Button>
           <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Link to="/cart">
               <span className="material-symbols-outlined">shopping_cart</span>
-              <span className="font-medium">Cart ({cartCount})</span>
+               <span className="font-medium">Keranjang ({cartCount})</span>
             </Link>
           </Button>
           {user ? (
@@ -94,9 +99,21 @@ export default function TopNavBar({ cartCount = 0 }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to="/orders" className="flex items-center w-full">
+                    <span className="material-symbols-outlined mr-2">receipt_long</span>
+                    Pesanan Saya
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/cart" className="flex items-center w-full">
+                    <span className="material-symbols-outlined mr-2">shopping_cart</span>
+                    Keranjang
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout}>
                   <span className="material-symbols-outlined mr-2">logout</span>
-                  Logout
+                   Keluar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

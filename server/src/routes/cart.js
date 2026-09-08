@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
     const data = await fetchCart(req.user.id)
     res.json(data)
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch cart' })
+    res.status(500).json({ error: 'Gagal mengambil keranjang' })
   }
 })
 
@@ -45,9 +45,9 @@ router.get('/', async (req, res) => {
 router.put('/', async (req, res) => {
   try {
     const { product_id, variant_id = null, quantity = 1 } = req.body
-    if (!product_id) return res.status(400).json({ error: 'product_id is required' })
+    if (!product_id) return res.status(400).json({ error: 'product_id wajib diisi' })
     if (!Number.isInteger(quantity) || quantity < 1) {
-      return res.status(400).json({ error: 'quantity must be a positive integer' })
+      return res.status(400).json({ error: 'quantity harus bilangan bulat positif' })
     }
 
     let query = supabaseAdmin
@@ -87,7 +87,7 @@ router.put('/', async (req, res) => {
 
     res.json({ item: result })
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update cart' })
+    res.status(500).json({ error: 'Gagal memperbarui keranjang' })
   }
 })
 
@@ -96,7 +96,7 @@ router.patch('/select/all', async (req, res) => {
   try {
     const { selected } = req.body
     if (typeof selected !== 'boolean') {
-      return res.status(400).json({ error: 'selected must be a boolean' })
+      return res.status(400).json({ error: 'selected harus berupa boolean' })
     }
 
     const { error } = await supabaseAdmin
@@ -107,7 +107,7 @@ router.patch('/select/all', async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.json({ ok: true })
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update cart selection' })
+    res.status(500).json({ error: 'Gagal memperbarui pilihan keranjang' })
   }
 })
 
@@ -119,7 +119,7 @@ router.patch('/:id', async (req, res) => {
     const updates = {}
     if (quantity !== undefined) {
       if (!Number.isInteger(quantity) || quantity < 1) {
-        return res.status(400).json({ error: 'quantity must be a positive integer' })
+      return res.status(400).json({ error: 'quantity harus bilangan bulat positif' })
       }
       updates.quantity = quantity
     }
@@ -136,7 +136,7 @@ router.patch('/:id', async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.json({ item: data })
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update cart item' })
+    res.status(500).json({ error: 'Gagal memperbarui item keranjang' })
   }
 })
 
@@ -163,7 +163,7 @@ router.delete('/selected/all', async (req, res) => {
 
     res.json({ ids })
   } catch (err) {
-    res.status(500).json({ error: 'Failed to remove selected items' })
+    res.status(500).json({ error: 'Gagal menghapus item yang dipilih' })
   }
 })
 
@@ -180,7 +180,7 @@ router.delete('/:id', async (req, res) => {
     if (error) return res.status(400).json({ error: error.message })
     res.json({ id })
   } catch (err) {
-    res.status(500).json({ error: 'Failed to remove cart item' })
+    res.status(500).json({ error: 'Gagal menghapus item keranjang' })
   }
 })
 

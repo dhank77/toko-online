@@ -10,7 +10,7 @@ function normalizeItem(raw) {
     id: raw.id,
     productId: raw.product_id,
     variantId: raw.variant_id,
-    name: p?.name || 'Unknown Product',
+    name: p?.name || 'Produk Tidak Diketahui',
     price: Number(p?.price || 0) + Number(raw.product_variants?.price_adjustment || 0),
     image: p?.image_url || null,
     variant: raw.product_variants?.name || null,
@@ -76,7 +76,7 @@ export function CartProvider({ children }) {
   const addItem = useCallback(
     async (product) => {
       if (!isAuthed) {
-        throw new Error('Please login to add items to your cart')
+        throw new Error('Silakan login untuk menambahkan item ke keranjang')
       }
       const optimistic = makeOptimisticItem(product)
       const seq = ++seqRef.current
@@ -238,6 +238,7 @@ export function CartProvider({ children }) {
     selectedSubtotal,
     tax,
     total,
+    loadCart,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

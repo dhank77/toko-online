@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { getProductBySlug } from '../lib/supabase'
 import { api } from '../utils/api'
 import { useCart } from '../context/CartContext'
@@ -10,12 +10,16 @@ import { formatRupiah } from '../lib/utils'
 
 export default function ProductDetail() {
   const { slug } = useParams()
+  const navigate = useNavigate()
   const [product, setProduct] = useState(null)
   const [variants, setVariants] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedImage, setSelectedImage] = useState(0)
   const [selectedVariant, setSelectedVariant] = useState(null)
+  const [quantity, setQuantity] = useState(1)
+  const [isAdding, setIsAdding] = useState(false)
+  const [isBuying, setIsBuying] = useState(false)
   const { addItem, isAuthed } = useCart()
 
   useEffect(() => {
@@ -34,10 +38,18 @@ export default function ProductDetail() {
         setLoading(false)
       })
       .catch((err) => {
-        setError(err.message || 'Product not found')
+        setError(err.message || 'Produk tidak ditemukan')
         setLoading(false)
       })
   }, [slug])
+
+  const currentPrice = product
+    ? selectedVariant
+      ? Number(product.price) + Number(selectedVariant.price_adjustment || 0)
+      : Number(product.price)
+    : 0
+
+  const images = product?.image_url ? [product.image_url] : []
 
   const renderStars = (rating) => {
     const stars = []
@@ -66,24 +78,57 @@ export default function ProductDetail() {
     return stars
   }
 
-  const handleAddToCart = async () => {
+  const ensureAuthed = () => {
     if (!isAuthed) {
-      toast.error('Please login to add items to your cart')
-      return
+      toast.error('Silakan login terlebih dahulu')
+      navigate('/login')
+      return false
     }
+    return true
+  }
+
+  const handleAddToCart = async () => {
+    if (!ensureAuthed()) return
+    if (!product) return
+    setIsAdding(true)
     try {
       await addItem({
         productId: product.id,
         variantId: selectedVariant?.id || null,
         variant: selectedVariant?.name || null,
-        quantity: 1,
+        quantity,
         name: product.name,
         image: product.image_url,
         price: currentPrice,
       })
-      toast.success(`${product.name} added to cart`)
+      toast.success(`${product.name} ditambahkan ke keranjang`)
     } catch (err) {
-      toast.error(err?.message || 'Failed to add to cart')
+      toast.error(err?.message || 'Gagal menambahkan ke keranjang')
+    } finally {
+      setIsAdding(false)
+    }
+  }
+
+  const handleBuyNow = async () => {
+    if (!ensureAuthed()) return
+    if (!product) return
+    setIsBuying(true)
+    try {
+      await addItem({
+        productId: product.id,
+        variantId: selectedVariant?.id || null,
+        variant: selectedVariant?.name || null,
+        quantity,
+        name: product.name,
+        image: product.image_url,
+        price: currentPrice,
+      })
+      toast.success(`${product.name} ditambahkan — lanjut ke keranjang`)
+      navigate('/cart')
+    } catch (err) {
+      toast.error(err?.message || 'Gagal memproses pembelian')
+    } finally {
+      setIsBuying(false)
     }
   }
 
@@ -118,27 +163,22 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-background pt-24 pb-16 flex items-center justify-center">
         <div className="text-center space-y-4">
           <span className="material-symbols-outlined text-6xl text-muted-foreground">error</span>
-          <h2 className="text-xl font-semibold text-foreground">Product Not Found</h2>
-          <p className="text-muted-foreground">{error || 'The product you are looking for does not exist.'}</p>
+          <h2 className="text-xl font-semibold text-foreground">Produk Tidak Ditemukan</h2>
+          <p className="text-muted-foreground">{error || 'Produk yang Anda cari tidak ada.'}</p>
           <Button asChild>
-            <Link to="/">Back to Home</Link>
+            <Link to="/">Kembali ke Beranda</Link>
           </Button>
         </div>
       </div>
     )
   }
 
-  const images = product.image_url ? [product.image_url] : []
-  const currentPrice = selectedVariant
-    ? Number(product.price) + Number(selectedVariant.price_adjustment || 0)
-    : Number(product.price)
-
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-6">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
-          <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+          <Link to="/" className="hover:text-primary transition-colors">Beranda</Link>
           <span>/</span>
           {product.categories?.name && (
             <>
@@ -153,20 +193,27 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Gallery */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="relative rounded-2xl overflow-hidden bg-muted/30 border border-border group cursor-crosshair h-[400px] sm:h-[500px]">
-              <img
-                src={images[selectedImage] || product.image_url}
-                alt={product.name}
-                className="w-full h-full object-contain p-8 transition-transform duration-300 group-hover:scale-150"
-                style={{ transformOrigin: 'var(--zoom-x, center) var(--zoom-y, center)' }}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.parentElement.getBoundingClientRect()
-                  const x = ((e.clientX - rect.left) / rect.width) * 100
-                  const y = ((e.clientY - rect.top) / rect.height) * 100
-                  e.currentTarget.style.setProperty('--zoom-x', `${x}%`)
-                  e.currentTarget.style.setProperty('--zoom-y', `${y}%`)
-                }}
-              />
+            <div className="relative rounded-2xl overflow-hidden bg-muted/30 border border-border group cursor-crosshair h-[400px] sm:h-[500px] flex items-center justify-center">
+              {images.length > 0 ? (
+                <img
+                  src={images[selectedImage] || product.image_url}
+                  alt={product.name}
+                  className="w-full h-full object-contain p-8 transition-transform duration-300 group-hover:scale-150"
+                  style={{ transformOrigin: 'var(--zoom-x, center) var(--zoom-y, center)' }}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.parentElement.getBoundingClientRect()
+                    const x = ((e.clientX - rect.left) / rect.width) * 100
+                    const y = ((e.clientY - rect.top) / rect.height) * 100
+                    e.currentTarget.style.setProperty('--zoom-x', `${x}%`)
+                    e.currentTarget.style.setProperty('--zoom-y', `${y}%`)
+                  }}
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                  <span className="material-symbols-outlined text-6xl">image_not_supported</span>
+                  <span className="text-sm">Tidak ada gambar</span>
+                </div>
+              )}
               {product.badge && (
                 <Badge variant="secondary" className="absolute top-4 left-4">
                   {product.badge}
@@ -181,7 +228,7 @@ export default function ProductDetail() {
             <div className="flex items-center gap-2">
               <div className="flex text-secondary">{renderStars(product.rating)}</div>
               <span className="text-sm text-muted-foreground">
-                ({Number(product.rating || 0).toFixed(1)}/5) — {product.review_count || 0} Reviews
+                 ({Number(product.rating || 0).toFixed(1)}/5) — {product.review_count || 0} Ulasan
               </span>
             </div>
 
@@ -191,9 +238,9 @@ export default function ProductDetail() {
               <div className="flex items-center gap-3">
                 <span className="text-3xl font-bold text-primary">{formatRupiah(currentPrice)}</span>
                 {product.in_stock ? (
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-0">In Stock</Badge>
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-0">Stok Tersedia</Badge>
                 ) : (
-                  <Badge variant="destructive">Out of Stock</Badge>
+                  <Badge variant="destructive">Stok Habis</Badge>
                 )}
               </div>
             </div>
@@ -209,7 +256,7 @@ export default function ProductDetail() {
             {/* Variants */}
             {variants.length > 0 && (
               <div className="space-y-3">
-                <span className="text-sm font-semibold text-foreground uppercase tracking-wider">Variant</span>
+                <span className="text-sm font-semibold text-foreground uppercase tracking-wider">Varian</span>
                 <div className="flex flex-wrap gap-2">
                   {variants.map((v) => (
                     <button
@@ -233,6 +280,32 @@ export default function ProductDetail() {
               </div>
             )}
 
+            {/* Quantity */}
+            <div className="space-y-3">
+              <span className="text-sm font-semibold text-foreground uppercase tracking-wider">Kuantitas</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center bg-muted rounded-xl border border-border p-1">
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-9 h-9 flex items-center justify-center hover:bg-background rounded-lg transition-colors disabled:opacity-40"
+                    disabled={quantity <= 1}
+                    aria-label="Kurangi jumlah"
+                  >
+                    <span className="material-symbols-outlined text-lg">remove</span>
+                  </button>
+                  <span className="w-12 text-center font-semibold text-foreground">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity((q) => q + 1)}
+                    className="w-9 h-9 flex items-center justify-center hover:bg-background rounded-lg transition-colors"
+                    aria-label="Tambah jumlah"
+                  >
+                    <span className="material-symbols-outlined text-lg">add</span>
+                  </button>
+                </div>
+                <span className="text-sm text-muted-foreground">Subtotal: <span className="font-semibold text-foreground">{formatRupiah(currentPrice * quantity)}</span></span>
+              </div>
+            </div>
+
             {/* Description */}
             {product.description && (
               <div className="bg-muted/50 rounded-xl p-4 border border-border">
@@ -249,20 +322,32 @@ export default function ProductDetail() {
               <Button
                 onClick={handleAddToCart}
                 className="flex-[2] py-6 text-base font-semibold"
-                disabled={!product.in_stock}
+                disabled={!product.in_stock || isAdding || isBuying}
               >
-                <span className="material-symbols-outlined mr-2">shopping_cart</span>
-                Add to Cart
+                {isAdding ? (
+                  <span className="material-symbols-outlined mr-2 animate-spin">progress_activity</span>
+                ) : (
+                  <span className="material-symbols-outlined mr-2">shopping_cart</span>
+                )}
+                {isAdding ? 'Menambahkan...' : 'Tambah ke Keranjang'}
               </Button>
               <Button
-                onClick={handleAddToCart}
+                onClick={handleBuyNow}
                 variant="secondary"
                 className="flex-1 py-6 text-base font-semibold"
-                disabled={!product.in_stock}
+                disabled={!product.in_stock || isAdding || isBuying}
               >
-                Buy Now
+                {isBuying ? (
+                  <span className="material-symbols-outlined mr-2 animate-spin">progress_activity</span>
+                ) : null}
+                {isBuying ? 'Memproses...' : 'Beli Sekarang'}
               </Button>
             </div>
+            {!isAuthed && (
+              <p className="text-xs text-muted-foreground text-center">
+                Kamu belum login. Klik tombol akan mengarahkan ke halaman login.
+              </p>
+            )}
           </div>
         </div>
 
@@ -271,20 +356,20 @@ export default function ProductDetail() {
           <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8">
               <div className="border-b border-border pb-6 mb-6">
-                <h2 className="text-xl font-bold text-foreground mb-4">About this product</h2>
+                <h2 className="text-xl font-bold text-foreground mb-4">Tentang produk ini</h2>
                 <p className="text-muted-foreground leading-relaxed">{product.description}</p>
               </div>
             </div>
             <div className="lg:col-span-4 bg-muted/50 p-6 rounded-xl border border-border self-start">
-              <h3 className="font-semibold text-foreground mb-4">Product Details</h3>
+              <h3 className="font-semibold text-foreground mb-4">Detail Produk</h3>
               <div className="space-y-3">
                 <div className="flex justify-between border-b border-border pb-2">
-                  <span className="text-sm text-muted-foreground">Category</span>
+                  <span className="text-sm text-muted-foreground">Kategori</span>
                   <span className="text-sm font-medium text-foreground">{product.categories?.name || '-'}</span>
                 </div>
                 <div className="flex justify-between border-b border-border pb-2">
-                  <span className="text-sm text-muted-foreground">Availability</span>
-                  <span className="text-sm font-medium text-foreground">{product.in_stock ? 'In Stock' : 'Out of Stock'}</span>
+                  <span className="text-sm text-muted-foreground">Ketersediaan</span>
+                  <span className="text-sm font-medium text-foreground">{product.in_stock ? 'Stok Tersedia' : 'Stok Habis'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-muted-foreground">Rating</span>
@@ -296,13 +381,13 @@ export default function ProductDetail() {
         )}
       </div>
 
-      {/* Mobile Sticky Add to Cart */}
+      {/* Mobile Sticky Tambah ke Keranjang */}
       <div className="md:hidden fixed bottom-0 left-0 w-full p-4 bg-background border-t border-border z-40 flex gap-3 items-center shadow-2xl">
-        <Button onClick={handleAddToCart} className="flex-1 py-5" disabled={!product.in_stock}>
-          Add to Cart
+        <Button onClick={handleAddToCart} className="flex-1 py-5" disabled={!product.in_stock || isAdding || isBuying}>
+          {isAdding ? 'Menambahkan...' : 'Tambah ke Keranjang'}
         </Button>
-        <Button variant="ghost" size="icon" className="border border-border">
-          <span className="material-symbols-outlined">favorite</span>
+        <Button onClick={handleBuyNow} variant="secondary" className="flex-1 py-5" disabled={!product.in_stock || isAdding || isBuying}>
+          {isBuying ? 'Memproses...' : 'Beli Sekarang'}
         </Button>
       </div>
     </div>

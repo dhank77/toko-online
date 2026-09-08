@@ -9,11 +9,11 @@ export default function AdminLayout() {
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: 'dashboard', end: true },
-    { to: '/admin/categories', label: 'Master Data', icon: 'category' },
-    { to: '/admin/products', label: 'Product Management', icon: 'inventory_2' },
-    { to: '/admin/orders', label: 'Order Management', icon: 'shopping_cart' },
-    { to: '/admin/customers', label: 'Customer CRM', icon: 'group' },
-    { to: '/admin/analytics', label: 'Analytics', icon: 'analytics' },
+    { to: '/admin/categories', label: 'Data Master', icon: 'category' },
+    { to: '/admin/products', label: 'Manajemen Produk', icon: 'inventory_2' },
+    { to: '/admin/orders', label: 'Manajemen Pesanan', icon: 'shopping_cart' },
+    { to: '/admin/customers', label: 'CRM Pelanggan', icon: 'group' },
+    { to: '/admin/analytics', label: 'Analitik', icon: 'analytics' },
   ]
 
   return (
@@ -21,8 +21,8 @@ export default function AdminLayout() {
       {/* SideNavBar */}
       <aside className="hidden md:flex flex-col h-screen p-4 space-y-4 bg-muted/50 border-r border-border w-64 fixed left-0 top-0 z-50">
         <div className="px-4 py-6">
-          <h1 className="text-xl font-bold text-foreground">Admin Workspace</h1>
-          <p className="text-xs text-muted-foreground uppercase tracking-wider">Global Operations</p>
+           <h1 className="text-xl font-bold text-foreground">Workspace Admin</h1>
+           <p className="text-xs text-muted-foreground uppercase tracking-wider">Operasi Global</p>
         </div>
         <nav className="flex-1 flex flex-col space-y-1 px-2">
           {navItems.map((item) => (
@@ -46,15 +46,15 @@ export default function AdminLayout() {
         <div className="pt-4 border-t border-border flex flex-col space-y-1 px-2 pb-4">
           <NavLink to="/" className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-150 rounded-lg">
             <span className="material-symbols-outlined">arrow_back</span>
-            <span className="text-sm font-medium">Back to Store</span>
+             <span className="text-sm font-medium">Kembali ke Toko</span>
           </NavLink>
           <a className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-150 rounded-lg" href="#">
             <span className="material-symbols-outlined">settings</span>
-            <span className="text-sm font-medium">Settings</span>
+             <span className="text-sm font-medium">Pengaturan</span>
           </a>
           <a className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-150 rounded-lg" href="#">
             <span className="material-symbols-outlined">help</span>
-            <span className="text-sm font-medium">Support</span>
+             <span className="text-sm font-medium">Bantuan</span>
           </a>
           <div className="flex items-center gap-3 px-3 py-2 mt-2">
             <Avatar className="h-8 w-8">
@@ -65,7 +65,7 @@ export default function AdminLayout() {
               />
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-foreground truncate">Admin Profile</span>
+              <span className="text-sm font-medium text-foreground truncate">Profil Admin</span>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function AdminLayout() {
             <div className="hidden lg:flex flex-1 max-w-md mx-6">
               <div className="relative w-full">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-x-1/2 text-muted-foreground">search</span>
-                <Input className="pl-10 pr-4 py-2 rounded-xl" placeholder="Search orders, customers, or stock..." />
+                <Input className="pl-10 pr-4 py-2 rounded-xl" placeholder="Cari pesanan, pelanggan, atau stok..." />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export default function AdminLayout() {
         {/* Footer */}
         <footer className="py-10 px-6 border-t border-border bg-muted/50">
           <div className="md:text-right">
-            <p className="text-muted-foreground text-sm">© 2026 ShopComposed. All rights reserved.</p>
+             <p className="text-muted-foreground text-sm">© 2026 ShopComposed. Hak cipta dilindungi.</p>
           </div>
         </footer>
       </main>

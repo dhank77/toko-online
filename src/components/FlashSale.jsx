@@ -7,27 +7,27 @@ export default function FlashSale() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="bg-muted rounded-[32px] p-8 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
           <div className="relative z-10 flex-1">
-            <Badge variant="secondary" className="mb-4">Limited Time Offer</Badge>
-            <h2 className="text-4xl font-bold text-foreground mb-6">Flash Sale Event</h2>
-            <p className="text-muted-foreground text-lg mb-8 max-w-md">
-              Save up to 40% on workspace essentials. Once the clock hits zero, the deals are gone forever.
-            </p>
+             <Badge variant="secondary" className="mb-4">Penawaran Terbatas</Badge>
+             <h2 className="text-4xl font-bold text-foreground mb-6">Acara Flash Sale</h2>
+             <p className="text-muted-foreground text-lg mb-8 max-w-md">
+               Hemat hingga 40% untuk kebutuhan workspace. Setelah jam menunjukkan nol, penawaran akan hilang selamanya.
+             </p>
             <div className="flex gap-4 mb-8">
               <div className="flex flex-col items-center bg-background/20 backdrop-blur-md rounded-2xl w-24 py-4">
                 <span className="text-2xl font-bold text-foreground" id="hours">12</span>
-                <span className="text-sm text-muted-foreground">Hours</span>
+                 <span className="text-sm text-muted-foreground">Jam</span>
               </div>
               <div className="flex flex-col items-center bg-background/20 backdrop-blur-md rounded-2xl w-24 py-4">
                 <span className="text-2xl font-bold text-foreground" id="minutes">45</span>
-                <span className="text-sm text-muted-foreground">Mins</span>
+                 <span className="text-sm text-muted-foreground">Menit</span>
               </div>
               <div className="flex flex-col items-center bg-background/20 backdrop-blur-md rounded-2xl w-24 py-4">
                 <span className="text-2xl font-bold text-foreground" id="seconds">08</span>
-                <span className="text-sm text-muted-foreground">Secs</span>
+                 <span className="text-sm text-muted-foreground">Detik</span>
               </div>
             </div>
             <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              Explore Sale Items
+               Jelajahi Barang Flash Sale
             </Button>
           </div>
           <div className="relative z-10 w-full md:w-1/2 h-[400px] rounded-2xl overflow-hidden">

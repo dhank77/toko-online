@@ -12,16 +12,24 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminRoute from './components/AdminRoute'
 import ProductDetail from './pages/ProductDetail'
+import OrdersPage from './pages/OrdersPage'
+import OrderDetail from './pages/OrderDetail'
+import PaymentSuccess from './pages/PaymentSuccess'
+import { Toaster } from 'react-hot-toast'
 
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
+        <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
             <Route path="/product/:slug" element={<SiteLayout><ProductDetail /></SiteLayout>} />
             <Route path="/cart" element={<SiteLayout><CartPage /></SiteLayout>} />
+            <Route path="/orders" element={<SiteLayout><OrdersPage /></SiteLayout>} />
+            <Route path="/orders/:orderId" element={<SiteLayout><OrderDetail /></SiteLayout>} />
+            <Route path="/payment/success" element={<SiteLayout><PaymentSuccess /></SiteLayout>} />
             <Route
               path="/admin"
               element={

@@ -32,9 +32,9 @@ export default function CategorySection() {
     <section className="py-8 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-4">
         <div className="flex justify-between items-end">
-          <h2 className="text-2xl font-bold text-primary">Browse Categories</h2>
+          <h2 className="text-2xl font-bold text-primary">Jelajahi Kategori</h2>
           <Button variant="ghost" size="sm" className="text-secondary hover:text-secondary/80">
-            View All <span className="material-symbols-outlined text-sm">chevron_right</span>
+             Lihat Semua <span className="material-symbols-outlined text-sm">chevron_right</span>
           </Button>
         </div>
       </div>

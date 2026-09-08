@@ -13,21 +13,20 @@ export default function HeroSection() {
         />
         <div className="relative z-20 h-full flex flex-col justify-center px-10 max-w-2xl">
           <Badge variant="secondary" className="w-fit mb-4">
-            Limited Season Drop
+             Rilis Musiman Terbatas
           </Badge>
           <h1 className="text-5xl font-bold text-primary-foreground mb-6 leading-tight">
-            Elevate Your Everyday Essentials
+             Tingkatkan Kebutuhan Sehari-hari Anda
           </h1>
           <p className="text-lg text-primary-foreground/90 mb-8">
-            Experience the intersection of corporate efficiency and premium retail. curated selections for the
-            discerning professional.
+             Rasakan pertemuan antara efisiensi korporat dan ritel premium. Pilihan kurasi untuk profesional yang berwawasan.
           </p>
           <div className="flex gap-4">
             <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              Shop Collections <span className="material-symbols-outlined">arrow_forward</span>
+               Jelajahi Koleksi <span className="material-symbols-outlined">arrow_forward</span>
             </Button>
             <Button variant="outline" size="lg" className="text-primary-foreground border-primary-foreground hover:bg-primary-foreground/10">
-              View Lookbook
+               Lihat Lookbook
             </Button>
           </div>
         </div>

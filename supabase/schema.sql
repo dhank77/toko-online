@@ -62,56 +62,56 @@ create index if not exists idx_categories_slug on public.categories(slug);
 -- Seed categories
 insert into public.categories (name, slug, icon) values
   ('Tech Gear', 'tech-gear', 'laptop_mac'),
-  ('Office Decor', 'office-decor', 'chair'),
-  ('Wearables', 'wearables', 'watch'),
-  ('Productivity', 'productivity', 'auto_stories'),
-  ('Apparel', 'apparel', 'checkroom'),
-  ('Wellness', 'wellness', 'coffee'),
-  ('Fitness', 'fitness', 'fitness_center')
+  ('Dekorasi Kantor', 'office-decor', 'chair'),
+  ('Perangkat Wearable', 'wearables', 'watch'),
+  ('Produktivitas', 'productivity', 'auto_stories'),
+  ('Pakaian', 'apparel', 'checkroom'),
+  ('Kesehatan', 'wellness', 'coffee'),
+  ('Kebugaran', 'fitness', 'fitness_center')
 on conflict (slug) do nothing;
 
 -- Seed 100 products
 insert into public.products (name, slug, description, price, image_url, badge, rating, review_count, category_id, in_stock) values
   (
-    'Wireless Pro Mouse',
+    'Mouse Wireless Pro',
     'wireless-pro-mouse',
-    'A precision wireless mouse with ergonomic curves and silent click technology. Finished in matte black with subtle RGB accent lighting.',
+    'Mouse wireless presisi dengan lekuk ergonomis dan teknologi klik senyap. Dilengkapi warna hitam matte dengan pencahayaan RGB aksen yang halus.',
     79.00,
     null,
-    'Top Rated',
+    'Peringkat Teratas',
     4.7,
     312,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'ErgoLift Chair',
+    'Kursi ErgoLift',
     'ergolift-chair',
-    'An award-winning ergonomic office chair with adaptive lumbar support and breathable mesh. Designed for 12-hour work sessions.',
+    'Kursi kantor ergonomis berprestasi dengan dukungan lumbar adaptif dan anyaman breathable. Dirancang untuk sesi kerja 12 jam.',
     599.00,
     null,
-    'Best Seller',
+    'Paling Laris',
     4.8,
     892,
     (select id from public.categories where slug = 'office-decor'),
     true
   ),
   (
-    'Smart Watch Ultra',
+    'Smartwatch Ultra',
     'smart-watch-ultra',
-    'A premium fitness smartwatch with titanium casing and always-on AMOLED display. Water resistant to 100 meters.',
+    'Smartwatch fitness premium dengan casing titanium dan layar AMOLED selalu menyala. Tahan air hingga 100 meter.',
     449.00,
     null,
-    'New',
+    'Baru',
     4.6,
     567,
     (select id from public.categories where slug = 'wearables'),
     true
   ),
   (
-    'Focus Planner Pro',
+    'Planner Fokus Pro',
     'focus-planner-pro',
-    'A leather-bound daily planner with guided productivity frameworks and magnetic closure. Includes quarterly goal-setting spreads.',
+    'Buku planner harian berkulit kulit dengan kerangka produktivitas terpandu dan penutup magnet. Dilengkapi spread goal-setting triwulanan.',
     38.00,
     null,
     null,
@@ -121,9 +121,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Merino Crew Sweater',
+    'Sweater Rajutan Merino',
     'merino-crew-sweater',
-    'A relaxed-fit merino wool sweater in heather charcoal. Soft hand-feel with ribbed cuffs and dropped shoulders.',
+    'Sweater wol merino dengan potongan longgar dalam warna charcoal heather. Sentuhan lembut dengan manset rajutan dan bahu jatuh.',
     95.00,
     null,
     null,
@@ -133,21 +133,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Ceramic Pour-Over Set',
+    'Set Seduh Keramik',
     'ceramic-pour-over-set',
-    'A minimalist pour-over coffee kit with borosilicate glass carafe and matte white ceramic dripper. Serves 2-3 cups.',
+    'Kit seduh kopi minimalis dengan kendi kaca borosilicate dan dripper keramik putih matte. Dapat menyajikan 2-3 cangkir.',
     64.00,
     null,
-    'Top Rated',
+    'Peringkat Teratas',
     4.8,
     421,
     (select id from public.categories where slug = 'wellness'),
     true
   ),
   (
-    'Adjustable Dumbbells',
+    'Dumbel Adjustable',
     'adjustable-dumbbells',
-    'A space-saving adjustable dumbbell pair with quick-select weight system from 5 to 52.5 lbs. Rubberized grip handles.',
+    'Pasangan dumbel adjustable hemat tempat dengan sistem berat cepat dari 5 hingga 52.5 lbs. Pegangan grip berlapis karet.',
     349.00,
     null,
     null,
@@ -157,9 +157,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Mechanical Keypad',
+    'Keypad Mekanikal',
     'mechanical-keypad',
-    'A compact 16-key mechanical keypad with hot-swappable switches and CNC aluminum frame. Programmable via open-source firmware.',
+    'Keypad mekanikal ringkas 16 tombol dengan switch hot-swappable dan frame aluminum CNC. Dapat diprogram melalui firmware open-source.',
     89.00,
     null,
     null,
@@ -169,9 +169,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Desk Mat XL',
+    'Mat Meja XL',
     'desk-mat-xl',
-    'An extra-large extended desk mat in dark gray with stitched edges. Water-resistant polyurethane surface protects your workspace.',
+    'Mat meja ekstra besar dalam warna abu-abu gelap dengan tepi jahitan. Permukaan polyurethane tahan air melindungi ruang kerja Anda.',
     42.00,
     null,
     null,
@@ -181,9 +181,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Leather Card Wallet',
+    'Dompet Kartu Kulit',
     'leather-card-wallet',
-    'A slim bifold card wallet in full-grain cognac leather. Holds up to 8 cards with a centered bill compartment.',
+    'Dompet kartu tipis lipat dua dalam kulit cognac full-grain. Dapat menampung hingga 8 kartu dengan kompartemen uang tengah.',
     65.00,
     null,
     null,
@@ -193,21 +193,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Noise-Cancel Earbuds',
+    'Earbuds Anti-Noise',
     'noise-cancel-earbuds',
-    'Compact true wireless earbuds with hybrid active noise cancellation and transparency mode. 8-hour battery with wireless charging case.',
+    'Earbuds true wireless ringkas dengan pembatalan bising aktif hibrida dan mode transparansi. Baterai 8 jam dengan casing pengisian nirkabel.',
     159.00,
     null,
-    'New',
+    'Baru',
     4.4,
     445,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'Standing Desk Frame',
+    'Rangka Meja Berdiri',
     'standing-desk-frame',
-    'A dual-motor electric standing desk frame with programmable memory presets and anti-collision sensors. Supports up to 220 lbs.',
+    'Rangka meja berdiri elektrik motor ganda dengan preset memori yang dapat diprogram dan sensor anti-tabrakan. Menopang hingga 220 lbs.',
     429.00,
     null,
     null,
@@ -217,9 +217,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Fitness Tracker Band',
+    'Band Pelacak Kebugaran',
     'fitness-tracker-band',
-    'A lightweight fitness band with continuous heart rate monitoring and sleep tracking. Six-month battery life on a single charge.',
+    'Band kebugaran ringan dengan pemantauan detak jantung berkelanjutan dan pelacakan tidur. Baterai enam bulan dalam sekali pengisian.',
     49.00,
     null,
     null,
@@ -229,21 +229,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Minimalist Desk Lamp',
+    'Lampu Meja Minimalis',
     'minimalist-desk-lamp',
-    'A sculptural LED desk lamp with adjustable color temperature and wireless charging base. Anodized aluminum construction.',
+    'Lampu meja LED berbentuk skulptural dengan suhu warna yang dapat diatur dan dasar pengisian nirkabel. Konstruksi aluminium anodized.',
     129.00,
     null,
-    'Top Rated',
+    'Peringkat Teratas',
     4.9,
     876,
     (select id from public.categories where slug = 'office-decor'),
     true
   ),
   (
-    'Canvas Backpack',
+    'Ransel Kanvas',
     'canvas-backpack',
-    'A weather-resistant waxed canvas backpack with padded laptop compartment and leather trim. 25L capacity for daily commute.',
+    'Ransel kanvas lapis lilin tahan cuaca dengan kompartemen laptop berlapis dan aksen kulit. Kapasitas 25L untuk perjalanan harian.',
     145.00,
     null,
     null,
@@ -253,9 +253,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Insulated Water Bottle',
+    'Botol Air Isolasi',
     'insulated-water-bottle',
-    'A triple-insulated stainless steel water bottle that keeps drinks cold for 24 hours or hot for 12 hours. Wide mouth for ice.',
+    'Botol air stainless steel isolasi tiga lapis yang menjaga minuman tetap dingin selama 24 jam atau panas selama 12 jam. Mulut lebar untuk es.',
     34.00,
     null,
     null,
@@ -265,9 +265,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Resistance Band Set',
+    'Set Ban Resistansi',
     'resistance-band-set',
-    'A set of five loop resistance bands with door anchor and ankle straps. Gradient resistance from light to extra heavy.',
+    'Set lima ban resistansi loop dengan jangkar pintu dan tali pergelangan kaki. Resistensi bertingkat dari ringan hingga ekstra berat.',
     29.00,
     null,
     null,
@@ -277,9 +277,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wireless Charging Pad',
+    'Pad Pengisian Nirkabel',
     'wireless-charging-pad',
-    'A fast wireless charging pad with 15W output and foreign object detection. Compatible with all Qi-enabled devices.',
+    'Pad pengisian nirkabel cepat dengan output 15W dan deteksi benda asing. Kompatibel dengan semua perangkat berkemampuan Qi.',
     39.00,
     null,
     null,
@@ -289,9 +289,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Linen Button-Down',
+    'Kemeja Linen',
     'linen-button-down',
-    'A relaxed linen button-down shirt in natural oat. Breathable fabric perfect for summer layering or casual Fridays.',
+    'Kemeja linen button-down longgar dalam warna oat alami. Kain breathable yang sempurna untuk layering musim panas atau hari santai.',
     88.00,
     null,
     null,
@@ -301,9 +301,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Meditation Cushion',
+    'Bantal Meditasi',
     'meditation-cushion',
-    'A zafu-style meditation cushion filled with organic buckwheat hulls. Removable machine-washable cover in stone gray.',
+    'Bantal meditasi gaya zafu berisi sekam buckwheat organik. Sarung dapat dilepas dan dicuci mesin dalam warna abu-abu batu.',
     58.00,
     null,
     null,
@@ -313,21 +313,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Smart Scale',
+    'Timbangan Cerdas',
     'smart-scale',
-    'A body composition smart scale with 14 biometric measurements and app sync. Sleek tempered glass top with hidden display.',
+    'Timbangan komposisi tubuh cerdas dengan 14 pengukuran biometrik dan sinkronisasi aplikasi. Bagian atas kaca tempered elegan dengan layar tersembunyi.',
     49.00,
     null,
-    'Best Seller',
+    'Paling Laris',
     4.6,
     1456,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'Portable Monitor',
+    'Monitor Portabel',
     'portable-monitor',
-    'A 15.6-inch portable USB-C monitor with 1080p IPS panel and built-in kickstand. Perfect for dual-screen productivity on the go.',
+    'Monitor USB-C portabel 15,6 inci dengan panel IPS 1080p dan kickstand bawaan. Sempurna untuk produktivitas layar ganda saat bepergian.',
     249.00,
     null,
     null,
@@ -337,9 +337,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wool Blend Scarf',
+    'Syal Campuran Wol',
     'wool-blend-scarf',
-    'A timeless wool-blend scarf in camel with hand-rolled edges. Generous length for multiple styling options.',
+    'Syal campuran wol abadi dalam warna kamel dengan tepi gulung tangan. Panjang ekstra untuk berbagai pilihan gaya.',
     55.00,
     null,
     null,
@@ -349,21 +349,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Yoga Mat Premium',
+    'Mat Yoga Premium',
     'yoga-mat-premium',
-    'A 6mm thick premium yoga mat with alignment markers and non-slip texture. Made from eco-friendly TPE material.',
+    'Mat yoga premium setebal 6mm dengan penanda alignment dan tekstur anti-slip. Terbuat dari bahan TPE ramah lingkungan.',
     68.00,
     null,
-    'Top Rated',
+    'Peringkat Teratas',
     4.7,
     934,
     (select id from public.categories where slug = 'fitness'),
     true
   ),
   (
-    'Pen Set Gold',
+    'Set Pena Emas',
     'pen-set-gold',
-    'A set of three retractable ballpoint pens with gold-plated accents and black gel ink. Comes in a magnetic gift box.',
+    'Set tiga pena bolpoin isi ulang dengan aksen berlapis emas dan tinta gel hitam. Hadir dalam kotak hadiah magnetik.',
     45.00,
     null,
     null,
@@ -373,9 +373,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Bluetooth Speaker',
+    'Speaker Bluetooth',
     'bluetooth-speaker',
-    'A portable Bluetooth speaker with 360-degree sound and 20-hour battery life. IP67 waterproof for outdoor adventures.',
+    'Speaker Bluetooth portabel dengan suara 360 derajat dan baterai 20 jam. Tahan air IP67 untuk petualangan luar ruangan.',
     79.00,
     null,
     null,
@@ -385,9 +385,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Monitor Stand Riser',
+    'Stand Monitor Riser',
     'monitor-stand-riser',
-    'A solid bamboo monitor stand riser with storage drawer for keyboard and office supplies. Cable management cutouts included.',
+    'Stand monitor riser bambu solid dengan laci penyimpanan untuk keyboard dan perlengkapan kantor. Dilengkapi lubang manajemen kabel.',
     54.00,
     null,
     null,
@@ -397,9 +397,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Chino Joggers',
+    'Jogger Chino',
     'chino-joggers',
-    'A modern take on the classic chino with tapered jogger styling. Stretch cotton twill with elastic waistband and zippered pockets.',
+    'Interpretasi modern chino klasik dengan gaya jogger meruncing. Twill katun stretch dengan pinggang elastis dan saku beritsleting.',
     78.00,
     null,
     null,
@@ -409,9 +409,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Essential Oil Diffuser',
+    'Difuser Minyak Esensial',
     'essential-oil-diffuser',
-    'A minimalist ultrasonic essential oil diffuser with ambient lighting. Whisper-quiet operation for bedrooms and offices.',
+    'Difuser minyak esensial ultrasonik minimalis dengan pencahayaan ambient. Operasi senyap untuk kamar tidur dan kantor.',
     34.00,
     null,
     null,
@@ -421,9 +421,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Foam Roller',
+    'Roller Busa',
     'foam-roller',
-    'A high-density foam roller with textured surface for deep tissue massage. 18 inches long with a solid core.',
+    'Roller busa berdensitas tinggi dengan permukaan bertekstur untuk pijat jaringan dalam. Panjang 18 inci dengan inti padat.',
     28.00,
     null,
     null,
@@ -433,9 +433,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'USB-C Hub 7-in-1',
+    'Hub USB-C 7-dalam-1',
     'usb-c-hub-7-in-1',
-    'A compact aluminum USB-C hub with HDMI 4K, SD card reader, and three USB-A ports. Plug-and-play with no drivers needed.',
+    'Hub USB-C aluminium ringkas dengan HDMI 4K, pembaca kartu SD, dan tiga port USB-A. Plug-and-play tanpa perlu driver.',
     59.00,
     null,
     null,
@@ -445,9 +445,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Polo Shirt Classic',
+    'Kaos Polo Klasik',
     'polo-shirt-classic',
-    'A classic-fit pique polo shirt in navy with mother-of-pearl buttons. Pre-shrunk cotton with reinforced collar.',
+    'Kaos polo pique potongan klasik dalam warna navy dengan kancing mother-of-pearl. Katun pra-susut dengan kerah yang diperkuat.',
     65.00,
     null,
     null,
@@ -457,21 +457,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Weighted Blanket',
+    'Selimut Berpemberat',
     'weighted-blanket',
-    'A 15-pound weighted blanket with glass bead filling and breathable cotton cover. Promotes deeper sleep and reduces anxiety.',
+    'Selimut berpemberat 15 pon dengan isian manik kaca dan sarung katun breathable. Mendorong tidur lebih nyenyak dan mengurangi kecemasan.',
     89.00,
     null,
-    'Best Seller',
+    'Paling Laris',
     4.8,
     1567,
     (select id from public.categories where slug = 'wellness'),
     true
   ),
   (
-    'Notebook Set A5',
+    'Set Buku Catatan A5',
     'notebook-set-a5',
-    'A set of three A5 dotted notebooks with 180gsm paper and lay-flat binding. Ideal for journaling and bullet journaling.',
+    'Set tiga buku catatan A5 bertitik dengan kertas 180gsm dan jilid lay-flat. Ideal untuk journaling dan bullet journaling.',
     24.00,
     null,
     null,
@@ -481,9 +481,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Denim Jacket',
+    'Jaket Denim',
     'denim-jacket',
-    'A classic denim jacket with a modern slim fit. Features chest pockets, button closure, and selvedge detail.',
+    'Jaket denim klasik dengan potongan slim modern. Dilengkapi saku dada, penutup kancing, dan detail selvedge.',
     128.00,
     null,
     null,
@@ -493,9 +493,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Resistance Bands',
+    'Ban Resistansi',
     'resistance-bands',
-    'A set of five loop resistance bands with door anchor and ankle straps. Gradient resistance from light to extra heavy.',
+    'Set lima ban resistansi loop dengan jangkar pintu dan tali pergelangan kaki. Resistensi bertingkat dari ringan hingga ekstra berat.',
     29.00,
     null,
     null,
@@ -505,9 +505,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Smart Light Bulb',
+    'Bohlam Pintar',
     'smart-light-bulb',
-    'A Wi-Fi enabled smart bulb with 16 million colors and tunable white light. Voice compatible with Alexa and Google Assistant.',
+    'Bohlam pintar Wi-Fi dengan 16 juta warna dan cahaya putih yang dapat disetel. Kompatibel suara dengan Alexa dan Google Assistant.',
     19.00,
     null,
     null,
@@ -517,9 +517,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Leather Notebook',
+    'Buku Kulit',
     'leather-notebook',
-    'A handcrafted leather-bound notebook with refillable paper. Ages beautifully with a rich patina over time.',
+    'Buku catatan bersampul kulit buatan tangan dengan kertas isi ulang. Menua dengan indah membentuk patina yang kaya seiring waktu.',
     48.00,
     null,
     null,
@@ -529,9 +529,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Jump Rope Speed',
+    'Lompat Tali Speed',
     'jump-rope-speed',
-    'A professional speed jump rope with ball bearings and adjustable cable length. Lightweight aluminum handles.',
+    'Lompat tali speed profesional dengan ball bearing dan panjang tali yang dapat disesuaikan. Pegangan aluminium ringan.',
     22.00,
     null,
     null,
@@ -541,21 +541,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Mechanical Keyboard',
+    'Keyboard Mekanikal',
     'mechanical-keyboard',
-    'A compact 75% mechanical keyboard with hot-swappable switches and per-key RGB lighting. USB-C connectivity with PBT keycaps.',
+    'Keyboard mekanikal 75% ringkas dengan switch hot-swappable dan pencahayaan RGB per tombol. Konektivitas USB-C dengan keycap PBT.',
     149.00,
     null,
-    'Top Rated',
+    'Peringkat Teratas',
     4.7,
     890,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'Desk Organizer',
+    'Organizer Meja',
     'desk-organizer',
-    'A modular desktop organizer with compartments for pens, sticky notes, and phone. Made from sustainable bamboo.',
+    'Organizer meja modular dengan kompartemen untuk pena, sticky notes, dan ponsel. Terbuat dari bambu berkelanjutan.',
     42.00,
     null,
     null,
@@ -565,9 +565,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Cotton Hoodie',
+    'Hoodie Katun',
     'cotton-hoodie',
-    'A heavyweight cotton hoodie with a relaxed fit and brushed interior. Features kangaroo pocket and ribbed cuffs.',
+    'Hoodie katun tebal dengan potongan longgar dan interior brushed. Dilengkapi saku kanguru dan manset ribbed.',
     89.00,
     null,
     null,
@@ -577,9 +577,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Air Purifier Mini',
+    'Pembersih Udara Mini',
     'air-purifier-mini',
-    'A compact HEPA air purifier for desks and small rooms. Removes 99.97% of airborne particles with whisper-quiet operation.',
+    'Pembersih udara HEPA ringkas untuk meja dan ruangan kecil. Menghilangkan 99,97% partikel udara dengan operasi senyap.',
     79.00,
     null,
     null,
@@ -589,9 +589,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wrist Roller',
+    'Roller Pergelangan Tangan',
     'wrist-roller',
-    'A forearm trainer with adjustable weight plate and non-slip handles. Builds grip strength and wrist endurance.',
+    'Alat latih lengan bawah dengan pelat beban yang dapat disesuaikan dan pegangan anti-slip. Membangun kekuatan genggaman dan daya tahan pergelangan tangan.',
     18.00,
     null,
     null,
@@ -601,9 +601,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Whiteboard Stand',
+    'Stand Papan Tulis',
     'whiteboard-stand',
-    'A portable whiteboard stand with adjustable height and marker tray. Perfect for home offices and classrooms.',
+    'Stand papan tulis portabel dengan ketinggian yang dapat diatur dan nampan spidol. Sempurna untuk kantor rumahan dan ruang kelas.',
     65.00,
     null,
     null,
@@ -613,21 +613,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Running Shoes',
+    'Sepatu Lari',
     'running-shoes',
-    'Lightweight running shoes with responsive cushioning and breathable mesh upper. Designed for daily training on roads and tracks.',
+    'Sepatu lari ringan dengan bantalan responsif dan upper mesh breathable. Dirancang untuk latihan harian di jalan dan lintasan.',
     129.00,
     null,
-    'New',
+    'Baru',
     4.6,
     789,
     (select id from public.categories where slug = 'fitness'),
     true
   ),
   (
-    'Tea Infuser Bottle',
+    'Botol Infuser Teh',
     'tea-infuser-bottle',
-    'A double-wall glass tea bottle with built-in stainless steel infuser. Keeps tea hot for hours and fits in car cup holders.',
+    'Botol teh kaca dinding ganda dengan infuser stainless steel bawaan. Menjaga teh tetap panas selama berjam-jam dan muat di cup holder mobil.',
     26.00,
     null,
     null,
@@ -637,9 +637,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Ergonomic Mouse Pad',
+    'Mat Mouse Ergonomis',
     'ergonomic-mouse-pad',
-    'A gel-filled ergonomic mouse pad with wrist support. Non-slip base and smooth tracking surface for precise control.',
+    'Mat mouse ergonomis berisi gel dengan penyangga pergelangan tangan. Alas anti-slip dan permukaan tracking halus untuk kontrol presisi.',
     19.00,
     null,
     null,
@@ -649,9 +649,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Canvas Tote Bag',
+    'Tas Kanvas',
     'canvas-tote-bag',
-    'A heavy-duty canvas tote bag with reinforced stitching and interior pocket. Perfect for groceries, books, or beach essentials.',
+    'Tas tote kanvas tugas berat dengan jahitan diperkuat dan saku interior. Sempurna untuk belanjaan, buku, atau perlengkapan pantai.',
     32.00,
     null,
     null,
@@ -663,7 +663,7 @@ insert into public.products (name, slug, description, price, image_url, badge, r
   (
     'Kettlebell 16kg',
     'kettlebell-16kg',
-    'A cast iron kettlebell with a smooth powder-coat finish and wide handle. Perfect for swings, squats, and Turkish get-ups.',
+    'Kettlebell besi cor dengan lapisan powder-coat halus dan pegangan lebar. Sempurna untuk swing, squat, dan Turkish get-up.',
     65.00,
     null,
     null,
@@ -673,9 +673,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Webcam 4K',
+    'Kamera Web 4K',
     'webcam-4k',
-    'A 4K webcam with auto-focus, built-in ring light, and noise-reducing dual microphones. Clip-on or stand mount included.',
+    'Kamera web 4K dengan fokus otomatis, ring light bawaan, dan dua mikrofon peredam bising. Termasuk dudukan klip atau stand.',
     99.00,
     null,
     null,
@@ -685,9 +685,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Silk Tie',
+    'Dasi Sutra',
     'silk-tie',
-    'A pure silk tie with hand-finished edges and a subtle herringbone pattern. A versatile addition to any professional wardrobe.',
+    'Dasi sutra murni dengan tepi finishing tangan dan pola herringbone halus. Tambahan serbaguna untuk lemari profesional mana pun.',
     48.00,
     null,
     null,
@@ -697,9 +697,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Sleep Mask',
+    'Masker Tidur',
     'sleep-mask',
-    'A contoured silk sleep mask that blocks light without pressure on the eyes. Adjustable strap and machine washable.',
+    'Masker tidur sutra berkontur yang menghalangi cahaya tanpa menekan mata. Tali dapat disesuaikan dan dapat dicuci mesin.',
     24.00,
     null,
     null,
@@ -709,9 +709,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Resistance Tubes',
+    'Tabung Resistansi',
     'resistance-tubes',
-    'A set of five resistance tubes with door anchor, handles, and ankle straps. Ideal for full-body workouts anywhere.',
+    'Set lima tabung resistansi dengan jangkar pintu, pegangan, dan tali pergelangan kaki. Ideal untuk latihan seluruh tubuh di mana saja.',
     35.00,
     null,
     null,
@@ -721,9 +721,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wireless Keyboard',
+    'Keyboard Nirkabel',
     'wireless-keyboard',
-    'A slim wireless keyboard with scissor mechanism keys and multi-device Bluetooth pairing. Rechargeable with 90-day battery life.',
+    'Keyboard nirkabel ramping dengan tombol mekanisme gunting dan pairing Bluetooth multi-perangkat. Baterai isi ulang dengan daya tahan 90 hari.',
     69.00,
     null,
     null,
@@ -733,9 +733,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Laptop Stand',
+    'Stand Laptop',
     'laptop-stand',
-    'An adjustable aluminum laptop stand with ventilation cutouts. Raises screen to eye level for better posture.',
+    'Stand laptop aluminium yang dapat disesuaikan dengan lubang ventilasi. Mengangkat layar setinggi mata untuk postur lebih baik.',
     59.00,
     null,
     null,
@@ -745,9 +745,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Jogger Pants',
+    'Celana Jogger',
     'jogger-pants',
-    'Tapered jogger pants with elastic waistband and zippered pockets. Made from stretch cotton blend for all-day comfort.',
+    'Celana jogger meruncing dengan pinggang elastis dan saku beritsleting. Terbuat dari campuran katun stretch untuk kenyamanan sepanjang hari.',
     54.00,
     null,
     null,
@@ -757,9 +757,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Massage Ball',
+    'Bola Pijat',
     'massage-ball',
-    'A textured massage ball for trigger point release and myofascial release. Compact size perfect for travel.',
+    'Bola pijat bertekstur untuk pelepasan titik pemicu dan pelepasan myofascial. Ukuran ringkas sempurna untuk bepergian.',
     16.00,
     null,
     null,
@@ -769,9 +769,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Notebook Leather',
+    'Buku Catatan Kulit',
     'notebook-leather',
-    'A handcrafted leather-bound notebook with refillable paper. Ages beautifully with a rich patina over time.',
+    'Buku catatan bersampul kulit buatan tangan dengan kertas isi ulang. Menua dengan indah membentuk patina yang kaya seiring waktu.',
     48.00,
     null,
     null,
@@ -781,9 +781,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Power Bank 20000',
+    'Powerbank 20000',
     'power-bank-20000',
-    'A high-capacity power bank with 20000mAh and dual USB-C ports. Charges laptops, tablets, and phones simultaneously.',
+    'Powerbank berkapasitas tinggi 20000mAh dengan dua port USB-C. Mengisi laptop, tablet, dan ponsel secara bersamaan.',
     59.00,
     null,
     null,
@@ -793,9 +793,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wool Beanie',
+    'Beanie Wol',
     'wool-beanie',
-    'A fine-knit merino wool beanie with a folded cuff. Soft, warm, and breathable for cold-weather layering.',
+    'Beanie wol merino rajutan halus dengan lipatan cuff. Lembut, hangat, dan breathable untuk layering cuaca dingin.',
     32.00,
     null,
     null,
@@ -805,9 +805,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Pull-Up Bar',
+    'Palang Pull-Up',
     'pull-up-bar',
-    'A doorway pull-up bar with multi-grip positions and padded handles. Supports up to 300 lbs with secure locking mechanism.',
+    'Palang pull-up pintu dengan posisi multi-grip dan pegangan berbantal. Menopang hingga 300 lbs dengan mekanisme penguncian aman.',
     45.00,
     null,
     null,
@@ -817,9 +817,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Tablet Stand',
+    'Stand Tablet',
     'tablet-stand',
-    'A versatile aluminum tablet stand with adjustable viewing angles. Compatible with tablets from 7 to 13 inches.',
+    'Stand tablet aluminium serbaguna dengan sudut pandang yang dapat disesuaikan. Kompatibel dengan tablet 7 hingga 13 inci.',
     39.00,
     null,
     null,
@@ -829,9 +829,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Graphic Tee',
+    'Kaos Grafis',
     'graphic-tee',
-    'A heavyweight cotton graphic tee with a relaxed fit. Pre-shrunk fabric with a soft hand feel.',
+    'Kaos grafis katun tebal dengan potongan longgar. Kain pra-susut dengan tekstur lembut.',
     35.00,
     null,
     null,
@@ -841,9 +841,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Aromatherapy Candle',
+    'Lilin Aromaterapi',
     'aromatherapy-candle',
-    'A soy wax aromatherapy candle with essential oils of lavender and eucalyptus. Burns cleanly for 50 hours.',
+    'Lilin aromaterapi lilin kedelai dengan minyak esensial lavender dan eukaliptus. Terbakar bersih selama 50 jam.',
     28.00,
     null,
     null,
@@ -853,9 +853,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Ab Roller',
+    'Roller Perut',
     'ab-roller',
-    'An ab roller with knee pad and non-slip grip handles. Targets core muscles for effective abdominal workouts.',
+    'Roller perut dengan alas lutut dan pegangan anti-slip. Menargetkan otot inti untuk latihan perut yang efektif.',
     22.00,
     null,
     null,
@@ -867,7 +867,7 @@ insert into public.products (name, slug, description, price, image_url, badge, r
   (
     'Mouse Wireless',
     'mouse-wireless',
-    'A precision wireless mouse with ergonomic curves and silent click technology. Finished in matte black with subtle RGB accent lighting.',
+    'Mouse wireless presisi dengan lekuk ergonomis dan teknologi klik senyap. Dilengkapi warna hitam matte dengan pencahayaan RGB aksen yang halus.',
     79.00,
     null,
     null,
@@ -877,9 +877,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Desk Pad',
+    'Pad Meja',
     'desk-pad',
-    'An extended desk pad with smooth micro-weave surface and non-slip rubber base. Protects your desk and provides ample mouse space.',
+    'Pad meja extended dengan permukaan micro-weave halus dan alas karet anti-slip. Melindungi meja Anda dan menyediakan ruang mouse yang luas.',
     29.00,
     null,
     null,
@@ -889,9 +889,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Chino Shorts',
+    'Celana Pendek Chino',
     'chino-shorts',
-    'Classic chino shorts with a comfortable mid-rise and 9-inch inseam. Stretch cotton twill with belt loops and zippered pockets.',
+    'Celana pendek chino klasik dengan mid-rise nyaman dan inseam 9 inci. Twill katun stretch dengan lubang sabuk dan saku beritsleting.',
     58.00,
     null,
     null,
@@ -901,9 +901,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Hydration Pack',
+    'Tas Hidrasi',
     'hydration-pack',
-    'A lightweight hydration pack with 2-liter reservoir and adjustable straps. Ideal for running, hiking, and cycling.',
+    'Tas hidrasi ringan dengan reservoir 2 liter dan tali yang dapat disesuaikan. Ideal untuk lari, hiking, dan bersepeda.',
     65.00,
     null,
     null,
@@ -913,9 +913,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Monitor Light Bar',
+    'Light Bar Monitor',
     'monitor-light-bar',
-    'A screen-mounted monitor light bar with adjustable brightness and color temperature. Reduces glare and eye strain.',
+    'Light bar monitor yang dipasang di layar dengan kecerahan dan suhu warna yang dapat diatur. Mengurangi silau dan kelelahan mata.',
     89.00,
     null,
     null,
@@ -925,9 +925,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Dress Shirt Slim',
+    'Kemeja Slim',
     'dress-shirt-slim',
-    'A non-iron slim-fit dress shirt in light blue. Wrinkle-resistant cotton with a spread collar and French cuffs.',
+    'Kemeja slim-fit anti-setrika dalam warna biru muda. Katun anti-kusut dengan kerah spread dan manset French.',
     85.00,
     null,
     null,
@@ -937,9 +937,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Foam Roller Soft',
+    'Roller Busa Lembut',
     'foam-roller-soft',
-    'A soft-density foam roller for gentle muscle recovery and flexibility work. 18 inches long with textured surface.',
+    'Roller busa berdensitas lembut untuk pemulihan otot ringan dan latihan fleksibilitas. Panjang 18 inci dengan permukaan bertekstur.',
     24.00,
     null,
     null,
@@ -949,9 +949,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Notebook Dot Grid',
+    'Buku Catatan Dot Grid',
     'notebook-dot-grid',
-    'A5 dot grid notebook with 160 pages and lay-flat binding. Perfect for bullet journaling and sketching.',
+    'Buku catatan A5 dot grid dengan 160 halaman dan jilid lay-flat. Sempurna untuk bullet journaling dan sketsa.',
     18.00,
     null,
     null,
@@ -961,9 +961,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wireless Earbuds',
+    'Earbuds Nirkabel',
     'wireless-earbuds',
-    'Compact true wireless earbuds with deep bass and 24-hour total battery life. IPX5 water resistant for workouts.',
+    'Earbuds true wireless ringkas dengan bass dalam dan total baterai 24 jam. Tahan air IPX5 untuk olahraga.',
     89.00,
     null,
     null,
@@ -973,21 +973,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Bamboo Keyboard',
+    'Keyboard Bambu',
     'bamboo-keyboard',
-    'A slim wireless keyboard with bamboo accents and low-profile keys. Eco-friendly design with multi-device pairing.',
+    'Keyboard nirkabel ramping dengan aksen bambu dan tombol low-profile. Desain ramah lingkungan dengan pairing multi-perangkat.',
     99.00,
     null,
-    'New',
+    'Baru',
     4.6,
     189,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'Wool Cardigan',
+    'Kardigan Wol',
     'wool-cardigan',
-    'A relaxed-fit merino wool cardigan with horn buttons and patch pockets. Perfect for layering in cooler weather.',
+    'Kardigan wol merino potongan longgar dengan kancing tanduk dan saku tempel. Sempurna untuk layering di cuaca sejuk.',
     165.00,
     null,
     null,
@@ -997,9 +997,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Jump Rope',
+    'Lompat Tali',
     'jump-rope',
-    'A professional speed jump rope with ball bearings and adjustable cable length. Lightweight aluminum handles.',
+    'Lompat tali speed profesional dengan ball bearing dan panjang tali yang dapat disesuaikan. Pegangan aluminium ringan.',
     22.00,
     null,
     null,
@@ -1009,9 +1009,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Yoga Block',
+    'Balok Yoga',
     'yoga-block',
-    'A high-density EVA foam yoga block with beveled edges. Provides support and stability for deeper stretches.',
+    'Balok yoga busa EVA berdensitas tinggi dengan tepi miring. Memberikan dukungan dan stabilitas untuk peregangan lebih dalam.',
     16.00,
     null,
     null,
@@ -1021,9 +1021,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Sunglasses Polarized',
+    'Kacamata Hitam Polarized',
     'sunglasses-polarized',
-    'Polarized sunglasses with lightweight titanium frame and UV400 protection. Classic aviator style for everyday wear.',
+    'Kacamata hitam polarized dengan frame titanium ringan dan perlindungan UV400. Gaya aviator klasik untuk penggunaan sehari-hari.',
     125.00,
     null,
     null,
@@ -1033,9 +1033,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Leather Belt',
+    'Sabuk Kulit',
     'leather-belt',
-    'A full-grain leather belt with brushed silver buckle. Handcrafted with precision stitching and a timeless design.',
+    'Sabuk kulit full-grain dengan gesper perak brushed. Buatan tangan dengan jahitan presisi dan desain abadi.',
     55.00,
     null,
     null,
@@ -1045,9 +1045,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Electric Kettle',
+    'Ketel Elektrik',
     'electric-kettle',
-    'A variable temperature electric kettle with hold function and gooseneck spout. Perfect for pour-over coffee and tea.',
+    'Ketel elektrik suhu variabel dengan fungsi tahan panas dan leher angsa. Sempurna untuk kopi pour-over dan teh.',
     79.00,
     null,
     null,
@@ -1057,9 +1057,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Grip Trainer',
+    'Alat Latih Genggaman',
     'grip-trainer',
-    'A variable resistance grip trainer with adjustable dial. Builds hand and forearm strength for climbing and daily tasks.',
+    'Alat latih genggaman resistensi variabel dengan dial yang dapat disesuaikan. Membangun kekuatan tangan dan lengan bawah untuk panjat tebing dan aktivitas harian.',
     19.00,
     null,
     null,
@@ -1069,9 +1069,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Laptop Sleeve',
+    'Sarung Laptop',
     'laptop-sleeve',
-    'A padded neoprene laptop sleeve with faux-fur lining. Protects against scratches and minor bumps with a slim profile.',
+    'Sarung laptop neoprene berbantal dengan lapisan faux-fur. Melindungi dari goresan dan benturan ringan dengan profil ramping.',
     39.00,
     null,
     null,
@@ -1081,9 +1081,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Running Shorts',
+    'Celana Pendek Lari',
     'running-shorts',
-    'Lightweight running shorts with built-in brief liner and zippered pocket. Moisture-wicking fabric with reflective details.',
+    'Celana pendek lari ringan dengan lapisan brief bawaan dan saku beritsleting. Kain penyerap keringat dengan detail reflektif.',
     45.00,
     null,
     null,
@@ -1093,9 +1093,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Scented Candle',
+    'Lilin Wangi',
     'scented-candle',
-    'A hand-poured soy wax candle with notes of cedar and bergamot. Housed in a reusable ceramic vessel.',
+    'Lilin lilin kedelai tuangan tangan dengan aroma cedar dan bergamot. Dikemas dalam wadah keramik yang dapat digunakan kembali.',
     32.00,
     null,
     null,
@@ -1107,7 +1107,7 @@ insert into public.products (name, slug, description, price, image_url, badge, r
   (
     'Kettlebell 24kg',
     'kettlebell-24kg',
-    'A cast iron kettlebell with a smooth powder-coat finish and wide handle. Perfect for advanced strength training.',
+    'Kettlebell besi cor dengan lapisan powder-coat halus dan pegangan lebar. Sempurna untuk latihan kekuatan tingkat lanjut.',
     89.00,
     null,
     null,
@@ -1117,9 +1117,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Microphone USB',
+    'Mikrofon USB',
     'microphone-usb',
-    'A professional USB condenser microphone with cardioid pickup pattern and built-in pop filter. Perfect for streaming and podcasting.',
+    'Mikrofon kondensor USB profesional dengan pola pickup cardioid dan pop filter bawaan. Sempurna untuk streaming dan podcasting.',
     129.00,
     null,
     null,
@@ -1129,9 +1129,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Wool Scarf',
+    'Syal Wol',
     'wool-scarf',
-    'A timeless wool-blend scarf in camel with hand-rolled edges. Generous length for multiple styling options.',
+    'Syal campuran wol abadi dalam warna kamel dengan tepi gulung tangan. Panjang ekstra untuk berbagai pilihan gaya.',
     55.00,
     null,
     null,
@@ -1141,9 +1141,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Meditation Bench',
+    'Bangku Meditasi',
     'meditation-bench',
-    'A folding meditation bench with angled seat and padded cushion. Supports comfortable cross-legged sitting.',
+    'Bangku meditasi lipat dengan dudukan miring dan bantal empuk. Mendukung duduk bersila dengan nyaman.',
     78.00,
     null,
     null,
@@ -1153,9 +1153,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Power Bank',
+    'Powerbank',
     'power-bank',
-    'A compact power bank with 10000mAh capacity and fast charging. Fits easily in pocket or bag for on-the-go charging.',
+    'Powerbank ringkas dengan kapasitas 10000mAh dan pengisian cepat. Muat mudah di saku atau tas untuk pengisian saat bepergian.',
     29.00,
     null,
     null,
@@ -1165,9 +1165,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Chinos Slim',
+    'Chino Slim',
     'chinos-slim',
-    'A slim-fit chino pant in stone with a comfortable stretch. Modern cut with a mid-rise and straight leg.',
+    'Celana chino slim-fit dalam warna batu dengan stretch nyaman. Potongan modern dengan mid-rise dan kaki lurus.',
     72.00,
     null,
     null,
@@ -1177,9 +1177,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Foam Roller Medium',
+    'Roller Busa Sedang',
     'foam-roller-medium',
-    'A medium-density foam roller for general muscle recovery. 18 inches long with a smooth surface.',
+    'Roller busa berdensitas sedang untuk pemulihan otot umum. Panjang 18 inci dengan permukaan halus.',
     20.00,
     null,
     null,
@@ -1189,9 +1189,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Pocket Notebook',
+    'Buku Catatan Saku',
     'pocket-notebook',
-    'A compact pocket-sized notebook with 192 pages of dotted paper. Fits in jeans pocket for on-the-go notes.',
+    'Buku catatan ukuran saku ringkas dengan 192 halaman kertas bertitik. Muat di saku jeans untuk catatan saat bepergian.',
     12.00,
     null,
     null,
@@ -1201,21 +1201,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Smart Plug',
+    'Steker Pintar',
     'smart-plug',
-    'A Wi-Fi smart plug with energy monitoring and scheduling. Works with Alexa and Google Assistant for voice control.',
+    'Steker pintar Wi-Fi dengan pemantauan energi dan penjadwalan. Bekerja dengan Alexa dan Google Assistant untuk kontrol suara.',
     15.00,
     null,
-    'Best Seller',
+    'Paling Laris',
     4.5,
     4567,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'Denim Shirt',
+    'Kemeja Denim',
     'denim-shirt',
-    'A classic denim shirt with a modern fit. Features chest pockets, button closure, and selvedge detail.',
+    'Kemeja denim klasik dengan potongan modern. Dilengkapi saku dada, penutup kancing, dan detail selvedge.',
     78.00,
     null,
     null,
@@ -1225,9 +1225,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Running Shoes Trail',
+    'Sepatu Lari Trail',
     'running-shoes-trail',
-    'Trail running shoes with aggressive tread and rock plate protection. Waterproof membrane for all-terrain confidence.',
+    'Sepatu lari trail dengan tapak agresif dan perlindungan rock plate. Membran tahan air untuk kepercayaan diri di segala medan.',
     149.00,
     null,
     null,
@@ -1237,9 +1237,9 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Tea Set',
+    'Set Teh',
     'tea-set',
-    'A minimalist ceramic tea set with teapot and four cups. Matte finish in warm white with subtle texture.',
+    'Set teh keramik minimalis dengan teko dan empat cangkir. Finishing matte dalam warna putih hangat dengan tekstur halus.',
     85.00,
     null,
     null,
@@ -1249,21 +1249,21 @@ insert into public.products (name, slug, description, price, image_url, badge, r
     true
   ),
   (
-    'Ergonomic Keyboard',
+    'Keyboard Ergonomis',
     'ergonomic-keyboard',
-    'A split ergonomic keyboard with adjustable tenting and negative tilt. Reduces wrist strain during long typing sessions.',
+    'Keyboard ergonomis split dengan tenting yang dapat disesuaikan dan kemiringan negatif. Mengurangi ketegangan pergelangan tangan saat mengetik lama.',
     179.00,
     null,
-    'New',
+    'Baru',
     4.6,
     345,
     (select id from public.categories where slug = 'tech-gear'),
     true
   ),
   (
-    'Leather Portfolio',
+    'Portofolio Kulit',
     'leather-portfolio',
-    'A luxury leather portfolio with document organizer and tablet sleeve. Handcrafted from full-grain Italian leather.',
+    'Portofolio kulit mewah dengan organizer dokumen dan sarung tablet. Buatan tangan dari kulit Italia full-grain.',
     185.00,
     null,
     null,

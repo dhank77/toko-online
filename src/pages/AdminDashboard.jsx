@@ -41,17 +41,17 @@ export default function AdminDashboard() {
       {/* Welcome Header */}
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Dashboard Overview</h1>
-          <p className="text-sm text-muted-foreground">Real-time performance tracking for your store operations.</p>
+          <h1 className="text-2xl font-bold text-foreground mb-1">Ringkasan Dashboard</h1>
+          <p className="text-sm text-muted-foreground">Pelacakan kinerja secara real-time untuk operasi toko Anda.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" className="flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">calendar_today</span>
-            Last 30 Days
+            30 Hari Terakhir
           </Button>
           <Button variant="outline" className="flex items-center gap-2">
             <span className="material-symbols-outlined text-lg">download</span>
-            Export Data
+             Ekspor Data
           </Button>
         </div>
       </div>
@@ -67,8 +67,8 @@ export default function AdminDashboard() {
               </div>
               <span className="text-secondary text-xs font-medium flex items-center">+12.4% <span className="material-symbols-outlined text-sm">trending_up</span></span>
             </div>
-            <p className="text-sm text-muted-foreground">Daily Revenue</p>
-            <h3 className="text-xl font-bold text-foreground mt-1">$4,280.50</h3>
+            <p className="text-sm text-muted-foreground">Pendapatan Harian</p>
+            <h3 className="text-xl font-bold text-foreground mt-1">Rp4.280.500</h3>
           </CardContent>
         </Card>
 
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
               </div>
               <span className="text-secondary text-xs font-medium flex items-center">+8.1% <span className="material-symbols-outlined text-sm">trending_up</span></span>
             </div>
-            <p className="text-sm text-muted-foreground">Total Orders</p>
+            <p className="text-sm text-muted-foreground">Total Pesanan</p>
             <h3 className="text-xl font-bold text-foreground mt-1">154</h3>
           </CardContent>
         </Card>
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
               </div>
               <span className="text-destructive text-xs font-medium flex items-center">-2.4% <span className="material-symbols-outlined text-sm">trending_down</span></span>
             </div>
-            <p className="text-sm text-muted-foreground">New Customers</p>
+            <p className="text-sm text-muted-foreground">Pelanggan Baru</p>
             <h3 className="text-xl font-bold text-foreground mt-1">28</h3>
           </CardContent>
         </Card>
@@ -107,10 +107,10 @@ export default function AdminDashboard() {
               <div className="p-2 bg-destructive/10 text-destructive rounded-lg">
                 <span className="material-symbols-outlined">warning</span>
               </div>
-              <span className="text-destructive text-xs font-medium">Critical</span>
+               <span className="text-destructive text-xs font-medium">Kritis</span>
             </div>
-            <p className="text-sm text-muted-foreground">Low Stock Alert</p>
-            <h3 className="text-xl font-bold text-foreground mt-1">12 SKUs</h3>
+            <p className="text-sm text-muted-foreground">Peringatan Stok Menipis</p>
+            <h3 className="text-xl font-bold text-foreground mt-1">12 SKU</h3>
           </CardContent>
         </Card>
       </div>
@@ -121,10 +121,10 @@ export default function AdminDashboard() {
         <Card className="lg:col-span-2">
           <CardContent className="p-6">
             <div className="flex justify-between items-center mb-6">
-              <h4 className="text-sm font-medium text-foreground uppercase tracking-tight">Sales Overview</h4>
+              <h4 className="text-sm font-medium text-foreground uppercase tracking-tight">Ringkasan Penjualan</h4>
               <div className="flex gap-2">
                 <span className="inline-block w-3 h-3 rounded-full bg-primary"></span>
-                <span className="text-xs text-muted-foreground">Revenue</span>
+                <span className="text-xs text-muted-foreground">Pendapatan</span>
               </div>
             </div>
             <div className="relative h-64 w-full flex items-end justify-between gap-2 px-2">
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
               <div className="w-full bg-primary rounded-t-lg" style={{ height: '70%' }} />
             </div>
             <div className="flex justify-between mt-4 px-2 text-xs text-muted-foreground">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+              <span>Sen</span><span>Sel</span><span>Rab</span><span>Kam</span><span>Jum</span><span>Sab</span><span>Min</span>
             </div>
           </CardContent>
         </Card>
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
         {/* Top Selling Products */}
         <Card className="flex flex-col">
           <CardContent className="p-6 flex-1 flex flex-col">
-            <h4 className="text-sm font-medium text-foreground uppercase tracking-tight mb-6">Top Selling Products</h4>
+             <h4 className="text-sm font-medium text-foreground uppercase tracking-tight mb-6">Produk Terlaris</h4>
             <div className="flex-1 space-y-4">
               {loading ? (
                 Array.from({ length: 3 }).map((_, idx) => (
@@ -166,14 +166,14 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
-                      <p className="text-xs text-muted-foreground">{product.review_count} reviews</p>
+                      <p className="text-xs text-muted-foreground">{product.review_count} ulasan</p>
                     </div>
                     <p className="text-sm font-medium text-primary">${Number(product.price).toFixed(2)}</p>
                   </div>
                 ))
               )}
             </div>
-            <Button variant="ghost" className="w-full mt-4 text-primary hover:underline decoration-2">View Full Report</Button>
+            <Button variant="ghost" className="w-full mt-4 text-primary hover:underline decoration-2">             Lihat Laporan Lengkap</Button>
           </CardContent>
         </Card>
       </div>
@@ -182,19 +182,19 @@ export default function AdminDashboard() {
       <Card className="overflow-hidden mb-8">
         <CardContent className="p-0">
           <div className="p-6 flex justify-between items-center border-b border-border">
-            <h4 className="text-sm font-medium text-foreground uppercase tracking-tight">Recent Orders</h4>
-            <Button variant="ghost" className="text-primary hover:underline">View All</Button>
+             <h4 className="text-sm font-medium text-foreground uppercase tracking-tight">Pesanan Terbaru</h4>
+             <Button variant="ghost" className="text-primary hover:underline">Lihat Semua</Button>
           </div>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="text-xs uppercase tracking-wider">Order ID</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Customer</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Product</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Amount</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">ID Pesanan</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Pelanggan</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Produk</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Jumlah</TableHead>
                   <TableHead className="text-xs uppercase tracking-wider">Status</TableHead>
-                  <TableHead className="text-xs uppercase tracking-wider">Action</TableHead>
+                  <TableHead className="text-xs uppercase tracking-wider">Aksi</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-border">
@@ -220,11 +220,11 @@ export default function AdminDashboard() {
                               {(order.profiles?.full_name || order.customer_name || 'U').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <span className="text-sm text-foreground">{order.profiles?.full_name || order.customer_name || 'Unknown'}</span>
+                           <span className="text-sm text-foreground">{order.profiles?.full_name || order.customer_name || 'Tidak Diketahui'}</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{order.product_id ? 'Product order' : 'Order'}</TableCell>
-                      <TableCell className="text-sm font-medium">${Number(order.total_amount || 0).toFixed(2)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{order.product_id ? 'Pesanan produk' : 'Pesanan'}</TableCell>
+                      <TableCell className="text-sm font-medium">Rp{Number(order.total_amount || 0).toFixed(2)}</TableCell>
                       <TableCell>
                         <Badge variant={order.status === 'shipped' ? 'default' : order.status === 'processed' ? 'secondary' : 'outline'}>
                           {order.status}
