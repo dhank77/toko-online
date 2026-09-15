@@ -1,4 +1,5 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
 import { Toaster } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -7,6 +8,7 @@ import logoUrl from '../assets/logo.png'
 
 export default function AdminLayout() {
   const location = useLocation()
+  const { resolved, toggleTheme } = useTheme()
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: 'dashboard', end: true },
@@ -50,6 +52,13 @@ export default function AdminLayout() {
             <span className="material-symbols-outlined">arrow_back</span>
              <span className="text-sm font-medium">Kembali ke Toko</span>
           </NavLink>
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-150 rounded-lg w-full text-left"
+          >
+            <span className="material-symbols-outlined">{resolved === 'dark' ? 'light_mode' : 'dark_mode'}</span>
+            <span className="text-sm font-medium">{resolved === 'dark' ? 'Mode Terang' : 'Mode Gelap'}</span>
+          </button>
           <a className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-150 rounded-lg" href="#">
             <span className="material-symbols-outlined">settings</span>
              <span className="text-sm font-medium">Pengaturan</span>

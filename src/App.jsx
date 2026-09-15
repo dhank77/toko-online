@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { CartProvider } from './context/CartContext'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import SiteLayout from './components/SiteLayout'
 import HomePage from './pages/HomePage'
 import CartPage from './pages/CartPage'
@@ -20,6 +21,7 @@ import { Toaster } from 'react-hot-toast'
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <CartProvider>
         <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
@@ -50,5 +52,6 @@ export default function App() {
         </BrowserRouter>
       </CartProvider>
     </AuthProvider>
+    </ThemeProvider>
   )
 }

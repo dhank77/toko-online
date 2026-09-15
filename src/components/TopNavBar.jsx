@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { api } from '../utils/api'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -19,6 +20,7 @@ const SEARCH_HINTS = [
 
 export default function TopNavBar({ cartCount = 0 }) {
   const { user, signOut } = useAuth()
+  const { resolved, toggleTheme } = useTheme()
   const [categories, setCategories] = useState([])
   const [catLoading, setCatLoading] = useState(true)
   const [hintIdx, setHintIdx] = useState(0)
@@ -55,6 +57,104 @@ export default function TopNavBar({ cartCount = 0 }) {
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
+
+  // ===== Deteksi lokasi pengguna (untuk chip "Dikirim ke") =====
+  const LOCATION_CACHE_KEY = 'tokorakyat:ship-city'
+  const DEFAULT_SHIP_CITY = 'Jakarta Pusat'
+
+  const readCachedCity = useCallback(() => {
+    try {
+      return localStorage.getItem(LOCATION_CACHE_KEY)
+    } catch {
+      return null
+    }
+  }, [])
+
+  const [shipCity, setShipCity] = useState(() => readCachedCity() || DEFAULT_SHIP_CITY)
+  const [locStatus, setLocStatus] = useState('idle') // idle | loading | ok | denied | error
+
+  const reverseGeocode = useCallback(async (latitude, longitude) => {
+    // Utama: BigDataCloud (gratis, tanpa API key, untuk penggunaan client-side)
+    try {
+      const res = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=id`
+      )
+      if (res.ok) {
+        const data = await res.json()
+        const city = data.city || data.locality || data.principalSubdivision
+        if (city) return city
+      }
+    } catch {
+      // lanjut ke fallback
+    }
+    // Fallback: Nominatim (OpenStreetMap)
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&accept-language=id`
+      )
+      if (res.ok) {
+        const data = await res.json()
+        const a = data.address || {}
+        // city_district memberi nama paling spesifik yang wajar (mis. "Jakarta Pusat");
+        // a.city pada provinsi tertentu berupa nama panjang (mis. "Daerah Khusus Ibukota Jakarta")
+        return a.city_district || a.town || a.village || a.city || a.county || a.state || null
+      }
+    } catch {
+      // tidak ada hasil
+    }
+    return null
+  }, [])
+
+  const requestLocation = useCallback(() => {
+    if (!('geolocation' in navigator)) {
+      setLocStatus('error')
+      return
+    }
+    setLocStatus('loading')
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords
+        const city = await reverseGeocode(latitude, longitude)
+        if (city) {
+          setShipCity(city)
+          try {
+            localStorage.setItem(LOCATION_CACHE_KEY, city)
+          } catch {
+            // abaikan jika storage diblokir
+          }
+          setLocStatus('ok')
+        } else {
+          setLocStatus('error')
+        }
+      },
+      (err) => {
+        // err.code 1 = PERMISSION_DENIED
+        setLocStatus(err && err.code === 1 ? 'denied' : 'error')
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 }
+    )
+  }, [reverseGeocode])
+
+  // Saat pertama kali dibuka: deteksi otomatis hanya jika belum ada cache lokasi
+  useEffect(() => {
+    if (!readCachedCity()) {
+      requestLocation()
+    } else {
+      setLocStatus('ok')
+    }
+  }, [readCachedCity, requestLocation])
+
+  const locTitle =
+    locStatus === 'loading'
+      ? 'Mendeteksi lokasi Anda…'
+      : locStatus === 'ok'
+        ? `${shipCity} — klik untuk perbarui lokasi`
+        : locStatus === 'denied'
+          ? 'Izin lokasi ditolak — klik untuk mencoba lagi'
+          : locStatus === 'error'
+            ? 'Gagal mendeteksi lokasi — klik untuk coba lagi'
+            : 'Dikirim ke alamat Anda — klik untuk deteksi lokasi'
+
 
   const fullName = user?.user_metadata?.full_name || user?.email || ''
   const email = user?.email || ''
@@ -226,13 +326,20 @@ export default function TopNavBar({ cartCount = 0 }) {
 
         <button
           type="button"
-          title="Atur alamat pengiriman"
+          onClick={requestLocation}
+          title={locTitle}
           className="hidden xl:flex items-center gap-2 h-11 px-2.5 rounded-xl hover:bg-muted transition-colors shrink-0"
         >
-          <span className="material-symbols-outlined text-primary">location_on</span>
+          {locStatus === 'loading' ? (
+            <span className="material-symbols-outlined text-primary animate-spin">progress_activity</span>
+          ) : (
+            <span className="material-symbols-outlined text-primary">location_on</span>
+          )}
           <span className="flex flex-col items-start leading-tight">
             <span className="text-[10px] text-muted-foreground">Dikirim ke</span>
-            <span className="text-xs font-semibold text-foreground">Jakarta Pusat</span>
+            <span className="text-xs font-semibold text-foreground">
+              {locStatus === 'loading' ? 'Mendeteksi lokasi…' : shipCity}
+            </span>
           </span>
         </button>
 
@@ -273,6 +380,17 @@ export default function TopNavBar({ cartCount = 0 }) {
         </div>
 
         <div className="flex items-center gap-0.5 ml-auto shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-muted-foreground hover:text-primary hover:bg-muted"
+            title={resolved === 'dark' ? 'Mode terang' : 'Mode gelap'}
+          >
+            <span className="material-symbols-outlined">
+              {resolved === 'dark' ? 'light_mode' : 'dark_mode'}
+            </span>
+          </Button>
           {notificationButton}
           <Button asChild variant="ghost" size="icon" className="text-muted-foreground hover:text-primary hover:bg-muted" title="Pesanan Saya">
             <Link to="/orders">
@@ -290,6 +408,17 @@ export default function TopNavBar({ cartCount = 0 }) {
         <div className="h-9 flex items-center justify-between">
           {logo(true)}
           <div className="flex items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="text-muted-foreground hover:text-primary hover:bg-muted"
+              title={resolved === 'dark' ? 'Mode terang' : 'Mode gelap'}
+            >
+              <span className="material-symbols-outlined text-xl">
+                {resolved === 'dark' ? 'light_mode' : 'dark_mode'}
+              </span>
+            </Button>
             {notificationButton}
             {cartButton}
             {authArea}
