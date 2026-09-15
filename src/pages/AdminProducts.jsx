@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
 import { supabase } from '../utils/supabaseClient'
+import { compressImage, formatFileSize } from '../utils/imageCompress'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -232,21 +233,31 @@ export default function AdminProducts() {
       return
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Gambar harus kurang dari 2MB')
+    const MAX_SIZE = 10 * 1024 * 1024 // 10MB before compression
+    if (file.size > MAX_SIZE) {
+      toast.error(`Gambar terlalu besar (${formatFileSize(file.size)}). Maksimal ${formatFileSize(MAX_SIZE)}`)
       return
     }
 
     setUploading(true)
     setError('')
     try {
-      const fileExt = file.name.split('.').pop()
+      // Compress image before upload
+      const originalSize = file.size
+      const compressed = await compressImage(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.82,
+      })
+      const compressedSize = compressed.size
+
+      const fileExt = compressed.name.split('.').pop()
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${fileExt}`
       const filePath = `products/${fileName}`
 
       const { error: uploadError } = await supabase.storage
         .from('products')
-        .upload(filePath, file, { cacheControl: '3600', upsert: false })
+        .upload(filePath, compressed, { cacheControl: '3600', upsert: false })
 
       if (uploadError) throw uploadError
 
@@ -255,7 +266,13 @@ export default function AdminProducts() {
         .getPublicUrl(filePath)
 
       setForm((prev) => ({ ...prev, image_url: urlData.publicUrl }))
-      toast.success('Gambar berhasil diunggah')
+
+      if (compressedSize < originalSize) {
+        const saved = ((1 - compressedSize / originalSize) * 100).toFixed(0)
+        toast.success(`Gambar dikompresi ${saved}% (${formatFileSize(originalSize)} → ${formatFileSize(compressedSize)})`)
+      } else {
+        toast.success('Gambar berhasil diunggah')
+      }
     } catch (err) {
       setError(err.message || 'Gagal mengunggah gambar')
     } finally {
