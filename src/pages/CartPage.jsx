@@ -61,6 +61,7 @@ export default function CartPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [paying, setPaying] = useState(false)
+  const [summaryOpen, setSummaryOpen] = useState(true) // Ringkasan di mobile bisa ditutup/buka
   const [confirm, setConfirm] = useState(null) // { type: 'selected' } | { type: 'item', id }
 
   // Rekomendasi "Produk Lainnya" ala halaman cart Tokopedia
@@ -359,43 +360,62 @@ export default function CartPage() {
             </section>
           </div>
 
-          {/* Kolom kanan: Ringkasan Belanja ala Tokopedia */}
-          <aside className="hidden lg:block">
-            <div className="sticky top-24 bg-card rounded-xl border border-border shadow-sm">
-              <div className="px-6 py-4 border-b border-border">
+          {/* Kolom kanan: Ringkasan Belanja ala Tokopedia (di bawah daftar produk pada mobile) */}
+          <aside className="block">
+            <div className="lg:sticky lg:top-24 bg-card rounded-xl border border-border shadow-sm">
+              {/* Header mobile: bisa ditutup/buka */}
+              <button
+                type="button"
+                onClick={() => setSummaryOpen((v) => !v)}
+                className="lg:hidden w-full flex items-center justify-between px-5 py-4 border-b border-border"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="font-bold">Ringkasan Belanja</span>
+                  <span className="material-symbols-outlined text-lg text-muted-foreground transition-transform duration-200" style={summaryOpen ? { transform: 'rotate(180deg)' } : undefined}>
+                    expand_more
+                  </span>
+                </span>
+                <span className="font-bold text-primary">{formatRupiah(total)}</span>
+              </button>
+
+              {/* Header desktop */}
+              <div className="hidden lg:block px-6 py-4 border-b border-border">
                 <h2 className="font-bold text-lg">Ringkasan Belanja</h2>
               </div>
-              <div className="px-6 py-4 space-y-3">
-                <div className="flex justify-between gap-3 text-sm">
-                  <span className="text-muted-foreground">Total harga produk ({selectedCount} barang)</span>
-                  <span className="font-semibold text-foreground whitespace-nowrap">{formatRupiah(selectedSubtotal)}</span>
+
+              <div className={summaryOpen ? 'block' : 'hidden lg:block'}>
+                <div className="px-6 py-4 space-y-3">
+                  <div className="flex justify-between gap-3 text-sm">
+                    <span className="text-muted-foreground">Total harga produk ({selectedCount} barang)</span>
+                    <span className="font-semibold text-foreground whitespace-nowrap">{formatRupiah(selectedSubtotal)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Total ongkir</span>
+                    <span className="font-bold text-secondary">GRATIS</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Pajak (2%)</span>
+                    <span className="font-semibold text-foreground">{formatRupiah(tax)}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total ongkir</span>
-                  <span className="font-bold text-secondary">GRATIS</span>
+                <div className="px-6 py-4 border-t border-border flex items-center justify-between gap-3">
+                  <span className="font-semibold">Total belanja</span>
+                  <span className="text-xl font-bold text-primary">{formatRupiah(total)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Pajak (2%)</span>
-                  <span className="font-semibold text-foreground">{formatRupiah(tax)}</span>
+                <div className="px-6 pb-6">
+                  <Button
+                    onClick={handleCheckout}
+                    disabled={paying || selectedCount === 0}
+                    className="w-full h-11 rounded-full bg-primary hover:bg-primary/90 font-bold text-base shadow-md disabled:opacity-60"
+                  >
+                    {paying ? <span className="material-symbols-outlined animate-spin">progress_activity</span> : `Checkout (${selectedCount})`}
+                  </Button>
+                  {selectedCount === 0 && <p className="text-xs text-center text-amber-600 mt-2">Pilih produk terlebih dahulu</p>}
+                  <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-4">
+                    <span className="material-symbols-outlined text-sm text-secondary">verified_user</span>
+                    Transaksi aman via Midtrans
+                  </p>
                 </div>
-              </div>
-              <div className="px-6 py-4 border-t border-border flex items-center justify-between gap-3">
-                <span className="font-semibold">Total belanja</span>
-                <span className="text-xl font-bold text-primary">{formatRupiah(total)}</span>
-              </div>
-              <div className="px-6 pb-6">
-                <Button
-                  onClick={handleCheckout}
-                  disabled={paying || selectedCount === 0}
-                  className="w-full h-11 rounded-full bg-primary hover:bg-primary/90 font-bold text-base shadow-md disabled:opacity-60"
-                >
-                  {paying ? <span className="material-symbols-outlined animate-spin">progress_activity</span> : `Checkout (${selectedCount})`}
-                </Button>
-                {selectedCount === 0 && <p className="text-xs text-center text-amber-600 mt-2">Pilih produk terlebih dahulu</p>}
-                <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-4">
-                  <span className="material-symbols-outlined text-sm text-secondary">verified_user</span>
-                  Transaksi aman via Midtrans
-                </p>
               </div>
             </div>
           </aside>
