@@ -11,6 +11,7 @@ import authRoutes from './routes/auth.js'
 import variantRoutes from './routes/variants.js'
 import cartRoutes from './routes/cart.js'
 import paymentRoutes from './routes/payment.js'
+import heroSlideRoutes from './routes/heroSlides.js'
 
 const app = express()
 
@@ -39,6 +40,7 @@ app.use('/api/profiles', profileRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api', variantRoutes)
 app.use('/api/payment', paymentRoutes)
+app.use('/api/hero-slides', heroSlideRoutes)
 
 app.use((err, req, res, next) => {
   console.error(err)

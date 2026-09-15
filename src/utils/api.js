@@ -137,5 +137,19 @@ export const api = {
     body: JSON.stringify({ order_id }),
   }),
   getMyOrders: () => request('/orders/my'),
+  // Hero Slides
+  getHeroSlides: () => request('/hero-slides'),
+  getAdminHeroSlides: () => request('/hero-slides/admin'),
+  createHeroSlide: (slide) => request('/hero-slides', {
+    method: 'POST',
+    body: JSON.stringify(slide),
+  }),
+  updateHeroSlide: (id, updates) => request(`/hero-slides/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(updates),
+  }),
+  deleteHeroSlide: (id) => request(`/hero-slides/${id}`, {
+    method: 'DELETE',
+  }),
   getMyOrder: (orderId) => request(`/orders/my/${orderId}`),
 }

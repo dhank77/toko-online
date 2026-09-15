@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '../lib/utils'
+import { api } from '../utils/api'
 
-const slides = [
+const fallbackSlides = [
   {
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAO-hieItXxTEtuWTIPMA8h8av4IltYbz5HFBHERs2F53LOCmrq4Z7IAKI4413da786Y5uPioQzZDyvMyCfm2GhlRYlqchbaBva5VVAPO8X5jFbVNMthoGqsW2hvofVBi8C0KKre7jmoObbArFdU4VAomycFZefa-qlvIcyi03MmDUy3VGsQq2OWL-pUc4XmzXlBVeZpHrbugcXmgf-bN4xT7DtzALxRogHVjV9ItDSmGbHZ0hwmuJo6Q',
     badge: 'Rilis Musiman Terbatas',
@@ -29,14 +30,40 @@ const slides = [
 ]
 
 export default function HeroCarousel() {
+  const [slides, setSlides] = useState(fallbackSlides)
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
+
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const data = await api.getHeroSlides()
+        if (data && data.length > 0) {
+          const mapped = data.map((s) => ({
+            img: s.img,
+            badge: s.badge,
+            title: s.title,
+            desc: s.description,
+            cta: s.cta_label ? { label: s.cta_label, href: s.cta_href || '#' } : null,
+            secondaryCta: s.secondary_cta_label
+              ? { label: s.secondary_cta_label, href: s.secondary_cta_href || '#' }
+              : null,
+          }))
+          setSlides(mapped)
+        }
+      } catch (err) {
+        // Silently fallback to hardcoded slides
+        console.warn('Gagal mengambil hero slides:', err.message)
+      }
+    }
+    fetchSlides()
+  }, [])
 
   useEffect(() => {
     if (paused || slides.length <= 1) return undefined
     const id = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5000)
     return () => clearInterval(id)
-  }, [paused])
+  }, [paused, slides.length])
 
   const go = (dir) => setIndex((i) => (i + dir + slides.length) % slides.length)
 
@@ -59,17 +86,23 @@ export default function HeroCarousel() {
             <img src={slide.img} alt={slide.title} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/30 to-transparent" />
             <div className="relative z-20 h-full flex flex-col justify-center px-8 md:px-12 max-w-2xl">
-              <Badge variant="secondary" className="w-fit mb-4">
-                {slide.badge}
-              </Badge>
+              {slide.badge && (
+                <Badge variant="secondary" className="w-fit mb-4">
+                  {slide.badge}
+                </Badge>
+              )}
               <h1 className="text-3xl md:text-5xl font-bold text-primary-foreground mb-4 md:mb-6 leading-tight">
                 {slide.title}
               </h1>
-              <p className="text-base md:text-lg text-primary-foreground/90 mb-6 md:mb-8">{slide.desc}</p>
+              {slide.desc && (
+                <p className="text-base md:text-lg text-primary-foreground/90 mb-6 md:mb-8">{slide.desc}</p>
+              )}
               <div className="flex gap-4">
-                <Button asChild size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                  <a href={slide.cta.href}>{slide.cta.label}</a>
-                </Button>
+                {slide.cta && (
+                  <Button asChild size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                    <a href={slide.cta.href}>{slide.cta.label}</a>
+                  </Button>
+                )}
                 {slide.secondaryCta && (
                   <Button
                     asChild

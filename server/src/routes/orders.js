@@ -52,7 +52,30 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
       `)
       .order('created_at', { ascending: false })
 
-    if (error) return res.status(400).json({ error: error.message })
+    // Fallback: jika FK orders -> profiles belum ada di database
+    // (PGRST200 = relationship not found), ambil orders & profiles
+    // terpisah lalu gabungkan secara manual agar halaman admin tetap jalan.
+    if (error) {
+      if (error.code === 'PGRST200') {
+        const [{ data: ordersData, error: ordersErr }, { data: profilesData }] = await Promise.all([
+          supabaseAdmin
+            .from('orders')
+            .select('*')
+            .order('created_at', { ascending: false }),
+          supabaseAdmin.from('profiles').select('id, full_name, email'),
+        ])
+
+        if (ordersErr) return res.status(400).json({ error: ordersErr.message })
+
+        const profilesById = new Map((profilesData || []).map((p) => [p.id, p]))
+        const merged = (ordersData || []).map((order) => ({
+          ...order,
+          profiles: profilesById.get(order.customer_id) || null,
+        }))
+        return res.json(merged)
+      }
+      return res.status(400).json({ error: error.message })
+    }
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: 'Gagal mengambil pesanan' })

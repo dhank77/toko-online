@@ -224,7 +224,7 @@ export default function AdminDashboard() {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{order.product_id ? 'Pesanan produk' : 'Pesanan'}</TableCell>
-                      <TableCell className="text-sm font-medium">Rp{Number(order.total_amount || 0).toFixed(2)}</TableCell>
+                      <TableCell className="text-sm font-medium">Rp{Number(order.total_amount || order.gross_amount || 0).toLocaleString('id-ID')}</TableCell>
                       <TableCell>
                         <Badge variant={order.status === 'shipped' ? 'default' : order.status === 'processed' ? 'secondary' : 'outline'}>
                           {order.status}
