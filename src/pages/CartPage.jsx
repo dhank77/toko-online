@@ -1,14 +1,45 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { formatRupiah } from '../lib/utils'
 import { api } from '../utils/api'
+import { getProducts } from '../lib/supabase'
 import { loadSnapScript } from '../utils/midtrans'
+import SectionHeader from '../components/SectionHeader'
+import ProductRow from '../components/ProductRow'
+import ProductCard, { ProductCardSkeleton } from '../components/ProductCard'
 import toast from 'react-hot-toast'
+
+const REC_CARD_WIDTH = 'w-[160px] sm:w-[200px] lg:w-[224px] flex-shrink-0 snap-start'
+
+function QtyStepper({ quantity, onDecrement, onIncrement }) {
+  return (
+    <div className="flex items-center rounded-lg border border-border overflow-hidden">
+      <button
+        type="button"
+        aria-label="Kurangi jumlah"
+        onClick={onDecrement}
+        disabled={quantity <= 1}
+        className="w-8 h-8 flex items-center justify-center hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+      >
+        <span className="material-symbols-outlined text-base">remove</span>
+      </button>
+      <span className="w-9 text-center text-sm font-semibold tabular-nums">{quantity}</span>
+      <button
+        type="button"
+        aria-label="Tambah jumlah"
+        onClick={onIncrement}
+        className="w-8 h-8 flex items-center justify-center hover:bg-muted transition-colors"
+      >
+        <span className="material-symbols-outlined text-base">add</span>
+      </button>
+    </div>
+  )
+}
 
 export default function CartPage() {
   const {
@@ -29,6 +60,27 @@ export default function CartPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [paying, setPaying] = useState(false)
+  const [confirm, setConfirm] = useState(null) // { type: 'selected' } | { type: 'item', id }
+
+  // Rekomendasi "Produk Lainnya" ala halaman cart Tokopedia
+  const [recs, setRecs] = useState([])
+  const [recsLoading, setRecsLoading] = useState(true)
+  useEffect(() => {
+    let active = true
+    getProducts(3, 8)
+      .then((res) => {
+        if (active) {
+          setRecs(res.data)
+          setRecsLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) setRecsLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   const allSelected = items.length > 0 && items.every((item) => item.selected)
 
@@ -49,7 +101,6 @@ export default function CartPage() {
 
     setPaying(true)
     try {
-      // Pastikan Snap ter-load (fallback jika script di index.html belum siap)
       try {
         await loadSnapScript()
       } catch (e) {
@@ -68,7 +119,6 @@ export default function CartPage() {
         quantity: Number(it.quantity),
         name: String(it.name).slice(0, 50),
       }))
-      // Tambahkan pajak sebagai item agar sum == gross_amount (fix: transaction_details.gross_amount is not equal to sum of item_details)
       const taxRounded = Math.round(tax)
       if (taxRounded > 0) {
         itemDetails.push({
@@ -95,7 +145,6 @@ export default function CartPage() {
         throw new Error(data?.error || 'Gagal mendapatkan token Midtrans')
       }
 
-      // Redirect ke Midtrans Snap - popup
       window.snap.pay(data.token, {
         onSuccess: async function (result) {
           toast.success('Pembayaran berhasil!')
@@ -103,8 +152,6 @@ export default function CartPage() {
           try {
             await api.finishPayment(data.order_id)
             toast.success('Pesanan disimpan ke riwayat')
-            // Bersihkan cart lokal: reload dari server (sudah dihapus di backend)
-            // Cart akan kosong untuk item yang dibeli; navigasi ke halaman sukses
             navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=success`)
           } catch (e) {
             console.warn('finishPayment after onSuccess failed:', e)
@@ -113,12 +160,10 @@ export default function CartPage() {
         },
         onPending: function (result) {
           toast('Menunggu pembayaran Anda...', { icon: '⏳' })
-          console.log('Midtrans pending:', result)
           navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=pending`)
         },
         onError: function (result) {
           toast.error('Pembayaran gagal!')
-          console.log('Midtrans error:', result)
           navigate(`/payment/success?order_id=${encodeURIComponent(data.order_id)}&status=failed`)
         },
         onClose: function () {
@@ -133,15 +178,41 @@ export default function CartPage() {
     }
   }
 
+  const handleConfirmDelete = async () => {
+    if (!confirm) return
+    try {
+      if (confirm.type === 'selected') {
+        const n = selectedCount
+        await removeSelected()
+        toast.success(`${n} produk dihapus dari keranjang`)
+      } else {
+        await removeItem(confirm.id)
+        toast.success('Produk dihapus dari keranjang')
+      }
+    } catch (err) {
+      toast.error(err?.message || 'Gagal menghapus produk')
+    } finally {
+      setConfirm(null)
+    }
+  }
+
   if (!user) {
     return (
-      <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-2xl font-bold mb-8">Keranjang Belanja</h1>
-        <div className="text-center py-16">
-          <p className="text-muted-foreground mb-4">Silakan login untuk melihat keranjang belanja Anda.</p>
-          <Link to="/login" className="text-primary font-medium hover:underline">
-            Masuk
-          </Link>
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-16">
+        <div className="flex flex-col items-center text-center py-20">
+          <div className="w-32 h-32 rounded-full bg-muted flex items-center justify-center mb-6">
+            <span className="material-symbols-outlined text-6xl text-muted-foreground/60">shopping_cart</span>
+          </div>
+          <h1 className="text-xl font-bold mb-2">Keranjang belanjamu menunggu</h1>
+          <p className="text-muted-foreground text-sm mb-6">Silakan login untuk melihat isi keranjang belanjamu.</p>
+          <div className="flex items-center gap-3">
+            <Button asChild className="rounded-full px-6 bg-primary hover:bg-primary/90">
+              <Link to="/login">Masuk</Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-full px-6 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+              <Link to="/register">Daftar</Link>
+            </Button>
+          </div>
         </div>
       </main>
     )
@@ -149,16 +220,18 @@ export default function CartPage() {
 
   if (loading && items.length === 0) {
     return (
-      <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-2xl font-bold mb-8">Keranjang Belanja</h1>
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-16">
+        <h1 className="text-xl font-bold mb-6">Keranjang</h1>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-background p-6 rounded-xl border border-border animate-pulse flex gap-4 items-center">
-              <div className="w-24 h-24 bg-muted rounded-lg" />
+            <div key={i} className="bg-card p-4 md:p-6 rounded-xl border border-border animate-pulse flex gap-4 items-center">
+              <div className="w-5 h-5 rounded bg-muted shrink-0" />
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-muted rounded-xl shrink-0" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-muted rounded w-1/3" />
-                <div className="h-4 bg-muted rounded w-1/4" />
+                <div className="h-4 bg-muted rounded w-2/3" />
+                <div className="h-3 bg-muted rounded w-1/4" />
               </div>
+              <div className="h-8 w-28 bg-muted rounded-lg hidden md:block" />
             </div>
           ))}
         </div>
@@ -167,213 +240,217 @@ export default function CartPage() {
   }
 
   return (
-    <main className="flex-grow w-full max-w-7xl mx-auto px-6 py-16">
-        <h1 className="text-2xl font-bold mb-8">Keranjang Belanja</h1>
+    <main className="flex-grow w-full max-w-7xl mx-auto px-4 md:px-6 pt-24 pb-28 lg:pb-16">
+      <h1 className="text-xl font-bold mb-6">Keranjang</h1>
 
       {items.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-muted-foreground mb-4">Keranjang Anda kosong.</p>
-          <Link to="/" className="text-primary font-medium hover:underline">
-            Lanjut Belanja
-          </Link>
+        <div className="flex flex-col items-center text-center py-16">
+          <div className="w-40 h-40 rounded-full bg-muted flex items-center justify-center mb-6">
+            <span className="material-symbols-outlined text-7xl text-muted-foreground/50">remove_shopping_cart</span>
+          </div>
+          <h2 className="text-xl font-bold mb-2">Yah, keranjang belanjamu kosong</h2>
+          <p className="text-muted-foreground text-sm mb-6">Coba luangkan waktu untuk mencari barang yang kamu inginkan.</p>
+          <Button asChild variant="outline" className="rounded-full px-6 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+            <Link to="/">Belanja Dulu, Yuk</Link>
+          </Button>
         </div>
       ) : (
-        <div className="grid checkout-grid gap-8 items-start">
-          {/* Left: Cart Items */}
-          <div className="space-y-6">
-            {/* Select All Header */}
-            <div className="bg-background p-4 rounded-xl border border-border shadow-sm flex items-center justify-between">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <Checkbox
-                  checked={allSelected}
-                  onCheckedChange={toggleSelectAll}
-                />
-                <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                  Pilih Semua ({items.length} item)
-                </span>
+        <div className="checkout-grid gap-6 items-start">
+          {/* Kolom kiri: daftar produk */}
+          <div className="space-y-4 min-w-0">
+            {/* Bar aksi pilih semua (ala Tokopedia) */}
+            <div className="bg-card rounded-xl border border-border shadow-sm px-4 md:px-6 py-3 flex items-center justify-between">
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} aria-label="Pilih semua produk" className="w-5 h-5" />
+                <span className="text-sm font-semibold">Pilih semua produk</span>
+                <span className="text-xs text-muted-foreground">({items.length} produk)</span>
               </label>
               <Button
                 variant="ghost"
-                className="text-destructive font-medium"
-                onClick={removeSelected}
+                size="icon"
+                title="Hapus produk terpilih"
                 disabled={selectedCount === 0}
+                onClick={() => setConfirm({ type: 'selected' })}
+                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 disabled:opacity-40"
               >
-                 Hapus yang Dipilih
+                <span className="material-symbols-outlined">delete</span>
               </Button>
             </div>
 
-            {/* Items List */}
-            <div className="space-y-4">
+            {/* Kartu toko (toko tunggal ala Tokopedia) */}
+            <section className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+              <div className="flex items-center gap-3 px-4 md:px-6 py-4 border-b border-border/70">
+                <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} aria-label="Pilih semua produk toko" className="w-5 h-5" />
+                <span className="material-symbols-outlined text-primary text-xl">storefront</span>
+                <div className="flex flex-col leading-tight">
+                  <span className="font-bold text-[15px] text-foreground">ShopComposed</span>
+                  <span className="text-xs text-muted-foreground">Jakarta Pusat</span>
+                </div>
+              </div>
+
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="item-row bg-background p-6 rounded-xl border border-transparent hover:border-border transition-all flex flex-col sm:flex-row gap-4 items-start sm:items-center"
+                  className="flex items-start gap-3 md:gap-4 px-4 md:px-6 py-4 border-t first:border-t-0 border-border/60"
                 >
-                  <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <Checkbox
-                      checked={item.selected}
-                      onCheckedChange={() => toggleSelect(item.id)}
+                  <Checkbox
+                    checked={item.selected}
+                    onCheckedChange={() => toggleSelect(item.id)}
+                    aria-label={`Pilih ${item.name}`}
+                    className="mt-1 shrink-0 w-5 h-5"
+                  />
+                  <Link to={`/product/${item.productId}`} className="shrink-0">
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-xl border border-border object-cover bg-muted"
                     />
-                    <div className="w-24 h-24 rounded-lg bg-muted overflow-hidden shrink-0">
-                      {item.image ? (
-                        <img
-                          className="w-full h-full object-cover"
-                          data-alt={item.name}
-                          src={item.image}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                          <span className="material-symbols-outlined">image</span>
-                        </div>
-                      )}
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      to={`/product/${item.productId}`}
+                      className="text-sm md:text-[15px] font-medium text-foreground line-clamp-2 leading-snug hover:text-primary transition-colors"
+                    >
+                      {item.name}
+                    </Link>
+                    {item.variant && (
+                      <span className="inline-block mt-1.5 text-xs bg-muted text-muted-foreground rounded-md px-2 py-0.5">
+                        Varian: {item.variant}
+                      </span>
+                    )}
+                    {/* Mobile: stepper + hapus + subtotal */}
+                    <div className="flex md:hidden mt-3 items-center justify-between gap-2">
+                      <QtyStepper quantity={item.quantity} onDecrement={() => decrement(item.id)} onIncrement={() => increment(item.id)} />
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          title="Hapus produk"
+                          onClick={() => setConfirm({ type: 'item', id: item.id })}
+                          className="w-8 h-8 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-lg">delete</span>
+                        </button>
+                        <span className="font-bold text-sm text-foreground">{formatRupiah(item.price * item.quantity)}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex-grow space-y-2">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-semibold text-foreground text-lg">{item.name}</h3>
-                        {item.variant && (
-                          <p className="text-sm text-muted-foreground">{item.variant}</p>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="delete-btn opacity-0 text-muted-foreground hover:text-destructive transition-all"
-                      >
-                        <span className="material-symbols-outlined" data-icon="delete">
-                          delete
-                        </span>
-                      </button>
+
+                  {/* Desktop: kolom harga | qty | subtotal | hapus ala Tokopedia */}
+                  <div className="hidden md:flex items-center gap-5 shrink-0">
+                    <div className="w-28 text-right">
+                      <span className="font-semibold text-[15px] text-foreground">{formatRupiah(item.price)}</span>
                     </div>
-                    <div className="flex justify-between items-end mt-2">
-                      <div className="text-primary font-semibold text-xl">{formatRupiah(item.price)}</div>
-                      <div className="flex items-center bg-muted rounded-lg p-1 border border-border">
-                        <button
-                          onClick={() => decrement(item.id)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-background rounded transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-lg" data-icon="remove">
-                            remove
-                          </span>
-                        </button>
-                        <span className="w-10 text-center font-medium quantity">{item.quantity}</span>
-                        <button
-                          onClick={() => increment(item.id)}
-                          className="w-8 h-8 flex items-center justify-center hover:bg-background rounded transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-lg" data-icon="add">
-                            add
-                          </span>
-                        </button>
-                      </div>
+                    <QtyStepper quantity={item.quantity} onDecrement={() => decrement(item.id)} onIncrement={() => increment(item.id)} />
+                    <div className="w-36 text-right">
+                      <span className="font-bold text-primary">{formatRupiah(item.price * item.quantity)}</span>
                     </div>
+                    <button
+                      type="button"
+                      title="Hapus produk"
+                      onClick={() => setConfirm({ type: 'item', id: item.id })}
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-lg">delete</span>
+                    </button>
                   </div>
                 </div>
               ))}
-            </div>
+            </section>
           </div>
 
-          {/* Right Sidebar: Order Summary */}
-          <aside className="space-y-6 sticky top-24">
-            <div className="bg-background p-8 rounded-xl border border-border shadow-sm">
-              <h2 className="text-xl font-semibold mb-6">Ringkasan Pesanan</h2>
-              <div className="space-y-4 pb-6 border-b border-border">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Subtotal ({selectedCount} items)</span>
-                  <span className="text-foreground font-semibold">
-                    {formatRupiah(selectedSubtotal)}
-                  </span>
+          {/* Kolom kanan: Ringkasan Belanja ala Tokopedia */}
+          <aside className="hidden lg:block">
+            <div className="sticky top-24 bg-card rounded-xl border border-border shadow-sm">
+              <div className="px-6 py-4 border-b border-border">
+                <h2 className="font-bold text-lg">Ringkasan Belanja</h2>
+              </div>
+              <div className="px-6 py-4 space-y-3">
+                <div className="flex justify-between gap-3 text-sm">
+                  <span className="text-muted-foreground">Total harga produk ({selectedCount} barang)</span>
+                  <span className="font-semibold text-foreground whitespace-nowrap">{formatRupiah(selectedSubtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Pengiriman</span>
-                  <span className="text-secondary font-semibold">GRATIS</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Total ongkir</span>
+                  <span className="font-bold text-secondary">GRATIS</span>
                 </div>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Estimasi pajak</span>
-                  <span className="text-foreground font-semibold">{formatRupiah(tax)}</span>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Pajak (2%)</span>
+                  <span className="font-semibold text-foreground">{formatRupiah(tax)}</span>
                 </div>
               </div>
-              <div className="py-6 space-y-4">
-                <label className="text-sm font-medium text-muted-foreground block">Kode Promo</label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Masukkan kode"
-                    type="text"
-                    className="flex-grow"
-                  />
-                  <Button variant="outline" className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground">
-                    Terapkan
-                  </Button>
-                </div>
+              <div className="px-6 py-4 border-t border-border flex items-center justify-between gap-3">
+                <span className="font-semibold">Total belanja</span>
+                <span className="text-xl font-bold text-primary">{formatRupiah(total)}</span>
               </div>
-              <div className="flex justify-between py-6">
-                <span className="text-xl font-semibold">Total</span>
-                <span className="text-2xl font-bold text-primary">{formatRupiah(total)}</span>
-              </div>
-              <Button
-                onClick={handleCheckout}
-                disabled={paying || selectedCount === 0}
-                className="w-full py-4 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-60"
-              >
-                {paying ? (
-                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
-                ) : null}
-                <span>{paying ? 'Memproses...' : 'Lanjut ke Pembayaran'}</span>
-                {!paying && (
-                  <span className="material-symbols-outlined" data-icon="arrow_forward">
-                    arrow_forward
-                  </span>
-                )}
-              </Button>
-              {selectedCount === 0 && (
-                <p className="text-xs text-amber-600 text-center mt-2">Pilih item terlebih dahulu</p>
-              )}
-              {/* Payment Methods */}
-              <div className="mt-8">
-                <p className="text-xs text-muted-foreground text-center uppercase tracking-wider mb-4">
-                  Metode Pembayaran Aman
+              <div className="px-6 pb-6">
+                <Button
+                  onClick={handleCheckout}
+                  disabled={paying || selectedCount === 0}
+                  className="w-full h-11 rounded-full bg-primary hover:bg-primary/90 font-bold text-base shadow-md disabled:opacity-60"
+                >
+                  {paying ? <span className="material-symbols-outlined animate-spin">progress_activity</span> : `Checkout (${selectedCount})`}
+                </Button>
+                {selectedCount === 0 && <p className="text-xs text-center text-amber-600 mt-2">Pilih produk terlebih dahulu</p>}
+                <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-4">
+                  <span className="material-symbols-outlined text-sm text-secondary">verified_user</span>
+                  Transaksi aman via Midtrans
                 </p>
-                <div className="flex justify-center items-center gap-6 opacity-60 hover:opacity-100 transition-all duration-300">
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <span className="material-symbols-outlined text-2xl text-secondary" data-icon="account_balance_wallet">
-                        account_balance_wallet
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-bold text-muted-foreground">GOPAY</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <span className="material-symbols-outlined text-2xl text-primary" data-icon="payments">
-                        payments
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-bold text-muted-foreground">OVO</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
-                      <span className="material-symbols-outlined text-2xl text-foreground" data-icon="qr_code_2">
-                        qr_code_2
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-bold text-muted-foreground">QRIS</span>
-                  </div>
-                </div>
               </div>
-            </div>
-            <div className="bg-muted/50 p-4 rounded-xl flex items-center gap-3">
-              <span className="material-symbols-outlined text-secondary" data-icon="verified_user">
-                verified_user
-              </span>
-              <p className="text-sm text-muted-foreground">
-                Belanja dengan percaya diri dengan{' '}
-                <span className="text-primary font-semibold">Jaminan Pembelian Aman</span>. Pengembalian
-                mudah dalam 30 hari.
-              </p>
             </div>
           </aside>
         </div>
       )}
+
+      {/* Bar checkout sticky mobile ala Tokopedia */}
+      {items.length > 0 && (
+        <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-card border-t border-border px-4 py-3 flex items-center justify-between gap-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]">
+          <div className="min-w-0">
+            <p className="text-[11px] text-muted-foreground leading-none mb-1">Total belanja ({selectedCount} produk)</p>
+            <p className="font-bold text-primary leading-none">{formatRupiah(total)}</p>
+          </div>
+          <Button
+            onClick={handleCheckout}
+            disabled={paying || selectedCount === 0}
+            className="rounded-full px-6 h-10 bg-primary hover:bg-primary/90 font-bold shrink-0"
+          >
+            {paying ? <span className="material-symbols-outlined animate-spin">progress_activity</span> : `Checkout (${selectedCount})`}
+          </Button>
+        </div>
+      )}
+
+      {/* Produk Lainnya (rekomendasi ala Tokopedia) */}
+      {recs.length > 0 && (
+        <section className="mt-12">
+          <SectionHeader title="Produk Lainnya" actionLabel="" />
+          <ProductRow>
+            {recsLoading
+              ? Array.from({ length: 6 }).map((_, idx) => <ProductCardSkeleton key={idx} className={REC_CARD_WIDTH} />)
+              : recs.map((product) => <ProductCard key={product.id} product={product} className={REC_CARD_WIDTH} />)}
+          </ProductRow>
+        </section>
+      )}
+
+      {/* Dialog konfirmasi hapus */}
+      <Dialog open={!!confirm} onOpenChange={(open) => !open && setConfirm(null)}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>Hapus produk?</DialogTitle>
+            <DialogDescription>
+              {confirm?.type === 'selected'
+                ? `${selectedCount} produk terpilih akan dihapus dari keranjang belanjamu.`
+                : 'Produk ini akan dihapus dari keranjang belanjamu.'}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirm(null)}>
+              Batal
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Hapus
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }

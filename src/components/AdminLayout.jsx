@@ -78,7 +78,7 @@ export default function AdminLayout() {
           <div className="flex justify-between items-center w-full px-6 max-w-7xl mx-auto h-full">
             <div className="flex items-center gap-4">
               <span className="md:hidden material-symbols-outlined text-primary cursor-pointer">menu</span>
-              <h2 className="text-xl font-bold text-primary tracking-tight">ShopComposed</h2>
+              <h2 className="text-xl font-bold text-primary tracking-tight">Tokorakyat.id</h2>
             </div>
             <div className="hidden lg:flex flex-1 max-w-md mx-6">
               <div className="relative w-full">
@@ -108,7 +108,7 @@ export default function AdminLayout() {
         {/* Footer */}
         <footer className="py-10 px-6 border-t border-border bg-muted/50">
           <div className="md:text-right">
-             <p className="text-muted-foreground text-sm">© 2026 ShopComposed. Hak cipta dilindungi.</p>
+             <p className="text-muted-foreground text-sm">© 2026 Tokorakyat.id. Hak cipta dilindungi.</p>
           </div>
         </footer>
       </main>

@@ -21,7 +21,7 @@ const slides = [
   },
   {
     img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZXYMewpkBoen-lTZLQKo3Hu-sE3TBgdyX4ODk_T3Jr7I8WCggX4cY411Y0MVzRjVnrenfvgugumkPVjFj1f8qiapcEA_Qaum9euY4mGt05HEP7lro7fSBPRRsNbhuz26PCW0qFzHHFZ1-8yJCitYUL3xS4opGRP-KHSWQ8GDaLcwHcWkoLGyx9wGG1z3_5MCvEJhhVEvoOHpYaZ-ekEMLGsWixoMhNnN9-IfY8xEJS-VX4_AzMeJCfA',
-    badge: 'Baru di ShopComposed',
+    badge: 'Baru di Tokorakyat.id',
     title: 'Koleksi Terbaru Baru Saja Tiba',
     desc: 'Temukan produk paling baru dari brand favorit, dikirim cepat dengan garansi resmi.',
     cta: { label: 'Belanja Sekarang', href: '#baru' },

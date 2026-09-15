@@ -41,7 +41,7 @@ export default function LoginPage() {
         <div className="w-full max-w-[480px] bg-background rounded-xl shadow-sm p-8 flex flex-col relative overflow-hidden border border-border">
           <div className="text-center mb-10 relative z-10">
             <h1 className="text-xl font-bold text-primary mb-2 tracking-tight">
-              ShopSmart
+              Tokorakyat.id
             </h1>
             <h2 className="text-2xl md:text-3xl text-foreground mb-1">
               Selamat Datang Kembali

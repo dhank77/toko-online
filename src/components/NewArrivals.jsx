@@ -31,7 +31,7 @@ export default function NewArrivals() {
   return (
     <section id="baru" className="py-10 bg-muted/40 scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6">
-        <SectionHeader title="Baru di ShopComposed" subtitle="Produk paling baru dari brand pilihan." />
+        <SectionHeader title="Baru di Tokorakyat.id" subtitle="Produk paling baru dari brand pilihan." />
 
         <ProductRow>
           {loading

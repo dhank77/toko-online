@@ -75,8 +75,8 @@ export default function TopNavBar({ cartCount = 0 }) {
         <span className={cn('material-symbols-outlined', compact ? 'text-lg' : 'text-xl')}>storefront</span>
       </span>
       <span className={cn('font-bold tracking-tight leading-none', compact ? 'text-base' : 'text-xl')}>
-        <span className="text-foreground">Shop</span>
-        <span className="text-primary">Composed</span>
+        <span className="text-foreground">Toko</span>
+        <span className="text-primary">Rakyat.id</span>
       </span>
     </Link>
   )

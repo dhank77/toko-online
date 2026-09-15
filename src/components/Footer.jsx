@@ -1,6 +1,6 @@
 const footerColumns = [
   {
-    title: 'ShopComposed',
+    title: 'Tokorakyat.id',
     links: ['Tentang Kami', 'Karier', 'Blog', 'Media Kit'],
   },
   {
@@ -81,14 +81,14 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-foreground mb-2">Download App</h4>
             <p className="text-muted-foreground text-sm">
-              Belanja lebih mudah lewat aplikasi ShopComposed di ponsel Anda.
+              Belanja lebih mudah lewat aplikasi Tokorakyat.id di ponsel Anda.
             </p>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-6 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} ShopComposed. Hak cipta dilindungi.</p>
+        <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} Tokorakyat.id. Hak cipta dilindungi.</p>
         <div className="flex gap-4">
           <a className="text-muted-foreground hover:text-primary transition-all text-sm" href="#">
             Kebijakan Privasi
