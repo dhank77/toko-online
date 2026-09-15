@@ -319,7 +319,7 @@ export default function AdminHeroSlides() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleToggleActive(slide)}
-                          className={`text-xs ${slide.is_active ? 'text-green-600 hover:text-green-700' : 'text-muted-foreground hover:text-foreground'}`}
+                          className={`text-xs ${slide.is_active ? 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300' : 'text-muted-foreground hover:text-foreground'}`}
                         >
                           <span className="material-symbols-outlined text-sm mr-1">
                             {slide.is_active ? 'visibility' : 'visibility_off'}

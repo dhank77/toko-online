@@ -410,7 +410,7 @@ export default function CartPage() {
                   >
                     {paying ? <span className="material-symbols-outlined animate-spin">progress_activity</span> : `Checkout (${selectedCount})`}
                   </Button>
-                  {selectedCount === 0 && <p className="text-xs text-center text-amber-600 mt-2">Pilih produk terlebih dahulu</p>}
+                  {selectedCount === 0 && <p className="text-xs text-center text-amber-600 dark:text-amber-400 mt-2">Pilih produk terlebih dahulu</p>}
                   <p className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground mt-4">
                     <span className="material-symbols-outlined text-sm text-secondary">verified_user</span>
                     Transaksi aman via Midtrans

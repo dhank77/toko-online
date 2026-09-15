@@ -188,7 +188,7 @@ export default function RegisterPage() {
             <img alt="Google" className="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFfGjDjYgVS4XP0UFEH7KwWJCvwWJ-NvSYQoEBYjQxJurJeIDJgnZhDrgc8SqzemszFUJv-vk23kNfgWbYNHarPyzaKvfJ36okoAk_oVQsq-5LhC71uq6wQC_CVcQVB6riWH-EWbg0zJ8-zRCuNCCSg8xZfz10RC9HvC3K42ol6qEPVG0Chy4WHKp2_JQI_7X6D5zL8849nMKTmtr9QDtUdE5hTHZqHv0uxNal86UxKpj4amWOvsmn" />
             Daftar dengan Google
           </Button>
-          <Button variant="outline" className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg hover:bg-[#1877F2] hover:text-white transition-colors duration-200 font-medium border-[#1877F2] text-[#1877F2]" type="button">
+          <Button variant="outline" className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg hover:bg-[#1877F2] hover:text-white dark:hover:bg-[#1877F2] dark:hover:text-white transition-colors duration-200 font-medium text-[#1877F2] dark:text-[#6da4f0] border-[#1877F2] dark:border-[#6da4f0]" type="button">
             <img alt="Facebook" className="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdy_OICvAe3qlqB-SwnTRoCbzyz-rFVoKAq3RMopK4ChCCxyiCOUz9--AMknvU5_r_rSdeIKyKjlA5W12J9tMd6n1YfZTa_H-6ngAyW2SyhWDOFv1OsA7lPl8CFBHiwT7vCDXw4mbXmPQfilxPNn58hniu2x77PqiiZrydu4WWvUBBFWilo75D3t1uMUIxY0g87iE0jdKP4KKjdTU93lmPu8WcNdtvnZwbUKrLoLDdcTHa8fgrZMja" />
             Daftar dengan Facebook
           </Button>

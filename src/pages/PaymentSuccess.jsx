@@ -43,7 +43,7 @@ export default function PaymentSuccess() {
   if (!orderId) {
     return (
       <main className="max-w-3xl mx-auto px-6 py-16 pt-24 text-center">
-        <span className="material-symbols-outlined text-6xl text-amber-500 mb-4">warning</span>
+        <span className="material-symbols-outlined text-6xl text-amber-500 dark:text-amber-400 mb-4">warning</span>
         <h1 className="text-2xl font-bold mb-2">Tidak ada order_id</h1>
         <p className="text-muted-foreground mb-6">Akses halaman ini dari riwayat pesanan.</p>
         <Button asChild><Link to="/orders">Lihat Pesanan</Link></Button>
@@ -68,8 +68,8 @@ export default function PaymentSuccess() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-16 pt-24">
-      <div className={`p-8 rounded-2xl border text-center ${isSuccess ? 'bg-emerald-50 border-emerald-200' : status === 'pending' ? 'bg-amber-50 border-amber-200' : 'bg-red-50 border-red-200'}`}>
-        <span className={`material-symbols-outlined text-6xl mb-4 ${isSuccess ? 'text-emerald-600' : status === 'pending' ? 'text-amber-600' : 'text-red-600'}`}>
+      <div className={`p-8 rounded-2xl border text-center ${isSuccess ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800' : status === 'pending' ? 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800' : 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'}`}>
+        <span className={`material-symbols-outlined text-6xl mb-4 ${isSuccess ? 'text-emerald-600 dark:text-emerald-400' : status === 'pending' ? 'text-amber-600 dark:text-amber-400' : 'text-red-600 dark:text-red-400'}`}>
           {isSuccess ? 'check_circle' : status === 'pending' ? 'hourglass_top' : 'error'}
         </span>
         <h1 className="text-2xl font-bold text-foreground mb-2">

@@ -238,7 +238,7 @@ export default function ProductDetail() {
               <div className="flex items-center gap-3">
                 <span className="text-3xl font-bold text-primary">{formatRupiah(currentPrice)}</span>
                 {product.in_stock ? (
-                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 border-0">Stok Tersedia</Badge>
+                  <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400 border-0">Stok Tersedia</Badge>
                 ) : (
                   <Badge variant="destructive">Stok Habis</Badge>
                 )}
