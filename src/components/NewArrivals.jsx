@@ -1,65 +1,43 @@
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { useState, useEffect } from 'react'
+import { getProducts } from '../lib/supabase'
+import SectionHeader from './SectionHeader'
+import ProductRow from './ProductRow'
+import ProductCard, { ProductCardSkeleton } from './ProductCard'
+
+const CARD_WIDTH = 'w-[160px] sm:w-[200px] lg:w-[228px] flex-shrink-0 snap-start'
 
 export default function NewArrivals() {
-  const items = [
-    {
-       title: 'Workspace Berkelanjutan',
-       desc: 'Bahan ramah lingkungan untuk kantor rumah modern.',
-       btn: 'Belanja Sekarang',
-      mdClass: 'md:col-span-2 md:row-span-2',
-    },
-    {
-      title: 'Audio Elite',
-      desc: null,
-      img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAZXYMewpkBoen-lTZLQKo3Hu-sE3TBgdyX4ODk_T3Jr7I8WCggX4cY411Y0MVzRjVnrenfvgugumkPVjFj1f8qiapcEA_Qaum9euY4mGt05HEP7lro7fSBPRRsNbhuz26PCW0qFzHHFZ1-8yJCitYUL3xS4opGRP-KHSWQ8GDaLcwHcWkoLGyx9wGG1z3_5MCvEJhhVEvoOHpYaZ-ekEMLGsWixoMhNnN9-IfY8xEJS-VX4_AzMeJCfA',
-      btn: null,
-      mdClass: '',
-    },
-    {
-       title: 'Jam Tangan',
-      desc: null,
-      img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDaYz8Z24lgW4NTOjhgnJ0jn3J5zLiP5Vi9CWr5Xqsk_3_UOjJSenWy_TeP1oCyQ9ofP071bff35GXnfOT-hDuEiw4Jg4eX5BoEIWBzPbMkCfGQvGxI-fUvpJQplrE3wDjUzSGeuM6SEJAfcftenwhS4sdG8FsI1rTOxNuEbLyVjHywlHW89ZpGILYlZo4ulyLfiCp3h4idJJhv7n7KxgoqcT0yoWh03F49VAHg2iAKJjQMq4zslOxpVQ',
-      btn: null,
-      mdClass: '',
-    },
-    {
-       title: 'Peralatan Perjalanan',
-      desc: null,
-      img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBXB6eT2r-9TR05J3DDhPfm8BbWObnr_jmQB-B4ECX8wLaKmsiwYg1O63WOqmvgDuU9JQJzpWVyHwNSwm2JCnkaar8OTrDc3OrFwcetTAMTpteDxOZ3VmO0ab-G15yw2jY8l17AXunIvu8V56z38eGV1mHupw2cqoju0mwTsDFUvhd-4JreBU_plrk3iK8XgP03zLJbW90bHtV24gm04EzbzLxk-5emH-G3xRFDfDBo2PI9O4yCsHR6aA',
-      btn: null,
-      mdClass: 'md:col-span-2',
-    },
-  ]
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    // Halaman 2 dipakai agar produknya tidak sama persis dengan Flash Sale & Trending (keduanya memakai halaman 1).
+    getProducts(2, 8)
+      .then((res) => {
+        if (active) {
+          setProducts(res.data)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
-    <section className="py-10 max-w-7xl mx-auto px-6">
-       <h2 className="text-2xl font-bold text-primary mb-8 text-center">Produk Terbaru</h2>
-      <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[600px]">
-        {items.map((item, idx) => (
-          <div
-            key={idx}
-            className={`rounded-3xl overflow-hidden relative group ${item.mdClass ? item.mdClass : ''}`}>
-            <img
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              data-alt={`${item.title} product image`}
-              src={item.img}
-            />
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors p-6 flex items-end">
-              {item.desc ? (
-                <div className="flex flex-col">
-                  <span className="text-white font-bold text-lg mb-2">{item.title}</span>
-                  <p className="text-white/80 text-sm mb-4">{item.desc}</p>
-                  <Button size="sm" className="w-fit bg-white text-primary hover:bg-white/90">
-                    {item.btn}
-                  </Button>
-                </div>
-              ) : (
-                <span className="text-white font-bold">{item.title}</span>
-              )}
-            </div>
-          </div>
-        ))}
+    <section id="baru" className="py-10 bg-muted/40 scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-6">
+        <SectionHeader title="Baru di ShopComposed" subtitle="Produk paling baru dari brand pilihan." />
+
+        <ProductRow>
+          {loading
+            ? Array.from({ length: 6 }).map((_, idx) => <ProductCardSkeleton key={idx} className={CARD_WIDTH} />)
+            : products.map((product) => <ProductCard key={product.id} product={product} className={CARD_WIDTH} />)}
+        </ProductRow>
       </div>
     </section>
   )

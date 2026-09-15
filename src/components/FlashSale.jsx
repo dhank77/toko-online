@@ -1,45 +1,99 @@
+import { useState, useEffect } from 'react'
+import { getProducts } from '../lib/supabase'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import SectionHeader from './SectionHeader'
+import ProductRow from './ProductRow'
+import ProductCard, { ProductCardSkeleton } from './ProductCard'
+
+const CARD_WIDTH = 'w-[160px] sm:w-[200px] lg:w-[224px] flex-shrink-0 snap-start'
+
+function calcMsLeft() {
+  const now = new Date()
+  const midnight = new Date(now)
+  midnight.setHours(24, 0, 0, 0)
+  return midnight.getTime() - now.getTime()
+}
+
+function useCountdownToMidnight() {
+  const [msLeft, setMsLeft] = useState(calcMsLeft)
+
+  useEffect(() => {
+    const id = setInterval(() => setMsLeft(calcMsLeft()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const totalSeconds = Math.floor(msLeft / 1000)
+  return {
+    hours: String(Math.floor(totalSeconds / 3600)).padStart(2, '0'),
+    minutes: String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0'),
+    seconds: String(totalSeconds % 60).padStart(2, '0'),
+  }
+}
+
+function CountdownBox({ value, label }) {
+  return (
+    <div className="flex flex-col items-center bg-foreground text-background rounded-lg px-2.5 py-1.5 min-w-12">
+      <span className="text-base font-bold leading-none tabular-nums">{value}</span>
+      <span className="text-[10px] opacity-80 mt-0.5">{label}</span>
+    </div>
+  )
+}
 
 export default function FlashSale() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const { hours, minutes, seconds } = useCountdownToMidnight()
+
+  useEffect(() => {
+    let active = true
+    getProducts(1, 10)
+      .then((res) => {
+        if (active) {
+          setProducts(res.data)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) setLoading(false)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
   return (
-    <section className="py-16">
+    <section id="flash-sale" className="py-10 bg-muted/40 scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="bg-muted rounded-[32px] p-8 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
-          <div className="relative z-10 flex-1">
-             <Badge variant="secondary" className="mb-4">Penawaran Terbatas</Badge>
-             <h2 className="text-4xl font-bold text-foreground mb-6">Acara Flash Sale</h2>
-             <p className="text-muted-foreground text-lg mb-8 max-w-md">
-               Hemat hingga 40% untuk kebutuhan workspace. Setelah jam menunjukkan nol, penawaran akan hilang selamanya.
-             </p>
-            <div className="flex gap-4 mb-8">
-              <div className="flex flex-col items-center bg-background/20 backdrop-blur-md rounded-2xl w-24 py-4">
-                <span className="text-2xl font-bold text-foreground" id="hours">12</span>
-                 <span className="text-sm text-muted-foreground">Jam</span>
+        <SectionHeader
+          title="Flash Sale"
+          subtitle="Diskon terbatas, berakhir pukul 00.00"
+          right={
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
+                <CountdownBox value={hours} label="Jam" />
+                <span className="font-bold text-foreground">:</span>
+                <CountdownBox value={minutes} label="Menit" />
+                <span className="font-bold text-foreground">:</span>
+                <CountdownBox value={seconds} label="Detik" />
               </div>
-              <div className="flex flex-col items-center bg-background/20 backdrop-blur-md rounded-2xl w-24 py-4">
-                <span className="text-2xl font-bold text-foreground" id="minutes">45</span>
-                 <span className="text-sm text-muted-foreground">Menit</span>
-              </div>
-              <div className="flex flex-col items-center bg-background/20 backdrop-blur-md rounded-2xl w-24 py-4">
-                <span className="text-2xl font-bold text-foreground" id="seconds">08</span>
-                 <span className="text-sm text-muted-foreground">Detik</span>
-              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-secondary hover:text-secondary/80 shrink-0 hidden sm:inline-flex"
+              >
+                Lihat Semuanya <span className="material-symbols-outlined text-sm">chevron_right</span>
+              </Button>
             </div>
-            <Button size="lg" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
-               Jelajahi Barang Flash Sale
-            </Button>
-          </div>
-          <div className="relative z-10 w-full md:w-1/2 h-[400px] rounded-2xl overflow-hidden">
-            <img
-              className="w-full h-full object-cover"
-              data-alt="A sophisticated collection of dark professional tech gear including a camera, high-end smartwatch, and sleek minimalist tools arranged on a dark charcoal textured surface. Dramatic lighting with teal highlights creates a mood of exclusivity and urgency."
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7Hna9rs8uQJdRN0mZWvBA6nHoaH0SdTte-SyeiFdX7aakkzjhTTF6hZeIAzVD6NvUXdgCkuwlrJmuWaZvN9CBJgrY6MPiY5lr0conYMlY1HtcF2vW_422dnFeJsEkWXdZDbC8MarGdTAZ-MSX1xtVe1n2RX-gH-uaR6KXtL3buOWMOKk_uTYpApfBsrC9QS-Q0BnU6zpa5VXc3loTdYyO7C99K8FtdkX6PCeToX9_sPEU1xNlAC257A"
-            />
-          </div>
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-secondary/20 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl"></div>
-        </div>
+          }
+        />
+
+        <ProductRow>
+          {loading
+            ? Array.from({ length: 6 }).map((_, idx) => <ProductCardSkeleton key={idx} className={CARD_WIDTH} />)
+            : products.map((product) => (
+                <ProductCard key={product.id} product={product} showDiscount className={CARD_WIDTH} />
+              ))}
+        </ProductRow>
       </div>
     </section>
   )
