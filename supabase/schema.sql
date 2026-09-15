@@ -57,6 +57,32 @@ create trigger update_products_updated_at
   before update on public.products
   for each row execute function public.update_updated_at();
 
+-- Hero Slides table (Homepage Carousel)
+create table if not exists public.hero_slides (
+  id uuid primary key default uuid_generate_v4(),
+  img text not null,
+  badge text,
+  title text not null,
+  description text,
+  cta_label text,
+  cta_href text,
+  secondary_cta_label text,
+  secondary_cta_href text,
+  sort_order integer default 0,
+  is_active boolean default true,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+drop trigger if exists update_hero_slides_updated_at on public.hero_slides;
+create trigger update_hero_slides_updated_at
+  before update on public.hero_slides
+  for each row execute function public.update_updated_at();
+
+create index if not exists idx_hero_slides_sort_order on public.hero_slides(sort_order);
+
+alter table public.hero_slides disable row level security;
+
 -- Indexes
 create index if not exists idx_products_category on public.products(category_id);
 create index if not exists idx_products_slug on public.products(slug);

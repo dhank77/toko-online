@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
+import logoUrl from '../assets/logo.png'
 
 export default function AdminLayout() {
   const location = useLocation()
@@ -13,6 +14,7 @@ export default function AdminLayout() {
     { to: '/admin/products', label: 'Manajemen Produk', icon: 'inventory_2' },
     { to: '/admin/orders', label: 'Manajemen Pesanan', icon: 'shopping_cart' },
     { to: '/admin/customers', label: 'CRM Pelanggan', icon: 'group' },
+    { to: '/admin/hero-slides', label: 'Hero Carousel', icon: 'view_carousel' },
     { to: '/admin/analytics', label: 'Analitik', icon: 'analytics' },
   ]
 
@@ -78,6 +80,7 @@ export default function AdminLayout() {
           <div className="flex justify-between items-center w-full px-6 max-w-7xl mx-auto h-full">
             <div className="flex items-center gap-4">
               <span className="md:hidden material-symbols-outlined text-primary cursor-pointer">menu</span>
+              <img src={logoUrl} alt="Logo Tokorakyat.id" className="w-9 h-9 rounded-xl object-cover" />
               <h2 className="text-xl font-bold text-primary tracking-tight">Tokorakyat.id</h2>
             </div>
             <div className="hidden lg:flex flex-1 max-w-md mx-6">

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import logoUrl from '../assets/logo.png'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -40,6 +41,11 @@ export default function LoginPage() {
       <main className="flex-grow flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-[480px] bg-background rounded-xl shadow-sm p-8 flex flex-col relative overflow-hidden border border-border">
           <div className="text-center mb-10 relative z-10">
+            <img
+              src={logoUrl}
+              alt="Logo Tokorakyat.id"
+              className="w-16 h-16 mx-auto mb-4 rounded-2xl object-cover shadow-sm"
+            />
             <h1 className="text-xl font-bold text-primary mb-2 tracking-tight">
               Tokorakyat.id
             </h1>

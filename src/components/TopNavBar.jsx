@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { cn } from '../lib/utils'
+import logoUrl from '../assets/logo.png'
 
 const SEARCH_HINTS = [
   'iPhone 17 Pro Max',
@@ -66,14 +67,14 @@ export default function TopNavBar({ cartCount = 0 }) {
 
   const logo = (compact = false) => (
     <Link to="/" className="flex items-center gap-2 shrink-0 group">
-      <span
+      <img
+        src={logoUrl}
+        alt="Logo Tokorakyat.id"
         className={cn(
-          'rounded-xl bg-gradient-to-br from-primary to-accent text-primary-foreground flex items-center justify-center shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all',
+          'rounded-xl object-cover shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all',
           compact ? 'w-7 h-7' : 'w-9 h-9'
         )}
-      >
-        <span className={cn('material-symbols-outlined', compact ? 'text-lg' : 'text-xl')}>storefront</span>
-      </span>
+      />
       <span className={cn('font-bold tracking-tight leading-none', compact ? 'text-base' : 'text-xl')}>
         <span className="text-foreground">Toko</span>
         <span className="text-primary">Rakyat.id</span>

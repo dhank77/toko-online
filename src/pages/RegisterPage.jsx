@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
+import logoUrl from '../assets/logo.png'
 
 export default function RegisterPage() {
   const [fullName, setFullName] = useState('')
@@ -49,6 +50,11 @@ export default function RegisterPage() {
     <div className="bg-background text-foreground font-sans min-h-screen flex flex-col items-center justify-center py-10 px-4">
       <main className="w-full max-w-[480px] bg-background rounded-xl border border-border p-6 md:p-8">
         <header className="text-center mb-8">
+          <img
+            src={logoUrl}
+            alt="Logo Tokorakyat.id"
+            className="w-16 h-16 mx-auto mb-3 rounded-2xl object-cover shadow-sm"
+          />
           <h1 className="text-xl font-bold text-primary mb-1">Tokorakyat.id</h1>
           <h2 className="text-2xl md:text-3xl text-foreground">Buat Akun Baru</h2>
           <p className="text-sm text-muted-foreground mt-2">Mulai pengalaman berbelanja terbaik Anda hari ini.</p>

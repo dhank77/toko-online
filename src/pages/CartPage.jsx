@@ -13,6 +13,7 @@ import SectionHeader from '../components/SectionHeader'
 import ProductRow from '../components/ProductRow'
 import ProductCard, { ProductCardSkeleton } from '../components/ProductCard'
 import toast from 'react-hot-toast'
+import logoUrl from '../assets/logo.png'
 
 const REC_CARD_WIDTH = 'w-[160px] sm:w-[200px] lg:w-[224px] flex-shrink-0 snap-start'
 
@@ -281,7 +282,7 @@ export default function CartPage() {
             <section className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
               <div className="flex items-center gap-3 px-4 md:px-6 py-4 border-b border-border/70">
                 <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} aria-label="Pilih semua produk toko" className="w-5 h-5" />
-                <span className="material-symbols-outlined text-primary text-xl">storefront</span>
+                <img src={logoUrl} alt="Logo Tokorakyat.id" className="w-6 h-6 rounded-lg object-cover" />
                 <div className="flex flex-col leading-tight">
                   <span className="font-bold text-[15px] text-foreground">Tokorakyat.id</span>
                   <span className="text-xs text-muted-foreground">Jakarta Pusat</span>
