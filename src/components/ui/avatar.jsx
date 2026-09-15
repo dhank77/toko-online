@@ -15,11 +15,19 @@ function Avatar({ className, ...props }) {
   )
 }
 
-function AvatarImage({ className, ...props }) {
+function AvatarImage({ className, onError, ...props }) {
+  const [hasError, setHasError] = React.useState(false)
+
+  if (hasError) return null
+
   return (
     <img
       data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
+      className={cn("aspect-square size-full object-cover", className)}
+      onError={(e) => {
+        setHasError(true)
+        onError?.(e)
+      }}
       {...props}
     />
   )

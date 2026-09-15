@@ -61,7 +61,13 @@ export function AuthProvider({ children }) {
   }
 
   const signInWithOAuth = async (provider) => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider })
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+        scopes: provider === 'google' ? 'openid profile email' : undefined,
+      },
+    })
     if (error) throw error
   }
 

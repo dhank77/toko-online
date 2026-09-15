@@ -255,7 +255,7 @@ export default function CartPage() {
           </Button>
         </div>
       ) : (
-        <div className="checkout-grid gap-6 items-start">
+        <div className="grid checkout-grid gap-6 items-start">
           {/* Kolom kiri: daftar produk */}
           <div className="space-y-4 min-w-0">
             {/* Bar aksi pilih semua (ala Tokopedia) */}
@@ -283,7 +283,7 @@ export default function CartPage() {
                 <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} aria-label="Pilih semua produk toko" className="w-5 h-5" />
                 <span className="material-symbols-outlined text-primary text-xl">storefront</span>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-bold text-[15px] text-foreground">ShopComposed</span>
+                  <span className="font-bold text-[15px] text-foreground">Tokorakyat.id</span>
                   <span className="text-xs text-muted-foreground">Jakarta Pusat</span>
                 </div>
               </div>

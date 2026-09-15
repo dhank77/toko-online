@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { api } from '../utils/api'
@@ -58,7 +58,15 @@ export default function TopNavBar({ cartCount = 0 }) {
   const fullName = user?.user_metadata?.full_name || user?.email || ''
   const email = user?.email || ''
   const getInitial = () => fullName.charAt(0).toUpperCase()
-  const avatarSrc = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null
+  const avatarSrc = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || user?.user_metadata?.image || user?.identities?.[0]?.identity_data?.picture || user?.identities?.[0]?.identity_data?.avatar_url || null
+  const [imgFailed, setImgFailed] = useState(false)
+
+  // Reset image error when avatar URL changes
+  useEffect(() => {
+    setImgFailed(false)
+  }, [avatarSrc])
+
+  const handleAvatarError = useCallback(() => setImgFailed(true), [])
 
   const handleLogout = async () => {
     await signOut()
@@ -116,22 +124,24 @@ export default function TopNavBar({ cartCount = 0 }) {
           className="rounded-full ml-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ring-offset-2"
         >
           <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/60 transition-colors">
-            {avatarSrc ? (
-              <AvatarImage src={avatarSrc} alt={getInitial()} />
-            ) : (
+            {avatarSrc && !imgFailed ? (
+              <AvatarImage src={avatarSrc} alt={getInitial()} onError={handleAvatarError} />
+            ) : null}
+            {!avatarSrc || imgFailed ? (
               <AvatarFallback className="bg-primary/10 text-primary font-bold">{getInitial()}</AvatarFallback>
-            )}
+            ) : null}
           </Avatar>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={10} className="w-64 p-0 overflow-hidden fade-slide-down">
         <div className="p-4 bg-muted/50 border-b border-border flex items-center gap-3">
           <Avatar className="h-11 w-11 border border-border">
-            {avatarSrc ? (
-              <AvatarImage src={avatarSrc} alt={getInitial()} />
-            ) : (
+            {avatarSrc && !imgFailed ? (
+              <AvatarImage src={avatarSrc} alt={getInitial()} onError={handleAvatarError} />
+            ) : null}
+            {!avatarSrc || imgFailed ? (
               <AvatarFallback className="bg-primary text-primary-foreground font-bold">{getInitial()}</AvatarFallback>
-            )}
+            ) : null}
           </Avatar>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground truncate">{fullName || 'Pengguna'}</p>
