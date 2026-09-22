@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
 import { supabase } from '../utils/supabaseClient'
 import { compressImage, formatFileSize } from '../utils/imageCompress'
+import { formatRupiah } from '../lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -401,7 +402,7 @@ export default function AdminProducts() {
                       </TableCell>
                       <TableCell className="text-sm font-medium text-foreground">{product.name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{product.slug}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">${Number(product.price).toFixed(2)}</TableCell>
+                      <TableCell className="text-sm font-semibold text-foreground">{formatRupiah(product.price)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{product.categories?.name || '-'}</TableCell>
                       <TableCell>
                            <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium border ${product.in_stock ? 'bg-primary/10 text-primary border-primary/20' : 'bg-destructive/10 text-destructive border-destructive/20'}`}>
@@ -503,17 +504,22 @@ export default function AdminProducts() {
                 />
               </div>
               <div>
-                <Label htmlFor="price">Harga</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={form.price}
-                  onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-                  required
-                  placeholder="0.00"
-                />
+                <Label htmlFor="price">Harga (Rp)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-muted-foreground">Rp</span>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="1000"
+                    min="0"
+                    value={form.price}
+                    onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
+                    required
+                    placeholder="0"
+                    className="pl-9"
+                  />
+                </div>
+                {form.price && <p className="text-xs text-muted-foreground mt-1">{formatRupiah(form.price)}</p>}
               </div>
               <div>
                 <Label>Gambar Produk</Label>
@@ -625,14 +631,18 @@ export default function AdminProducts() {
                           className="flex-1"
                            placeholder="Nama varian"
                         />
-                        <Input
-                          type="number"
-                          step="0.01"
-                          value={variant.price_adjustment}
-                          onChange={(e) => handleUpdateVariant(variant.id, { price_adjustment: Number(e.target.value) })}
-                          className="w-28"
-                           placeholder="Penyesuaian"
-                        />
+                        <div className="relative w-32">
+                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">Rp</span>
+                          <Input
+                            type="number"
+                            step="1000"
+                            value={variant.price_adjustment}
+                            onChange={(e) => handleUpdateVariant(variant.id, { price_adjustment: Number(e.target.value) })}
+                            className="pl-7"
+                            placeholder="0"
+                            title={variant.price_adjustment ? formatRupiah(variant.price_adjustment) : 'Penyesuaian harga'}
+                          />
+                        </div>
                         <Input
                           type="number"
                           value={variant.stock}
@@ -660,14 +670,17 @@ export default function AdminProducts() {
                      placeholder="Nama varian baru"
                     className="flex-1"
                   />
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={variantForm.price_adjustment}
-                    onChange={(e) => setVariantForm((prev) => ({ ...prev, price_adjustment: e.target.value }))}
-                     placeholder="Penyesuaian"
-                    className="w-28"
-                  />
+                  <div className="relative w-32">
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground">Rp</span>
+                    <Input
+                      type="number"
+                      step="1000"
+                      value={variantForm.price_adjustment}
+                      onChange={(e) => setVariantForm((prev) => ({ ...prev, price_adjustment: e.target.value }))}
+                      placeholder="0"
+                      className="pl-7"
+                    />
+                  </div>
                   <Input
                     type="number"
                     value={variantForm.stock}

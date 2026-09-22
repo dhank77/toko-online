@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../utils/api'
+import { formatRupiah } from '../lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -168,7 +169,7 @@ export default function AdminDashboard() {
                       <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
                       <p className="text-xs text-muted-foreground">{product.review_count} ulasan</p>
                     </div>
-                    <p className="text-sm font-medium text-primary">${Number(product.price).toFixed(2)}</p>
+                    <p className="text-sm font-medium text-primary">{formatRupiah(product.price)}</p>
                   </div>
                 ))
               )}
@@ -224,7 +225,7 @@ export default function AdminDashboard() {
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">{order.product_id ? 'Pesanan produk' : 'Pesanan'}</TableCell>
-                      <TableCell className="text-sm font-medium">Rp{Number(order.total_amount || order.gross_amount || 0).toLocaleString('id-ID')}</TableCell>
+                      <TableCell className="text-sm font-medium">{formatRupiah(order.total_amount || order.gross_amount || 0)}</TableCell>
                       <TableCell>
                         <Badge variant={order.status === 'shipped' ? 'default' : order.status === 'processed' ? 'secondary' : 'outline'}>
                           {order.status}

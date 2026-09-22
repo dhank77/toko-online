@@ -14,6 +14,7 @@ import AdminHeroSlides from './pages/AdminHeroSlides'
 import AdminOrders from './pages/AdminOrders'
 import AdminCustomers from './pages/AdminCustomers'
 import AdminAnalytics from './pages/AdminAnalytics'
+import { AdminSearchProvider } from './context/AdminSearchContext'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminRoute from './components/AdminRoute'
@@ -42,7 +43,9 @@ export default function App() {
               path="/admin"
               element={
                 <AdminRoute>
-                  <AdminLayout />
+                  <AdminSearchProvider>
+                    <AdminLayout />
+                  </AdminSearchProvider>
                 </AdminRoute>
               }
             >
