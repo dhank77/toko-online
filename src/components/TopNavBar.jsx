@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { api } from '../utils/api'
@@ -20,6 +20,8 @@ const SEARCH_HINTS = [
 
 export default function TopNavBar({ cartCount = 0 }) {
   const { user, signOut } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
   const { resolved, toggleTheme } = useTheme()
   const [categories, setCategories] = useState([])
   const [catLoading, setCatLoading] = useState(true)
@@ -288,16 +290,31 @@ export default function TopNavBar({ cartCount = 0 }) {
                 </div>
               ))
             : categories.map((cat) => (
-                <DropdownMenuItem key={cat.id} className="gap-3 px-3 py-2.5 rounded-xl cursor-pointer">
-                  <span className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-lg">{cat.icon || 'category'}</span>
-                  </span>
-                  <span className="text-sm font-medium truncate">{cat.name}</span>
+                <DropdownMenuItem key={cat.id} asChild className="gap-3 px-3 py-2.5 rounded-xl cursor-pointer">
+                  <Link to={cat.slug ? `/category/${cat.slug}` : `/category/${cat.id}`} className="flex items-center gap-3 w-full">
+                    <span className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-lg">{cat.icon || 'category'}</span>
+                    </span>
+                    <span className="text-sm font-medium truncate">{cat.name}</span>
+                  </Link>
                 </DropdownMenuItem>
               ))}
         </div>
         <div className="mt-1 pt-2 border-t border-border">
-          <DropdownMenuItem className="justify-center gap-1.5 text-primary font-semibold cursor-pointer rounded-xl py-2.5">
+          <DropdownMenuItem
+            onSelect={() => {
+              const goToKategori = () =>
+                document.getElementById('kategori')?.scrollIntoView({ behavior: 'smooth' })
+              if (location.pathname !== '/') {
+                navigate('/')
+                // Tunggu HomePage render dulu baru scroll
+                setTimeout(goToKategori, 150)
+              } else {
+                goToKategori()
+              }
+            }}
+            className="justify-center gap-1.5 text-primary font-semibold cursor-pointer rounded-xl py-2.5"
+          >
             Lihat Semua Kategori
             <span className="material-symbols-outlined text-base">arrow_forward</span>
           </DropdownMenuItem>

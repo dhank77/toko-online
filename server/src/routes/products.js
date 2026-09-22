@@ -12,6 +12,9 @@ router.get('/', async (req, res) => {
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12))
     const from = (page - 1) * limit
     const to = from + limit - 1
+    const search = (req.query.search || '').trim()
+    const category = (req.query.category || '').trim()
+    const categorySlug = (req.query.category_slug || req.query.categorySlug || '').trim()
 
     let query = supabaseAdmin
       .from('products')
@@ -19,6 +22,30 @@ router.get('/', async (req, res) => {
 
     // Public only sees in_stock products
     query = query.eq('in_stock', true)
+
+    // Filter by category id (dipakai dropdown topbar & section kategori)
+    if (category) {
+      query = query.eq('category_id', category)
+    } else if (categorySlug) {
+      // Resolve slug -> id agar frontend cukup kirim slug yang human-readable
+      const { data: catData } = await supabaseAdmin
+        .from('categories')
+        .select('id')
+        .eq('slug', categorySlug)
+        .single()
+      if (!catData) {
+        return res.json({
+          data: [],
+          pagination: { page, limit, total: 0, totalPages: 0 },
+        })
+      }
+      query = query.eq('category_id', catData.id)
+    }
+
+    // Search by name
+    if (search) {
+      query = query.ilike('name', `%${search}%`)
+    }
 
     // Sorting
     const sortField = req.query.sort || 'created_at'

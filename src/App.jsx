@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import SiteLayout from './components/SiteLayout'
 import HomePage from './pages/HomePage'
+import CategoryPage from './pages/CategoryPage'
 import CartPage from './pages/CartPage'
 import AdminLayout from './components/AdminLayout'
 import AdminDashboard from './pages/AdminDashboard'
@@ -28,6 +29,7 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<SiteLayout><HomePage /></SiteLayout>} />
+            <Route path="/category/:slug" element={<SiteLayout><CategoryPage /></SiteLayout>} />
             <Route path="/product/:slug" element={<SiteLayout><ProductDetail /></SiteLayout>} />
             <Route path="/cart" element={<SiteLayout><CartPage /></SiteLayout>} />
             <Route path="/orders" element={<SiteLayout><OrdersPage /></SiteLayout>} />

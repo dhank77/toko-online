@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../utils/api'
 import SectionHeader from './SectionHeader'
 
@@ -36,7 +37,7 @@ export default function CategorySection() {
   return (
     <section id="kategori" className="py-10 scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6">
-        <SectionHeader title="Kategori Pilihan" actionLabel="Lihat Semuanya" />
+        <SectionHeader title="Kategori Pilihan" actionLabel="" />
 
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-x-2 gap-y-6">
           {loading
@@ -47,7 +48,11 @@ export default function CategorySection() {
                 </div>
               ))
             : categories.slice(0, 20).map((cat) => (
-                <button key={cat.id} type="button" className="flex flex-col items-center gap-2 group cursor-pointer">
+                <Link
+                  key={cat.id}
+                  to={cat.slug ? `/category/${cat.slug}` : `/category/${cat.id}`}
+                  className="flex flex-col items-center gap-2 group cursor-pointer"
+                >
                   <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-muted border-2 border-transparent group-hover:border-secondary transition-all flex items-center justify-center overflow-hidden">
                     <span className="material-symbols-outlined text-3xl md:text-4xl text-primary group-hover:scale-110 transition-transform">
                       {cat.icon || 'category'}
@@ -56,7 +61,7 @@ export default function CategorySection() {
                   <span className="text-xs md:text-sm font-medium text-foreground text-center leading-tight line-clamp-2">
                     {cat.name}
                   </span>
-                </button>
+                </Link>
               ))}
         </div>
       </div>
