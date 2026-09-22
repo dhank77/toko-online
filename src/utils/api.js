@@ -132,6 +132,7 @@ export const api = {
   }),
   getTransactionStatus: (orderId) => request(`/payment/status/${orderId}`),
   getMyTransactions: () => request('/payment/my-transactions'),
+  syncMyOrders: () => request('/payment/sync-my-orders', { method: 'POST' }),
   finishPayment: (order_id) => request('/payment/finish', {
     method: 'POST',
     body: JSON.stringify({ order_id }),

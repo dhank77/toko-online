@@ -11,6 +11,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import AdminCategories from './pages/AdminCategories'
 import AdminProducts from './pages/AdminProducts'
 import AdminHeroSlides from './pages/AdminHeroSlides'
+import AdminOrders from './pages/AdminOrders'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminRoute from './components/AdminRoute'
@@ -46,6 +47,7 @@ export default function App() {
               <Route index element={<AdminDashboard />} />
               <Route path="categories" element={<AdminCategories />} />
               <Route path="products" element={<AdminProducts />} />
+              <Route path="orders" element={<AdminOrders />} />
               <Route path="hero-slides" element={<AdminHeroSlides />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />

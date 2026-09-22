@@ -17,15 +17,19 @@ export default function OrdersPage() {
   useEffect(() => {
     if (!user) return
     setLoading(true)
-    Promise.allSettled([api.getMyOrders(), api.getMyTransactions()]).then(([oRes, tRes]) => {
-      if (oRes.status === 'fulfilled') setOrders(Array.isArray(oRes.value) ? oRes.value : [])
-      else setOrders([])
-      if (tRes.status === 'fulfilled') setTransactions(Array.isArray(tRes.value) ? tRes.value : [])
-      else setTransactions([])
-      setLoading(false)
-    }).catch((e) => {
-      setError(e.message)
-      setLoading(false)
+    // Sinkronkan dulu: perbaiki order yang hilang dari transaksi success,
+    // lalu ambil ulang orders + transactions
+    api.syncMyOrders().catch(() => {}).finally(() => {
+      Promise.allSettled([api.getMyOrders(), api.getMyTransactions()]).then(([oRes, tRes]) => {
+        if (oRes.status === 'fulfilled') setOrders(Array.isArray(oRes.value) ? oRes.value : [])
+        else setOrders([])
+        if (tRes.status === 'fulfilled') setTransactions(Array.isArray(tRes.value) ? tRes.value : [])
+        else setTransactions([])
+        setLoading(false)
+      }).catch((e) => {
+        setError(e.message)
+        setLoading(false)
+      })
     })
   }, [user])
 

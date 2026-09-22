@@ -211,13 +211,28 @@ router.post('/notification', async (req, res) => {
 
     let updatedTx = null
     try {
+      // Ambil row lama dulu agar snapshot items tidak hilang
+      // (statusResponse Midtrans TIDAK berisi item_details)
+      const { data: existing } = await supabaseAdmin
+        .from('transactions')
+        .select('*')
+        .eq('order_id', orderId)
+        .maybeSingle()
+      const prevRaw = existing?.raw_response || {}
+      const mergedRaw = {
+        ...prevRaw,
+        ...statusResponse,
+        items: prevRaw.items || prevRaw.item_details || statusResponse.item_details || [],
+        snapToken: prevRaw.snapToken,
+        customer: prevRaw.customer,
+      }
       const { data, error: updErr } = await supabaseAdmin
         .from('transactions')
         .update({
           status: newStatus,
           payment_type: paymentType,
           transaction_time: statusResponse.transaction_time || new Date().toISOString(),
-          raw_response: statusResponse,
+          raw_response: mergedRaw,
         })
         .eq('order_id', orderId)
         .select()
@@ -250,13 +265,12 @@ router.post('/notification', async (req, res) => {
 // Helper: buat order dari transaction sukses + bersihkan keranjang
 async function finalizeOrderForTransaction(txRow) {
   try {
-    // cek apakah order sudah ada
-    const { data: existing } = await supabaseAdmin.from('orders').select('id').eq('order_id', txRow.order_id).single().catch(() => ({ data: null }))
-    // supabase single throws if not found, so use maybeSingle
+    // maybeSingle: tidak throw saat tidak ketemu
     const { data: found } = await supabaseAdmin.from('orders').select('id').eq('order_id', txRow.order_id).maybeSingle()
     if (found) return found
 
-    const items = txRow.raw_response?.items || txRow.raw_response?.item_details || []
+    const raw = txRow.raw_response || {}
+    const items = raw.items || raw.item_details || txRow.items || []
     const { error: insErr } = await supabaseAdmin.from('orders').insert([{
       order_id: txRow.order_id,
       customer_id: txRow.user_id,
@@ -320,14 +334,29 @@ router.post('/finish', authenticate, async (req, res) => {
     else if (transactionStatus === 'settlement') newStatus = 'success'
     else if (['cancel', 'deny', 'expire'].includes(transactionStatus)) newStatus = 'failed'
 
-    // Update transactions
+    // Update transactions — pertahankan snapshot items lama
+    // (statusResponse Midtrans TIDAK berisi item_details)
+    const { data: prevTx } = await supabaseAdmin
+      .from('transactions')
+      .select('*')
+      .eq('order_id', order_id)
+      .eq('user_id', req.user.id)
+      .maybeSingle()
+    const prevRaw = prevTx?.raw_response || {}
+    const mergedRaw = {
+      ...prevRaw,
+      ...statusResponse,
+      items: prevRaw.items || prevRaw.item_details || statusResponse.item_details || [],
+      snapToken: prevRaw.snapToken,
+      customer: prevRaw.customer,
+    }
     const { data: tx, error: updErr } = await supabaseAdmin
       .from('transactions')
       .update({
         status: newStatus,
         payment_type: statusResponse.payment_type,
         transaction_time: statusResponse.transaction_time,
-        raw_response: statusResponse,
+        raw_response: mergedRaw,
       })
       .eq('order_id', order_id)
       .eq('user_id', req.user.id)
@@ -339,17 +368,42 @@ router.post('/finish', authenticate, async (req, res) => {
     }
 
     // Jika sukses, buat order & bersihkan keranjang
-    if (newStatus === 'success' && tx) {
-      await finalizeOrderForTransaction(tx)
-    } else if (newStatus === 'success') {
+    let finalTx = tx
+    if (newStatus === 'success' && !finalTx) {
       // Fallback fetch tx row
-      const { data: fetched } = await supabaseAdmin.from('transactions').select('*').eq('order_id', order_id).single()
-      if (fetched) await finalizeOrderForTransaction(fetched)
+      const { data: fetched } = await supabaseAdmin.from('transactions').select('*').eq('order_id', order_id).maybeSingle()
+      if (fetched) finalTx = fetched
+    }
+    if (newStatus === 'success' && finalTx) {
+      await finalizeOrderForTransaction(finalTx)
     }
 
     res.json({ status: newStatus, order_id, raw: statusResponse })
   } catch (err) {
     console.error('Finish handler error:', err)
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// POST /api/payment/sync-my-orders - buat ulang order yang hilang dari transaksi success milik user
+router.post('/sync-my-orders', authenticate, async (req, res) => {
+  try {
+    const { data: txs, error } = await supabaseAdmin
+      .from('transactions')
+      .select('*')
+      .eq('user_id', req.user.id)
+      .eq('status', 'success')
+    if (error) return res.status(400).json({ error: error.message })
+    let created = 0
+    for (const tx of txs || []) {
+      const { data: found } = await supabaseAdmin.from('orders').select('id').eq('order_id', tx.order_id).maybeSingle()
+      if (!found) {
+        await finalizeOrderForTransaction(tx)
+        created += 1
+      }
+    }
+    res.json({ success: true, checked: (txs || []).length, created })
+  } catch (err) {
     res.status(500).json({ error: err.message })
   }
 })
