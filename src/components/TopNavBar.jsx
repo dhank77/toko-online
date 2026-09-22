@@ -167,9 +167,9 @@ export default function TopNavBar({ cartCount = 0 }) {
     ''
   const email = user?.email || ''
   const getInitial = () => (fullName ? fullName.charAt(0).toUpperCase() : '?')
-  // Supabase/Google menyimpan foto di key yang berbeda-beda tergantung provider & versi:
-  // user_metadata: avatar_url (google), picture (google oauth), image; identities[0].identity_data juga bisa.
   // Google kadang mengembalikan URL `=s96-c` kecil — upgrade ke `=s192-c` agar tajam di avatar.
+  // Catatan: URL foto Google membutuhkan referrer `https://lh3.googleusercontent.com`
+  // agar tidak 403 saat di-load ulang — JANGAN pakai referrerPolicy="no-referrer".
   const rawAvatarSrc =
     user?.user_metadata?.avatar_url ||
     user?.user_metadata?.picture ||
@@ -248,7 +248,6 @@ export default function TopNavBar({ cartCount = 0 }) {
               <AvatarImage
                 src={avatarSrc}
                 alt={fullName || email || 'Foto profil'}
-                referrerPolicy="no-referrer"
                 onError={() => setAvatarBroken(true)}
               />
             )}
@@ -263,7 +262,6 @@ export default function TopNavBar({ cartCount = 0 }) {
               <AvatarImage
                 src={avatarSrc}
                 alt={fullName || email || 'Foto profil'}
-                referrerPolicy="no-referrer"
                 onError={() => setAvatarBroken(true)}
               />
             )}

@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from '@/components/ui/table'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Label } from '@/components/ui/label'
 
 function initials(name) {
@@ -171,7 +171,10 @@ export default function AdminCustomers() {
                   <TableRow key={c.id}>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8"><AvatarFallback className="text-[11px] font-bold">{initials(c.displayName)}</AvatarFallback></Avatar>
+                        <Avatar className="h-8 w-8">
+                          {c.avatar_url && (<AvatarImage src={c.avatar_url} alt={c.displayName} />)}
+                          <AvatarFallback className="text-[11px] font-bold">{initials(c.displayName)}</AvatarFallback>
+                        </Avatar>
                         <div><p className="text-sm font-medium">{c.displayName}</p><p className="text-[11px] text-muted-foreground">{c.email || '-'}</p></div>
                       </div>
                     </TableCell>
@@ -194,7 +197,10 @@ export default function AdminCustomers() {
           {detail && (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Avatar className="h-12 w-12"><AvatarFallback className="font-bold">{initials(detail.full_name || detail.displayName)}</AvatarFallback></Avatar>
+                <Avatar className="h-12 w-12">
+                  {detail.avatar_url && (<AvatarImage src={detail.avatar_url} alt={detail.full_name || detail.displayName} />)}
+                  <AvatarFallback className="font-bold">{initials(detail.full_name || detail.displayName)}</AvatarFallback>
+                </Avatar>
                 <div>
                   <p className="font-bold">{detail.full_name || detail.displayName}</p>
                   <p className="text-xs text-muted-foreground">{detail.email}</p>

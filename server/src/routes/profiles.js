@@ -40,6 +40,34 @@ router.put('/me', authenticate, async (req, res) => {
   }
 })
 
+// Ambil peta avatar dari Supabase Auth (foto Google hanya tersimpan di
+// user_metadata, bukan di tabel profiles). Tanpa migrasi DB.
+async function getAvatarMap() {
+  const map = {}
+  try {
+    let page = 1
+    for (;;) {
+      const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 100 })
+      if (error || !data?.users?.length) break
+      for (const u of data.users) {
+        const url =
+          u.user_metadata?.avatar_url ||
+          u.user_metadata?.picture ||
+          u.identities?.[0]?.identity_data?.avatar_url ||
+          u.identities?.[0]?.identity_data?.picture ||
+          null
+        if (url) map[u.id] = url
+      }
+      if (data.users.length < 100) break
+      page += 1
+      if (page > 20) break // batas aman 2000 user
+    }
+  } catch {
+    // abaikan — avatar opsional, halaman tetap jalan dengan inisial
+  }
+  return map
+}
+
 // ---- Admin: CRM Pelanggan ----
 
 // GET /api/profiles/admin/all - daftar semua pelanggan + ringkasan order
@@ -54,6 +82,8 @@ router.get('/admin/all', authenticate, requireAdmin, async (req, res) => {
     const { data: orders } = await supabaseAdmin
       .from('orders')
       .select('customer_id, gross_amount, status, created_at')
+
+    const avatarMap = await getAvatarMap()
 
     const statsByUser = {}
     for (const o of orders || []) {
@@ -71,6 +101,7 @@ router.get('/admin/all', authenticate, requireAdmin, async (req, res) => {
     const merged = (profiles || []).map((p) => ({
       ...p,
       displayName: p.full_name || (p.email ? p.email.split('@')[0] : 'Pelanggan'),
+      avatar_url: avatarMap[p.id] || null,
       ...(statsByUser[p.id] || { totalOrders: 0, totalSpent: 0, lastOrderAt: null }),
     }))
     res.json(merged)
@@ -88,7 +119,20 @@ router.get('/admin/:id', authenticate, requireAdmin, async (req, res) => {
       supabaseAdmin.from('orders').select('id, order_id, gross_amount, status, payment_type, items, created_at').eq('customer_id', id).order('created_at', { ascending: false }),
     ])
     if (profErr) return res.status(404).json({ error: 'Pelanggan tidak ditemukan' })
-    res.json({ ...(profile || {}), orders: orders || [] })
+    let avatar_url = null
+    try {
+      const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(id)
+      const u = authUser?.user
+      avatar_url =
+        u?.user_metadata?.avatar_url ||
+        u?.user_metadata?.picture ||
+        u?.identities?.[0]?.identity_data?.avatar_url ||
+        u?.identities?.[0]?.identity_data?.picture ||
+        null
+    } catch {
+      // abaikan
+    }
+    res.json({ ...(profile || {}), avatar_url, orders: orders || [] })
   } catch (err) {
     res.status(500).json({ error: 'Gagal mengambil detail pelanggan' })
   }

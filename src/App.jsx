@@ -13,6 +13,7 @@ import AdminProducts from './pages/AdminProducts'
 import AdminHeroSlides from './pages/AdminHeroSlides'
 import AdminOrders from './pages/AdminOrders'
 import AdminCustomers from './pages/AdminCustomers'
+import AdminAnalytics from './pages/AdminAnalytics'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminRoute from './components/AdminRoute'
@@ -51,6 +52,7 @@ export default function App() {
               <Route path="orders" element={<AdminOrders />} />
               <Route path="customers" element={<AdminCustomers />} />
               <Route path="hero-slides" element={<AdminHeroSlides />} />
+              <Route path="analytics" element={<AdminAnalytics />} />
             </Route>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />

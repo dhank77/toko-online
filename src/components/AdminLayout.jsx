@@ -1,14 +1,57 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { useState } from 'react'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 import { Toaster } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import logoUrl from '../assets/logo.png'
 
 export default function AdminLayout() {
-  const location = useLocation()
+  const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const { resolved, toggleTheme } = useTheme()
+  const [confirmLogout, setConfirmLogout] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  // Nama + foto diambil dari Supabase Auth (mendukung login Google),
+  // sama seperti yang dipakai TopNavBar di sisi toko.
+  const fullName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.identities?.[0]?.identity_data?.full_name ||
+    user?.identities?.[0]?.identity_data?.name ||
+    user?.email?.split('@')[0] ||
+    'Admin'
+  const email = user?.email || ''
+  const rawAvatar =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    user?.user_metadata?.image ||
+    user?.identities?.[0]?.identity_data?.avatar_url ||
+    user?.identities?.[0]?.identity_data?.picture ||
+    user?.identities?.[0]?.identity_data?.image ||
+    null
+  const avatarSrc = rawAvatar ? String(rawAvatar).replace(/=s\d+-c$/, '=s192-c') : null
+  const initials = String(fullName || 'A')
+    .split(' ')
+    .map((n) => n[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    try {
+      await signOut()
+      setConfirmLogout(false)
+      navigate('/login', { replace: true })
+    } finally {
+      setLoggingOut(false)
+    }
+  }
 
   const navItems = [
     { to: '/admin', label: 'Dashboard', icon: 'dashboard', end: true },
@@ -63,21 +106,24 @@ export default function AdminLayout() {
             <span className="material-symbols-outlined">settings</span>
              <span className="text-sm font-medium">Pengaturan</span>
           </a>
-          <a className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-all duration-150 rounded-lg" href="#">
-            <span className="material-symbols-outlined">help</span>
-             <span className="text-sm font-medium">Bantuan</span>
-          </a>
-          <div className="flex items-center gap-3 px-3 py-2 mt-2">
-            <Avatar className="h-8 w-8">
-              <img
-                className="w-full h-full object-cover"
-                data-alt="Admin profile"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaKRwo4p7v9iQY3VZeVmRNogGHt25rkobmurKp3vJGofPzg0dBZauXhUhknatFroepE4Ep21_yztkag-7Rxzm4HhIboF-6uV4LejDcmhKstl1XpQlc3WsYyagDmjPI1HAgqsO9OrfrfxfVfMprY_FoKjFWJMgs6b-KREcfGC-3vAgvTJZfdJEoCyWK9H08EtRVEOwptLXMIi34Hg3J4KfUINNjn8mS6CrZeT8lgXID-oF2BSrmdlORzQ"
-              />
+          <div className="flex items-center gap-3 px-3 py-2 mt-2 rounded-lg bg-background border border-border">
+            <Avatar className="h-9 w-9 shrink-0">
+              {avatarSrc && (<AvatarImage src={avatarSrc} alt={fullName} />)}
+              <AvatarFallback className="text-xs font-bold bg-primary/10 text-primary">{initials}</AvatarFallback>
             </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-foreground truncate">Profil Admin</span>
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-sm font-semibold text-foreground truncate" title={fullName}>{fullName}</span>
+              <span className="text-[11px] text-muted-foreground truncate" title={email}>{email || 'Administrator'}</span>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              title="Keluar"
+              onClick={() => setConfirmLogout(true)}
+              className="shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            >
+              <span className="material-symbols-outlined text-lg">logout</span>
+            </Button>
           </div>
         </div>
       </aside>
@@ -116,6 +162,26 @@ export default function AdminLayout() {
         </section>
 
         <Toaster position="bottom-left" />
+
+        {/* Dialog konfirmasi logout */}
+        <Dialog open={confirmLogout} onOpenChange={(o) => { if (!o) setConfirmLogout(false) }}>
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle>Keluar dari Admin?</DialogTitle>
+              <DialogDescription>
+                Anda akan keluar dari akun <span className="font-semibold text-foreground">{email || fullName}</span> dan kembali ke halaman login.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setConfirmLogout(false)} disabled={loggingOut}>
+                Batal
+              </Button>
+              <Button variant="destructive" onClick={handleLogout} disabled={loggingOut}>
+                {loggingOut ? 'Keluar...' : 'Ya, Keluar'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Footer */}
         <footer className="py-10 px-6 border-t border-border bg-muted/50">
