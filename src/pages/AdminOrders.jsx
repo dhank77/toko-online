@@ -90,7 +90,8 @@ export default function AdminOrders() {
     }
     if (q) {
       list = list.filter((o) => {
-        const name = (o.profiles?.full_name || o.customer_name || '').toLowerCase()
+        const snap = o.raw_response?.customer?.firstName || o.raw_response?.customer_details?.first_name || ''
+        const name = (o.profiles?.full_name || snap || '').toLowerCase()
         const email = (o.profiles?.email || '').toLowerCase()
         const oid = String(o.order_id || o.id || '').toLowerCase()
         return name.includes(q) || email.includes(q) || oid.includes(q)
@@ -194,14 +195,18 @@ export default function AdminOrders() {
                     </TableCell>
                   </TableRow>
                 ) : filtered.map((order) => {
-                  const name = order.profiles?.full_name || 'Tanpa Nama'
+                  // Nama: profil -> snapshot checkout -> email -> potongan ID
+                  const snapName = order.raw_response?.customer?.firstName || order.raw_response?.customer_details?.first_name || null
+                  const emailName = order.profiles?.email ? order.profiles.email.split('@')[0] : null
+                  const name = order.profiles?.full_name || snapName || emailName || `User ${String(order.customer_id || '').slice(0, 8)}`
+                  const email = order.profiles?.email || null
                   return (
                     <TableRow key={order.id}>
                       <TableCell><span className="font-mono text-xs font-semibold">{order.order_id}</span><span className="block text-[11px] text-muted-foreground">{order.payment_type || ''}</span></TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Avatar className="h-7 w-7"><AvatarFallback className="text-[10px] font-bold">{initials(name)}</AvatarFallback></Avatar>
-                          <div><p className="text-sm font-medium">{name}</p><p className="text-[11px] text-muted-foreground">{order.profiles?.email || ''}</p></div>
+                          <div><p className="text-sm font-medium">{name}</p><p className="text-[11px] text-muted-foreground">{email || ''}</p></div>
                         </div>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate">{itemSummary(order.items)}</TableCell>
@@ -234,7 +239,7 @@ export default function AdminOrders() {
                 <Badge variant={statusVariant(detail.status)} className="capitalize">{statusLabel(detail.status)}</Badge>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 text-sm">
-                <div className="p-4 rounded-lg bg-muted/50 border"><p className="text-xs text-muted-foreground mb-1">PELANGGAN</p><p className="font-semibold">{detail.profiles?.full_name || '-'}</p><p className="text-xs text-muted-foreground">{detail.profiles?.email || ''}</p></div>
+                <div className="p-4 rounded-lg bg-muted/50 border"><p className="text-xs text-muted-foreground mb-1">PELANGGAN</p><p className="font-semibold">{detail.profiles?.full_name || detail.raw_response?.customer?.firstName || detail.raw_response?.customer_details?.first_name || detail.profiles?.email?.split('@')[0] || '-'}</p><p className="text-xs text-muted-foreground">{detail.profiles?.email || ''}</p></div>
                 <div className="p-4 rounded-lg bg-muted/50 border"><p className="text-xs text-muted-foreground mb-1">PEMBAYARAN</p><p className="font-semibold">{detail.payment_type || '-'}</p><p className="text-lg font-bold text-primary">{formatRupiah(detail.gross_amount || 0)}</p></div>
               </div>
               <div className="border rounded-lg divide-y">
