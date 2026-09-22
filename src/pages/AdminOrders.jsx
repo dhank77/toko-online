@@ -211,7 +211,18 @@ export default function AdminOrders() {
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-12">
                       <span className="material-symbols-outlined text-5xl text-muted-foreground block mb-2">receipt_long</span>
-                      <p className="text-sm text-muted-foreground">{orders.length === 0 ? 'Belum ada pesanan masuk.' : 'Tidak cocok dengan filter.'}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {orders.length === 0
+                          ? 'Belum ada pesanan masuk.'
+                          : search.trim()
+                            ? `Tidak ada pesanan yang cocok dengan "${search.trim()}".`
+                            : 'Tidak cocok dengan filter.'}
+                      </p>
+                      {(search.trim() || statusFilter !== 'all') && (
+                        <Button variant="outline" size="sm" className="mt-3" onClick={() => { setSearch(''); setStatusFilter('all') }}>
+                          Bersihkan pencarian
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : filtered.map((order) => {

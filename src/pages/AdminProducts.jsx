@@ -414,7 +414,16 @@ export default function AdminProducts() {
                 ) : products.length === 0 ? (
                   <TableRow>
                      <TableCell colSpan="7" className="px-6 py-12 text-center text-sm text-muted-foreground">
-                       Tidak ada produk ditemukan. Buat produk pertama Anda untuk memulai.
+                       {search.trim() || categoryFilter
+                         ? 'Tidak ada produk yang cocok dengan pencarian/filter Anda.'
+                         : 'Tidak ada produk ditemukan. Buat produk pertama Anda untuk memulai.'}
+                       {(search.trim() || categoryFilter) && (
+                         <div className="mt-3">
+                           <Button variant="outline" size="sm" onClick={() => { setSearch(''); setCategoryFilter('') }}>
+                             Bersihkan pencarian
+                           </Button>
+                         </div>
+                       )}
                      </TableCell>
                   </TableRow>
                 ) : (

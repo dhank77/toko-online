@@ -183,7 +183,18 @@ export default function AdminCustomers() {
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-12">
                       <span className="material-symbols-outlined text-5xl text-muted-foreground block mb-2">group</span>
-                      <p className="text-sm text-muted-foreground">Tidak ada pelanggan yang cocok.</p>
+                      <p className="text-sm text-muted-foreground">
+                        {customers.length === 0
+                          ? 'Belum ada pelanggan terdaftar.'
+                          : search.trim()
+                            ? `Tidak ada pelanggan yang cocok dengan "${search.trim()}".`
+                            : 'Tidak ada pelanggan yang cocok.'}
+                      </p>
+                      {(search.trim() || roleFilter !== 'all') && (
+                        <Button variant="outline" size="sm" className="mt-3" onClick={() => { setSearch(''); setRoleFilter('all') }}>
+                          Bersihkan pencarian
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ) : list.map((c) => (
