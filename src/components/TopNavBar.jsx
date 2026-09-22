@@ -158,10 +158,35 @@ export default function TopNavBar({ cartCount = 0 }) {
             : 'Dikirim ke alamat Anda — klik untuk deteksi lokasi'
 
 
-  const fullName = user?.user_metadata?.full_name || user?.email || ''
+  const fullName =
+    user?.user_metadata?.full_name ||
+    user?.user_metadata?.name ||
+    user?.identities?.[0]?.identity_data?.full_name ||
+    user?.identities?.[0]?.identity_data?.name ||
+    user?.email ||
+    ''
   const email = user?.email || ''
-  const getInitial = () => fullName.charAt(0).toUpperCase()
-  const avatarSrc = user?.user_metadata?.avatar_url || user?.user_metadata?.picture || user?.user_metadata?.image || user?.identities?.[0]?.identity_data?.picture || user?.identities?.[0]?.identity_data?.avatar_url || null
+  const getInitial = () => (fullName ? fullName.charAt(0).toUpperCase() : '?')
+  // Supabase/Google menyimpan foto di key yang berbeda-beda tergantung provider & versi:
+  // user_metadata: avatar_url (google), picture (google oauth), image; identities[0].identity_data juga bisa.
+  // Google kadang mengembalikan URL `=s96-c` kecil — upgrade ke `=s192-c` agar tajam di avatar.
+  const rawAvatarSrc =
+    user?.user_metadata?.avatar_url ||
+    user?.user_metadata?.picture ||
+    user?.user_metadata?.image ||
+    user?.identities?.[0]?.identity_data?.avatar_url ||
+    user?.identities?.[0]?.identity_data?.picture ||
+    user?.identities?.[0]?.identity_data?.image ||
+    null
+  const avatarSrc = rawAvatarSrc
+    ? String(rawAvatarSrc).replace(/=s\d+-c$/, '=s192-c')
+    : null
+  const [avatarBroken, setAvatarBroken] = useState(false)
+
+  // Reset flag error setiap ganti user / URL avatar (mis. habis login Google)
+  useEffect(() => {
+    setAvatarBroken(false)
+  }, [avatarSrc, user?.id])
 
   const handleLogout = async () => {
     await signOut()
@@ -219,7 +244,14 @@ export default function TopNavBar({ cartCount = 0 }) {
           className="rounded-full ml-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ring-offset-2"
         >
           <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/60 transition-colors">
-            {avatarSrc && <AvatarImage src={avatarSrc} alt={getInitial()} />}
+            {avatarSrc && !avatarBroken && (
+              <AvatarImage
+                src={avatarSrc}
+                alt={fullName || email || 'Foto profil'}
+                referrerPolicy="no-referrer"
+                onError={() => setAvatarBroken(true)}
+              />
+            )}
             <AvatarFallback className="bg-primary/10 text-primary font-bold">{getInitial()}</AvatarFallback>
           </Avatar>
         </button>
@@ -227,7 +259,14 @@ export default function TopNavBar({ cartCount = 0 }) {
       <DropdownMenuContent align="end" sideOffset={10} className="w-64 p-0 overflow-hidden fade-slide-down">
         <div className="p-4 bg-muted/50 border-b border-border flex items-center gap-3">
           <Avatar className="h-11 w-11 border border-border">
-            {avatarSrc && <AvatarImage src={avatarSrc} alt={getInitial()} />}
+            {avatarSrc && !avatarBroken && (
+              <AvatarImage
+                src={avatarSrc}
+                alt={fullName || email || 'Foto profil'}
+                referrerPolicy="no-referrer"
+                onError={() => setAvatarBroken(true)}
+              />
+            )}
             <AvatarFallback className="bg-primary text-primary-foreground font-bold">{getInitial()}</AvatarFallback>
           </Avatar>
           <div className="min-w-0">
