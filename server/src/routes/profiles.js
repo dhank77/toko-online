@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import { supabaseAdmin } from '../config/supabase.js'
 import { authenticate } from '../middleware/auth.js'
+import { requireAdmin } from '../middleware/admin.js'
 
 const router = Router()
 
@@ -36,6 +37,86 @@ router.put('/me', authenticate, async (req, res) => {
     res.json(data)
   } catch (err) {
     res.status(500).json({ error: 'Gagal memperbarui profil' })
+  }
+})
+
+// ---- Admin: CRM Pelanggan ----
+
+// GET /api/profiles/admin/all - daftar semua pelanggan + ringkasan order
+router.get('/admin/all', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { data: profiles, error: profErr } = await supabaseAdmin
+      .from('profiles')
+      .select('id, email, full_name, role, created_at, updated_at')
+      .order('created_at', { ascending: false })
+    if (profErr) return res.status(400).json({ error: profErr.message })
+
+    const { data: orders } = await supabaseAdmin
+      .from('orders')
+      .select('customer_id, gross_amount, status, created_at')
+
+    const statsByUser = {}
+    for (const o of orders || []) {
+      if (!o.customer_id) continue
+      const s = (statsByUser[o.customer_id] ||= { totalOrders: 0, totalSpent: 0, lastOrderAt: null })
+      s.totalOrders += 1
+      if (!['failed', 'cancelled', 'expire', 'deny'].includes(String(o.status).toLowerCase())) {
+        s.totalSpent += Number(o.gross_amount || 0)
+      }
+      if (!s.lastOrderAt || new Date(o.created_at) > new Date(s.lastOrderAt)) {
+        s.lastOrderAt = o.created_at
+      }
+    }
+
+    const merged = (profiles || []).map((p) => ({
+      ...p,
+      displayName: p.full_name || (p.email ? p.email.split('@')[0] : 'Pelanggan'),
+      ...(statsByUser[p.id] || { totalOrders: 0, totalSpent: 0, lastOrderAt: null }),
+    }))
+    res.json(merged)
+  } catch (err) {
+    res.status(500).json({ error: 'Gagal mengambil data pelanggan' })
+  }
+})
+
+// GET /api/profiles/admin/:id - detail 1 pelanggan + riwayat order
+router.get('/admin/:id', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const [{ data: profile, error: profErr }, { data: orders }] = await Promise.all([
+      supabaseAdmin.from('profiles').select('id, email, full_name, role, created_at, updated_at').eq('id', id).single(),
+      supabaseAdmin.from('orders').select('id, order_id, gross_amount, status, payment_type, items, created_at').eq('customer_id', id).order('created_at', { ascending: false }),
+    ])
+    if (profErr) return res.status(404).json({ error: 'Pelanggan tidak ditemukan' })
+    res.json({ ...(profile || {}), orders: orders || [] })
+  } catch (err) {
+    res.status(500).json({ error: 'Gagal mengambil detail pelanggan' })
+  }
+})
+
+// PATCH /api/profiles/admin/:id - ubah nama / role pelanggan
+router.patch('/admin/:id', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const { full_name, role } = req.body || {}
+    const updates = {}
+    if (typeof full_name === 'string') updates.full_name = full_name.trim()
+    if (role === 'admin' || role === 'customer') updates.role = role
+    if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Tidak ada perubahan' })
+    // Admin tidak bisa menurunkan role dirinya sendiri
+    if (id === req.user.id && updates.role && updates.role !== 'admin') {
+      return res.status(400).json({ error: 'Tidak bisa menurunkan role akun sendiri' })
+    }
+    const { data, error } = await supabaseAdmin
+      .from('profiles')
+      .update(updates)
+      .eq('id', id)
+      .select('id, email, full_name, role, created_at, updated_at')
+      .single()
+    if (error) return res.status(400).json({ error: error.message })
+    res.json(data)
+  } catch (err) {
+    res.status(500).json({ error: 'Gagal memperbarui pelanggan' })
   }
 })
 

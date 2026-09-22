@@ -11,8 +11,6 @@ export default function AdminRoute({ children }) {
     }
   }, [user, isAdmin, checkingAdmin, checkAdmin])
 
-  console.log('AdminRoute render:', { loading, checkingAdmin, hasUser: !!user, isAdmin })
-
   if (loading || checkingAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-foreground">

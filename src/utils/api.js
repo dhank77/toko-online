@@ -118,6 +118,12 @@ export const api = {
     method: 'PUT',
     body: JSON.stringify(data),
   }),
+  getAdminCustomers: () => request('/profiles/admin/all'),
+  getAdminCustomer: (id) => request(`/profiles/admin/${id}`),
+  updateAdminCustomer: (id, updates) => request(`/profiles/admin/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  }),
   login: (email, password) => request('/auth/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
