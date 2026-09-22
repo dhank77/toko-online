@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { useAdminSearch } from '../context/AdminSearchContext'
 import { formatRupiah } from '../lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -18,7 +19,9 @@ export default function AdminCustomers() {
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [search, setSearch] = useState('')
+  // Kata kunci berasal dari kolom pencarian di header admin (state global),
+  // sehingga kolom di halaman ini dan di header selalu sinkron.
+  const { query: search, setQuery: setSearch } = useAdminSearch()
   const [roleFilter, setRoleFilter] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
   const [detail, setDetail] = useState(null)
@@ -136,6 +139,22 @@ export default function AdminCustomers() {
           <option value="spent">Belanja terbesar</option>
         </select>
       </div>
+      {!loading && (search.trim() || roleFilter !== 'all') && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>
+            Menampilkan <span className="font-semibold text-foreground">{list.length}</span> dari {customers.length} pelanggan
+            {search.trim() ? <> untuk &quot;{search.trim()}&quot;</> : null}
+            {roleFilter !== 'all' ? <> · role {roleFilter}</> : null}.
+          </span>
+          <button
+            type="button"
+            onClick={() => { setSearch(''); setRoleFilter('all') }}
+            className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">filter_alt_off</span>Bersihkan pencarian
+          </button>
+        </div>
+      )}
       <Card className="overflow-hidden">
         <CardContent className="p-0">
           <div className="overflow-x-auto">

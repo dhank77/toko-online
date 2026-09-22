@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { useAdminSearch } from '../context/AdminSearchContext'
 import { supabase } from '../utils/supabaseClient'
 import { compressImage, formatFileSize } from '../utils/imageCompress'
 import { formatRupiah } from '../lib/utils'
@@ -43,7 +44,9 @@ export default function AdminProducts() {
   const [savingVariant, setSavingVariant] = useState(false)
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef(null)
-  const [search, setSearch] = useState('')
+  // Kata kunci berasal dari kolom pencarian di header admin (state global),
+  // sehingga kolom di halaman ini dan di header selalu sinkron.
+  const { query: search, setQuery: setSearch, submitSearch, version: searchVersion } = useAdminSearch()
   const [categoryFilter, setCategoryFilter] = useState('')
   const [sortField, setSortField] = useState('created_at')
   const [sortOrder, setSortOrder] = useState('desc')
@@ -54,6 +57,18 @@ export default function AdminProducts() {
     const timer = setTimeout(() => setDebouncedSearch(search), 300)
     return () => clearTimeout(timer)
   }, [search])
+
+  // Kembali ke halaman 1 setiap kata kunci berubah (termasuk dari header admin).
+  useEffect(() => {
+    setPage(1)
+  }, [search])
+
+  // Tekan Enter di header / pindah menu: langsung terapkan tanpa menunggu debounce.
+  useEffect(() => {
+    setDebouncedSearch(search)
+    setPage(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchVersion])
 
   const loadProducts = async (pageNum = 1) => {
     setLoading(true)
@@ -313,9 +328,10 @@ export default function AdminProducts() {
         <div className="relative flex-1">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">search</span>
           <Input
-             placeholder="Cari produk..."
+             placeholder="Cari nama produk atau deskripsi..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); submitSearch(search) } }}
             className="pl-10"
           />
         </div>
@@ -349,6 +365,23 @@ export default function AdminProducts() {
            <option value="asc">Meningkat</option>
         </select>
       </div>
+
+      {!loading && (search.trim() || categoryFilter) && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>
+            Menampilkan <span className="font-semibold text-foreground">{products.length}</span> produk
+            {search.trim() ? <> untuk &quot;{search.trim()}&quot;</> : null}
+            {categoryFilter ? <> pada kategori terpilih</> : null} · halaman {page} dari {totalPages}.
+          </span>
+          <button
+            type="button"
+            onClick={() => { setSearch(''); setCategoryFilter('') }}
+            className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">filter_alt_off</span>Bersihkan pencarian
+          </button>
+        </div>
+      )}
 
       <Card>
         <CardContent className="p-0">

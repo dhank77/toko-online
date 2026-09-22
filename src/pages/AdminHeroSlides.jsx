@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { useAdminSearch } from '../context/AdminSearchContext'
 import { supabase } from '../utils/supabaseClient'
 import { compressImage, formatFileSize } from '../utils/imageCompress'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,8 @@ export default function AdminHeroSlides() {
   const [slides, setSlides] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  // Kata kunci dari kolom pencarian header admin (state global).
+  const { query: search, setQuery: setSearch } = useAdminSearch()
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ ...emptySlide })
   const [modalMode, setModalMode] = useState(null)
@@ -51,6 +54,19 @@ export default function AdminHeroSlides() {
   useEffect(() => {
     loadSlides()
   }, [])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return slides
+    return slides.filter((s) =>
+      (s.title || '').toLowerCase().includes(q) ||
+      (s.badge || '').toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q) ||
+      (s.cta_label || '').toLowerCase().includes(q)
+    )
+  }, [slides, search])
+
+  const searching = search.trim().length > 0
 
   const openCreate = () => {
     setModalMode('create')
@@ -234,6 +250,34 @@ export default function AdminHeroSlides() {
         </Button>
       </div>
 
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">search</span>
+          <Input
+            placeholder="Cari judul atau badge slide..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {!loading && searching && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>
+            Menampilkan <span className="font-semibold text-foreground">{filtered.length}</span> dari {slides.length} slide
+            untuk &quot;{search.trim()}&quot;.
+          </span>
+          <button
+            type="button"
+            onClick={() => setSearch('')}
+            className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">filter_alt_off</span>Bersihkan pencarian
+          </button>
+        </div>
+      )}
+
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -260,14 +304,16 @@ export default function AdminHeroSlides() {
                       <TableCell><div className="h-4 bg-muted rounded w-8 animate-pulse ml-auto" /></TableCell>
                     </TableRow>
                   ))
-                ) : slides.length === 0 ? (
+                ) : filtered.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan="6" className="px-6 py-12 text-center text-sm text-muted-foreground">
-                      Tidak ada slide ditemukan. Buat slide pertama Anda untuk memulai.
+                      {searching
+                        ? `Tidak ada slide yang cocok dengan "${search.trim()}".`
+                        : 'Tidak ada slide ditemukan. Buat slide pertama Anda untuk memulai.'}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  slides.map((slide) => (
+                  filtered.map((slide) => (
                     <TableRow key={slide.id} className="hover:bg-muted/50 transition-colors group">
                       <TableCell>
                         <div className="flex items-center gap-1">

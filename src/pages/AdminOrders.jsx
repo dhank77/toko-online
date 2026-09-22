@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { useAdminSearch } from '../context/AdminSearchContext'
 import { formatRupiah } from '../lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -58,7 +59,9 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [search, setSearch] = useState('')
+  // Kata kunci berasal dari kolom pencarian di header admin (state global),
+  // sehingga kolom di halaman ini dan di header selalu sinkron.
+  const { query: search, setQuery: setSearch } = useAdminSearch()
   const [statusFilter, setStatusFilter] = useState('all')
   const [sortOrder, setSortOrder] = useState('desc')
   const [detail, setDetail] = useState(null)
@@ -150,7 +153,7 @@ export default function AdminOrders() {
       <div className="mb-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">search</span>
-          <Input placeholder="Cari order ID, nama, email..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
+          <Input placeholder="Cari No. Pesanan, nama, atau email pembeli..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
         </div>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 border rounded-md bg-background text-sm">
           {STATUS_OPTIONS.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
@@ -160,6 +163,23 @@ export default function AdminOrders() {
           <option value="asc">Terlama dulu</option>
         </select>
       </div>
+
+      {!loading && (search.trim() || statusFilter !== 'all') && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>
+            Menampilkan <span className="font-semibold text-foreground">{filtered.length}</span> dari {orders.length} pesanan
+            {search.trim() ? <> untuk &quot;{search.trim()}&quot;</> : null}
+            {statusFilter !== 'all' ? <> · status {statusLabel(statusFilter)}</> : null}.
+          </span>
+          <button
+            type="button"
+            onClick={() => { setSearch(''); setStatusFilter('all') }}
+            className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">filter_alt_off</span>Bersihkan pencarian
+          </button>
+        </div>
+      )}
 
       <Card className="overflow-hidden">
         <CardContent className="p-0">

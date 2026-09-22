@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import { api } from '../utils/api'
+import { useAdminSearch } from '../context/AdminSearchContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -25,6 +26,8 @@ export default function AdminCategories() {
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  // Kata kunci dari kolom pencarian header admin (state global).
+  const { query: search, setQuery: setSearch } = useAdminSearch()
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ ...emptyCategory })
   const [modalMode, setModalMode] = useState(null)
@@ -46,6 +49,18 @@ export default function AdminCategories() {
   useEffect(() => {
     loadCategories()
   }, [])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return categories
+    return categories.filter((c) =>
+      (c.name || '').toLowerCase().includes(q) ||
+      (c.slug || '').toLowerCase().includes(q) ||
+      (c.icon || '').toLowerCase().includes(q)
+    )
+  }, [categories, search])
+
+  const searching = search.trim().length > 0
 
   const generateSlug = (name) =>
     name
@@ -129,6 +144,34 @@ export default function AdminCategories() {
         </Button>
       </div>
 
+      <div className="mb-4 flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">search</span>
+          <Input
+            placeholder="Cari nama kategori atau slug..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+      </div>
+
+      {!loading && searching && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+          <span>
+            Menampilkan <span className="font-semibold text-foreground">{filtered.length}</span> dari {categories.length} kategori
+            untuk &quot;{search.trim()}&quot;.
+          </span>
+          <button
+            type="button"
+            onClick={() => setSearch('')}
+            className="inline-flex items-center gap-1 hover:text-foreground transition-colors"
+          >
+            <span className="material-symbols-outlined text-[16px]">filter_alt_off</span>Bersihkan pencarian
+          </button>
+        </div>
+      )}
+
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -151,14 +194,16 @@ export default function AdminCategories() {
                       <TableCell><div className="h-4 bg-muted rounded w-8 animate-pulse ml-auto" /></TableCell>
                     </TableRow>
                   ))
-                ) : categories.length === 0 ? (
+                ) : filtered.length === 0 ? (
                   <TableRow>
                      <TableCell colSpan="4" className="px-6 py-12 text-center text-sm text-muted-foreground">
-                       Tidak ada kategori ditemukan. Buat kategori pertama Anda untuk memulai.
+                       {searching
+                         ? `Tidak ada kategori yang cocok dengan "${search.trim()}".`
+                         : 'Tidak ada kategori ditemukan. Buat kategori pertama Anda untuk memulai.'}
                      </TableCell>
                   </TableRow>
                 ) : (
-                  categories.map((category) => (
+                  filtered.map((category) => (
                     <TableRow key={category.id} className="hover:bg-muted/50 transition-colors group">
                       <TableCell className="text-sm font-medium text-foreground">{category.name}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{category.slug}</TableCell>

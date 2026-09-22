@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
+import { ADMIN_SEARCH_TARGETS, getAdminSearchTarget, useAdminSearch } from '../context/AdminSearchContext'
 import { Toaster } from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -19,6 +20,26 @@ export default function AdminLayout() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
+  const searchInputRef = useRef(null)
+  const location = useLocation()
+  const { query, setQuery, submitSearch, clear } = useAdminSearch()
+
+  // Halaman aktif menentukan placeholder + apakah daftarnya bisa disaring.
+  const searchTarget = getAdminSearchTarget(location.pathname)
+  const placeholder = searchTarget?.placeholder || 'Cari pesanan, pelanggan, atau produk...'
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/.test(navigator.userAgent || '')
+  const shortcutLabel = isMac ? '⌘K' : 'Ctrl K'
+
+  // Saran menu pada dropdown pencarian (difilter oleh kata kunci yang diketik).
+  const suggestionItems = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return ADMIN_SEARCH_TARGETS
+    return ADMIN_SEARCH_TARGETS.filter(
+      (t) => t.label.toLowerCase().includes(q) || (t.keywords || '').toLowerCase().includes(q)
+    )
+  }, [query])
 
   useEffect(() => {
     try {
@@ -32,6 +53,112 @@ export default function AdminLayout() {
 
   // close mobile drawer on nav
   const closeMobile = () => setMobileOpen(false)
+
+  const focusSearch = () => {
+    const isDesktop = typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+    if (!isDesktop) {
+      setSearchOpen(true)
+      return
+    }
+    setSearchFocused(true)
+    searchInputRef.current?.focus()
+  }
+
+  const handleClearSearch = () => {
+    clear()
+    setSearchFocused(false)
+    searchInputRef.current?.focus()
+  }
+
+  // Enter = cari di halaman saat ini; kalau halaman tidak punya daftar
+  // (mis. Dashboard/Analitik) maka pindah ke menu yang bisa dicari.
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    setSearchFocused(false)
+    if (searchTarget?.searchable) {
+      submitSearch(query)
+      setSearchOpen(false)
+      return
+    }
+    const dest = suggestionItems.find((t) => t.searchable) || ADMIN_SEARCH_TARGETS.find((t) => t.searchable)
+    if (dest) {
+      setSearchOpen(false)
+      navigate(dest.to, { state: { adminQuery: query } })
+    }
+  }
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault()
+      clear()
+      setSearchFocused(false)
+      setSearchOpen(false)
+      e.target.blur?.()
+    }
+  }
+
+  // Klik saran menu: pindah halaman dan bawa kata kunci agar langsung tersaring.
+  const handleSuggestionClick = (t) => {
+    setSearchFocused(false)
+    setSearchOpen(false)
+    if (location.pathname === t.to) {
+      if (t.searchable) submitSearch(query)
+      return
+    }
+    navigate(t.to, { state: { adminQuery: query } })
+  }
+
+  // Shortcut: ⌘K / Ctrl+K atau "/" memfokuskan kolom pencarian.
+  useEffect(() => {
+    const onKey = (e) => {
+      const el = e.target
+      const typing =
+        el instanceof HTMLElement &&
+        (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)
+      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        focusSearch()
+        return
+      }
+      if (e.key === '/' && !typing) {
+        e.preventDefault()
+        focusSearch()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const renderSuggestionList = (listClassName = '') => (
+    <div className={listClassName}>
+      <p className="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wider text-muted-foreground">
+        {query.trim() ? 'Menu yang cocok' : 'Cari di menu'}
+      </p>
+      {suggestionItems.length === 0 ? (
+        <p className="px-3 py-3 text-sm text-muted-foreground">
+          Menu tidak ditemukan. Tekan Enter untuk mencari di Manajemen Pesanan.
+        </p>
+      ) : (
+        suggestionItems.map((t) => (
+          <button
+            key={t.to}
+            type="button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => handleSuggestionClick(t)}
+            className={`w-full flex items-center gap-3 px-3 py-2 text-left text-sm hover:bg-muted transition-colors ${
+              t.to === searchTarget?.to ? 'bg-muted/60' : ''
+            }`}
+          >
+            <span className="material-symbols-outlined text-[20px] text-muted-foreground">{t.icon}</span>
+            <span className="flex-1 min-w-0 truncate">{t.label}</span>
+            {t.to === searchTarget?.to && t.searchable && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground">Di sini</span>
+            )}
+          </button>
+        ))
+      )}
+    </div>
+  )
 
   const fullName =
     user?.user_metadata?.full_name ||
@@ -223,7 +350,7 @@ export default function AdminLayout() {
       {/* Main Content */}
       <main className={`flex-1 min-h-screen bg-background flex flex-col transition-all duration-300 ease-in-out ${collapsed ? 'md:ml-[72px]' : 'md:ml-64'}`}>
         {/* TopAppBar */}
-        <header className="h-[64px] md:h-20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border sticky top-0 z-30 flex items-center">
+        <header className="h-[64px] md:h-20 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border sticky top-0 z-30 flex items-center relative">
           <div className="flex justify-between items-center w-full px-4 md:px-6 max-w-7xl mx-auto h-full gap-3">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
               <Button
@@ -249,13 +376,55 @@ export default function AdminLayout() {
               <h2 className="text-base md:text-xl font-bold text-primary tracking-tight truncate">Tokorakyat.id</h2>
               <span className="hidden lg:inline-flex ml-2 text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground border">Admin</span>
             </div>
-            <div className="hidden lg:flex flex-1 max-w-md mx-6">
+            <form onSubmit={handleSearchSubmit} className="hidden md:flex flex-1 max-w-md mx-3 lg:mx-6">
               <div className="relative w-full">
-                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">search</span>
-                <Input className="pl-10 pr-4 py-2 rounded-full bg-muted/50" placeholder="Cari pesanan, pelanggan, atau stok..." />
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-[20px]">search</span>
+                <Input
+                  ref={searchInputRef}
+                  value={query}
+                  onChange={(e) => { setQuery(e.target.value); setSearchFocused(true) }}
+                  onFocus={() => setSearchFocused(true)}
+                  onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder={placeholder}
+                  aria-label="Pencarian admin"
+                  className="pl-11 pr-16 py-2 rounded-full bg-muted/50"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  {query ? (
+                    <button
+                      type="button"
+                      onClick={handleClearSearch}
+                      title="Bersihkan pencarian"
+                      aria-label="Bersihkan pencarian"
+                      className="h-7 w-7 inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">close</span>
+                    </button>
+                  ) : (
+                    <kbd className="hidden lg:inline-flex items-center px-2 py-0.5 rounded border border-border bg-background text-[10px] font-medium text-muted-foreground">
+                      {shortcutLabel}
+                    </kbd>
+                  )}
+                </div>
+                {searchFocused && (
+                  <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-50 rounded-xl border border-border bg-popover text-popover-foreground shadow-lg overflow-hidden max-h-[70vh] overflow-y-auto">
+                    {renderSuggestionList()}
+                  </div>
+                )}
               </div>
-            </div>
+            </form>
             <div className="flex items-center gap-1 md:gap-2 shrink-0">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden text-muted-foreground hover:text-primary h-9 w-9"
+                onClick={() => setSearchOpen((v) => !v)}
+                aria-label="Pencarian"
+                title="Pencarian"
+              >
+                <span className="material-symbols-outlined">{searchOpen ? 'close' : 'search'}</span>
+              </Button>
               <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary h-9 w-9">
                 <span className="material-symbols-outlined">notifications</span>
               </Button>
@@ -263,10 +432,52 @@ export default function AdminLayout() {
                 <span className="material-symbols-outlined">person</span>
               </Button>
               <div className="h-8 w-[1px] bg-border mx-1 hidden sm:block"></div>
-              <span className="hidden md:inline-flex text-xs text-muted-foreground mr-1">{collapsed ? 'Diperluas' : 'Diciutkan'}</span>
             </div>
           </div>
         </header>
+
+        {/* Pencarian mobile (kolom header hanya tampil di md+) */}
+        {searchOpen && (
+          <>
+            <div
+              className="md:hidden fixed inset-0 top-[64px] z-30 bg-black/30 backdrop-blur-sm"
+              onClick={() => setSearchOpen(false)}
+            />
+            <div className="md:hidden absolute inset-x-0 top-full z-40 border-b border-border bg-background p-3 shadow-lg">
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-[20px]">search</span>
+                <Input
+                  autoFocus
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder={placeholder}
+                  aria-label="Pencarian admin"
+                  className="pl-11 pr-12 py-2 rounded-full bg-muted/50"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    title="Bersihkan pencarian"
+                    aria-label="Bersihkan pencarian"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-7 inline-flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">close</span>
+                  </button>
+                )}
+              </form>
+              <p className="mt-2 px-1 text-[11px] text-muted-foreground">
+                {searchTarget?.searchable
+                  ? `Mencari di ${searchTarget.label} — tekan Enter untuk menerapkan.`
+                  : 'Pilih menu tujuan, lalu tekan Enter.'}
+              </p>
+              <div className="mt-2 max-h-[55vh] overflow-y-auto rounded-xl border border-border bg-popover text-popover-foreground">
+                {renderSuggestionList()}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Page Content */}
         <section className="p-4 md:p-6 max-w-7xl mx-auto w-full flex-1">
