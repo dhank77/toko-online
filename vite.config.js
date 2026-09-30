@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename)
 
 export default defineConfig(({ mode }) => {
   // Ambil PORT / VITE_PORT dari env, CLI (--port), atau .env agar dinamis.
-  // Prioritas: CLI `vite --port=xxxx` > process.env.PORT > .env (PORT/VITE_PORT) > default 5174
+  // Prioritas: CLI `vite --port=xxxx` > process.env.PORT > .env (PORT/VITE_PORT) > default 5173
   const env = loadEnv(mode, process.cwd(), '')
   const port = Number(process.env.PORT || env.PORT || env.VITE_PORT || 5173)
 

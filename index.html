@@ -16,12 +16,26 @@
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block"
       rel="stylesheet"
     />
-    <!-- Midtrans Snap - Sandbox (production URL: https://app.midtrans.com/snap/snap.js) -->
-    <script
-      type="text/javascript"
-      src="https://app.sandbox.midtrans.com/snap/snap.js"
-      data-client-key="Mid-client-YB3sPx8HmfM2RPD8"
-    ></script>
+    <!--
+      Midtrans Snap: URL & client key dipilih otomatis dari env Vite saat build.
+      - VITE_MIDTRANS_IS_PRODUCTION=true  -> https://app.midtrans.com/snap/snap.js
+      - VITE_MIDTRANS_IS_PRODUCTION=false -> https://app.sandbox.midtrans.com/snap/snap.js
+      (Script ini sengaja tidak di-hardcode agar sandbox/produksi tidak perlu
+      edit manual di index.html.)
+    -->
+    <script>
+      (function () {
+        var isProduction = '%VITE_MIDTRANS_IS_PRODUCTION%' === 'true';
+        var clientKey = '%VITE_MIDTRANS_CLIENT_KEY%';
+        var script = document.createElement('script');
+        script.src = isProduction
+          ? 'https://app.midtrans.com/snap/snap.js'
+          : 'https://app.sandbox.midtrans.com/snap/snap.js';
+        script.setAttribute('data-client-key', clientKey);
+        script.async = true;
+        document.head.appendChild(script);
+      })();
+    </script>
   </head>
   <body>
     <script>

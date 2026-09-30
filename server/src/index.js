@@ -1,53 +1,11 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import rateLimit from 'express-rate-limit'
-import cookieParser from 'cookie-parser'
-import productRoutes from './routes/products.js'
-import categoryRoutes from './routes/categories.js'
-import orderRoutes from './routes/orders.js'
-import profileRoutes from './routes/profiles.js'
-import authRoutes from './routes/auth.js'
-import variantRoutes from './routes/variants.js'
-import cartRoutes from './routes/cart.js'
-import paymentRoutes from './routes/payment.js'
-import heroSlideRoutes from './routes/heroSlides.js'
+// Entry point KHUSUS development lokal.
+// Di Vercel, yang dipakai adalah /api/index.js (serverless) dan app.listen()
+// TIDAK dijalankan karena Vercel yang mengelola lifecycle fungsi.
+import app from './app.js'
 
-const app = express()
+const PORT = Number(process.env.PORT) || 3001
 
-app.use(helmet({ contentSecurityPolicy: false }))
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }))
-app.use(cookieParser())
-app.use(express.json({ limit: '10kb' }))
-
-const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 500,
-  message: { error: 'Terlalu banyak permintaan, coba lagi nanti.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-})
-
-app.use('/api/', globalLimiter)
-
-app.get('/health', (req, res) => res.json({ status: 'ok' }))
-
-app.use('/api/auth', authRoutes)
-app.use('/api/products', productRoutes)
-app.use('/api/categories', categoryRoutes)
-app.use('/api/orders', orderRoutes)
-app.use('/api/profiles', profileRoutes)
-app.use('/api/cart', cartRoutes)
-app.use('/api', variantRoutes)
-app.use('/api/payment', paymentRoutes)
-app.use('/api/hero-slides', heroSlideRoutes)
-
-app.use((err, req, res, next) => {
-  console.error(err)
-  res.status(err.status || 500).json({ error: err.message || 'Kesalahan server internal' })
-})
-
-const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+  console.log(`[server] listening on http://localhost:${PORT}`)
 })
+

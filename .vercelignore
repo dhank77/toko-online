@@ -1,0 +1,23 @@
+# Berkas yang tidak perlu di-upload ke Vercel (mempercepat upload).
+# HATI-HATI: jangan mengecualikan berkas yang dibutuhkan saat build
+# (src/, public/, index.html, package.json, server/src/).
+
+# Dependencies & build output — di-install/di-build ulang di Vercel
+node_modules
+server/node_modules
+dist
+
+# Secrets — JANGAN pernah di-upload
+.env
+.env.*
+server/.env
+server/.env.*
+!.env.example
+!server/.env.example
+
+# Metadata & noise
+.git
+.gitignore
+.vercel
+*.log
+.DS_Store

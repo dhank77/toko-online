@@ -1,8 +1,6 @@
 import { supabaseAdmin } from '../config/supabase.js'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET
-
 async function verifyRemotely(token) {
   const { data: { user }, error } = await supabaseAdmin.auth.getUser(token)
   if (error || !user) return null
@@ -21,9 +19,12 @@ export async function authenticate(req, res, next) {
 
   try {
     // Fast path: verify the Supabase JWT locally (no network round-trip).
-    if (JWT_SECRET) {
+    // Dibaca saat request (bukan module load) agar nilainya selalu final
+    // setelah dotenv/env Vercel termuat, dan bisa diubah tanpa restart.
+    const jwtSecret = process.env.JWT_SECRET
+    if (jwtSecret) {
       try {
-        const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] })
+        const payload = jwt.verify(token, jwtSecret, { algorithms: ['HS256'] })
         if (typeof payload?.sub === 'string' && payload.sub) {
           req.user = { id: payload.sub, ...payload }
           await ensureProfile(req.user).catch(() => {})
