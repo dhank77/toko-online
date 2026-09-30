@@ -1,0 +1,57 @@
+# =====================================================================
+#  .htaccess — untuk frontend hasil build Vite di cPanel (Apache/LiteSpeed)
+#
+#  CARA PAKAI:
+#   1. npm run build            (di komputer lokal)
+#   2. Upload ISI folder dist/ ke public_html/
+#   3. File ini diletakkan di public_html/.htaccess
+#
+#  FUNGSI:
+#   - /api/*  -> diteruskan ke aplikasi Express (port 3001)
+#   - /assets, /logo.png, dll -> served langsung (file ada)
+#   - /produk, /cart, dll     -> index.html (SPA fallback, React Router)
+# =====================================================================
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # ---------------------------------------------------------------------
+  # 1. API Express
+  #    Ganti 3001 bila Anda memakai PORT lain di ecosystem.config.cjs
+  # ---------------------------------------------------------------------
+  RewriteRule ^api/(.*)$ http://127.0.0.1:3001/api/$1 [P,L,QSA]
+
+  # Health check: /health -> http://127.0.0.1:3001/health
+  RewriteRule ^health$ http://127.0.0.1:3001/health [P,L,QSA]
+
+  # ---------------------------------------------------------------------
+  # 2. Berkas statis: biarkan Apache melayani langsung
+  #    PENTING: harus SEBELUM SPA fallback, agar /assets/*.js tidak
+  #    ikut dilayani sebagai index.html.
+  # ---------------------------------------------------------------------
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # ---------------------------------------------------------------------
+  # 3. SPA fallback: semua route lain -> index.html
+  #    Agar refresh di /produk tidak menghasilkan 404.
+  # ---------------------------------------------------------------------
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+# -----------------------------------------------------------------------
+# Keamanan dasar
+# -----------------------------------------------------------------------
+Options -Indexes
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Blokir akses ke berkas sensitif jika somehow ikut ter-upload
+<FilesMatch "(^\.env)|(\.log$)|(^package\.json$)|(^package-lock\.json$)">
+  Require all denied
+</FilesMatch>
